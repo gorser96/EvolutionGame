@@ -1,16 +1,16 @@
-﻿using EvolutionBack.Domain.Models;
-using EvolutionBack.Domain.Repo;
+﻿using Domain.Models;
+using Domain.Repo;
 
 namespace Infrastructure.Repo;
 
-public class UserRepo : IUserRepo
+public class PropertyRepo : IPropertyRepo
 {
-    public User Create(Guid uid)
+    public IProperty Create(Guid uid)
     {
         throw new NotImplementedException();
     }
 
-    public User Find(Guid uid)
+    public IProperty Find(Guid uid)
     {
         throw new NotImplementedException();
     }

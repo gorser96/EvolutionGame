@@ -3,7 +3,7 @@ using EvolutionBack.Domain.Repo;
 
 namespace Infrastructure.Repo;
 
-internal class RoomRepo : IRoomRepo
+public class RoomRepo : IRoomRepo
 {
     public Room Create(Guid uid)
     {
