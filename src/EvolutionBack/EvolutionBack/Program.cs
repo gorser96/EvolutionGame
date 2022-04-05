@@ -1,5 +1,4 @@
-using EvolutionBack;
-using EvolutionBack.Services;
+using EvolutionBack.Core;
 
 WebApplicationOptions options = new();
 
@@ -13,7 +12,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // services
-builder.Services.AddTransient<AnimalQueries>();
+builder.Services.AddServices();
+
+// queries
+builder.Services.AddQueries();
+
+// commands
+builder.Services.AddCommandHandlers();
+
+// repositories
+builder.Services.AddRepositories();
 
 var app = builder.Build();
 

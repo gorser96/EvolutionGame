@@ -9,6 +9,8 @@ public class Burrowing : IPropertyAction
         IsPair = isPair;
         IsOnEnemy = isOnEnemy;
         AdditionalUid = additionalUid;
+        
+        IsActive = true;
     }
 
     public Guid Uid { get; set; }
@@ -23,7 +25,29 @@ public class Burrowing : IPropertyAction
 
     public string AssemblyName => nameof(Burrowing);
 
-    public void Invoke(Animal? self = null, Animal? target = null)
+    public bool IsActive { get; set; }
+
+    public void SetIsActive(bool value)
     {
+        IsActive = value;
+    }
+
+    public bool? OnDefense(Animal self, Animal enemy)
+    {
+        // если это свойство не заблокировано, например, "Неоплазией" или "Интеллектом"
+        if (IsActive)
+        {
+            if (self.FoodCurrent >= self.FoodMax)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void OnUse(Animal self)
+    {
+        // это свойство не активируется по требованию (например как "Спячка")
     }
 }

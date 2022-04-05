@@ -3,14 +3,14 @@ using Domain.Repo;
 
 namespace Infrastructure.Repo;
 
-public class UserRepo : IUserRepo
+public class InGameUserRepo : IInGameUserRepo
 {
-    public User Create(Guid uid)
+    public InGameUser Create(Guid uid)
     {
         throw new NotImplementedException();
     }
 
-    public User Find(Guid uid)
+    public InGameUser Find(Guid uid)
     {
         throw new NotImplementedException();
     }

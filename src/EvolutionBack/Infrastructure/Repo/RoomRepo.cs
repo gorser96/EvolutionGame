@@ -1,5 +1,5 @@
-﻿using EvolutionBack.Domain.Models;
-using EvolutionBack.Domain.Repo;
+﻿using Domain.Models;
+using Domain.Repo;
 
 namespace Infrastructure.Repo;
 

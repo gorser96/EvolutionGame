@@ -1,6 +1,6 @@
-﻿using EvolutionBack.Domain.Models;
+﻿using Domain.Models;
 
-namespace EvolutionBack.Domain.Repo;
+namespace Domain.Repo;
 
 public interface IUserRepo
 {

@@ -1,4 +1,4 @@
-﻿namespace EvolutionBack.Domain.Models;
+﻿namespace Domain.Models;
 
 public class User
 {
@@ -14,8 +14,6 @@ public class User
     public string Login { get; set; }
 
     public string Password { get; set; }
-
-    public Guid? RoomUid { get; set; }
 
     // TODO: очки, рейтинг
 }

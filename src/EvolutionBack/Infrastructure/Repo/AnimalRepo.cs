@@ -3,14 +3,14 @@ using Domain.Repo;
 
 namespace Infrastructure.Repo;
 
-public class UserRepo : IUserRepo
+public class AnimalRepo : IAnimalRepo
 {
-    public User Create(Guid uid)
+    public Animal Create(Guid uid, Guid userUid)
     {
         throw new NotImplementedException();
     }
 
-    public User Find(Guid uid)
+    public Animal Find(Guid uid)
     {
         throw new NotImplementedException();
     }

@@ -1,4 +1,4 @@
-﻿namespace EvolutionBack.Domain.Models;
+﻿namespace Domain.Models;
 
 public class Room
 {
@@ -6,12 +6,12 @@ public class Room
     {
         Uid = uid;
         Name = name;
-        Users = new List<User>();
+        Users = new List<InGameUser>();
     }
 
     public Guid Uid { get; set; }
 
     public string Name { get; set; }
 
-    public virtual ICollection<User> Users { get; set; }
+    public virtual ICollection<InGameUser> Users { get; set; }
 }
