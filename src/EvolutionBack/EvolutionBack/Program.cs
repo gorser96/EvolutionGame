@@ -1,4 +1,6 @@
 using EvolutionBack.Core;
+using MediatR;
+using System.Reflection;
 
 WebApplicationOptions options = new();
 
@@ -10,6 +12,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// mediator
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
 // services
 builder.Services.AddServices();
