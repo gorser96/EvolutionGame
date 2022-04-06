@@ -1,22 +1,39 @@
 ﻿using Domain.Models;
 using Domain.Repo;
+using Infrastructure.EF;
 
 namespace Infrastructure.Repo;
 
 public class InGameUserRepo : IInGameUserRepo
 {
-    public InGameUser Create(Guid uid)
+    private readonly EvolutionDbContext _dbContext;
+
+    public InGameUserRepo(EvolutionDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public InGameUser Find(Guid uid)
+    public InGameUser Create(Guid userUid, Guid roomUid)
     {
-        throw new NotImplementedException();
+        return _dbContext.InGameUsers.Add(new InGameUser(userUid, roomUid)).Entity;
+    }
+
+    public InGameUser? Find(Guid uid)
+    {
+        return _dbContext.InGameUsers.Find(uid);
     }
 
     public bool Remove(Guid uid)
     {
-        throw new NotImplementedException();
+        var obj = Find(uid);
+        if (obj == null)
+        {
+            return false;
+        }
+        else
+        {
+            _dbContext.InGameUsers.Remove(obj);
+            return true;
+        }
     }
 }

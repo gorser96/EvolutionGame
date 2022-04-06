@@ -5,9 +5,9 @@ public class Card
     public Card(Guid uid, Guid additionUid, Guid firstPropertyUid, Guid? secondPropertyUid)
     {
         Uid = uid;
+        AdditionUid = additionUid;
         FirstPropertyUid = firstPropertyUid;
         SecondPropertyUid = secondPropertyUid;
-        AdditionUid = additionUid;
     }
 
     public Guid Uid { get; private set; }
@@ -21,6 +21,13 @@ public class Card
     public virtual Property? FirstProperty { get; private set; }
 
     public Guid? SecondPropertyUid { get; private set; }
-    
+
     public virtual Property? SecondProperty { get; private set; }
+
+    internal void Update(Card obj)
+    {
+        AdditionUid = obj.AdditionUid;
+        FirstPropertyUid = obj.FirstPropertyUid;
+        SecondPropertyUid = obj.SecondPropertyUid;
+    }
 }

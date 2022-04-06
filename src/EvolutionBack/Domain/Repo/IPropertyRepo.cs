@@ -4,9 +4,9 @@ namespace Domain.Repo;
 
 public interface IPropertyRepo
 {
-    public Property Find(Guid uid);
+    public Property? Find(Guid uid);
 
-    public Property Create(Guid uid);
+    public Property Create(Guid uid, string name, bool isPair, bool isOnEnemy, string assemblyName);
 
     public bool Remove(Guid uid);
 }

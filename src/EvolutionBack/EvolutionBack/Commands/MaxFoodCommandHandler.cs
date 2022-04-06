@@ -16,7 +16,12 @@ public class MaxFoodCommandHandler : IRequestHandler<MaxFoodCommand>
     {
         var animal = _animalRepo.Find(request.AnimalUid);
 
-        animal.SetMaxFood(request.MaxFood);
+        if (animal is null)
+        {
+            throw new NullReferenceException(nameof(animal));
+        }
+
+        animal.Update(foodMax: request.MaxFood);
 
         return Task.FromResult(Unit.Value);
     }

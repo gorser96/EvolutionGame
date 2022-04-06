@@ -1,22 +1,39 @@
 ﻿using Domain.Models;
 using Domain.Repo;
+using Infrastructure.EF;
 
 namespace Infrastructure.Repo;
 
 public class AnimalRepo : IAnimalRepo
 {
-    public Animal Create(Guid uid, Guid userUid)
+    private readonly EvolutionDbContext _dbContext;
+
+    public AnimalRepo(EvolutionDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Animal Find(Guid uid)
+    public Animal Create(Guid uid, Guid userUid)
     {
-        throw new NotImplementedException();
+        return _dbContext.Animals.Add(new Animal(uid)).Entity;
+    }
+
+    public Animal? Find(Guid uid)
+    {
+        return _dbContext.Animals.Find(uid);
     }
 
     public bool Remove(Guid uid)
     {
-        throw new NotImplementedException();
+        var obj = Find(uid);
+        if (obj == null)
+        {
+            return false;
+        }
+        else
+        {
+            _dbContext.Animals.Remove(obj);
+            return true;
+        }
     }
 }

@@ -17,6 +17,16 @@ namespace EvolutionBack.Commands
             var attacker = _animalRepo.Find(request.AttackerUid);
             var defensive = _animalRepo.Find(request.DefensiveUid);
 
+            if (attacker is null)
+            {
+                throw new NullReferenceException(nameof(attacker));
+            }
+
+            if (defensive is null)
+            {
+                throw new NullReferenceException(nameof(defensive));
+            }
+
             defensive.DisableProperties(request.DisabledPropertiesOnAttack);
 
             attacker.Attack(defensive);

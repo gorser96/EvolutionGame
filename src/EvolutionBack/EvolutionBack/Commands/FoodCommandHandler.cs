@@ -16,7 +16,12 @@ public class FoodCommandHandler : IRequestHandler<FoodCommand>
     {
         var animal = _animalRepo.Find(request.AnimalUid);
 
-        animal.SetFood(request.Food);
+        if (animal is null)
+        {
+            throw new NullReferenceException(nameof(animal));
+        }
+
+        animal.Update(foodCurrent: request.Food);
 
         return Task.FromResult(Unit.Value);
     }

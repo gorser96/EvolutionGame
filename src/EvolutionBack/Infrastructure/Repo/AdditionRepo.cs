@@ -1,22 +1,39 @@
 ﻿using Domain.Models;
 using Domain.Repo;
+using Infrastructure.EF;
 
 namespace Infrastructure.Repo;
 
 public class AdditionRepo : IAdditionRepo
 {
-    public Addition Create(Guid uid)
+    private readonly EvolutionDbContext _dbContext;
+
+    public AdditionRepo(EvolutionDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Addition Find(Guid uid)
+    public Addition Create(Guid uid, string name)
     {
-        throw new NotImplementedException();
+        return _dbContext.Additions.Add(new Addition(uid, name)).Entity;
+    }
+
+    public Addition? Find(Guid uid)
+    {
+        return _dbContext.Additions.Find(uid);
     }
 
     public bool Remove(Guid uid)
     {
-        throw new NotImplementedException();
+        var obj = Find(uid);
+        if (obj == null)
+        {
+            return false;
+        }
+        else
+        {
+            _dbContext.Additions.Remove(obj);
+            return true;
+        }
     }
 }

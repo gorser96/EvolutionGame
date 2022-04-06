@@ -4,7 +4,7 @@ namespace Domain.Repo;
 
 public interface IAnimalRepo
 {
-    public Animal Find(Guid uid);
+    public Animal? Find(Guid uid);
 
     public Animal Create(Guid uid, Guid userUid);
 

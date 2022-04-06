@@ -1,22 +1,39 @@
 ﻿using Domain.Models;
 using Domain.Repo;
+using Infrastructure.EF;
 
 namespace Infrastructure.Repo;
 
 public class PropertyRepo : IPropertyRepo
 {
-    public Property Create(Guid uid)
+    private readonly EvolutionDbContext _dbContext;
+
+    public PropertyRepo(EvolutionDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Property Find(Guid uid)
+    public Property Create(Guid uid, string name, bool isPair, bool isOnEnemy, string assemblyName)
     {
-        throw new NotImplementedException();
+        return _dbContext.Properties.Add(new Property(uid, name, isPair, isOnEnemy, assemblyName)).Entity;
+    }
+
+    public Property? Find(Guid uid)
+    {
+        return _dbContext.Properties.Find(uid);
     }
 
     public bool Remove(Guid uid)
     {
-        throw new NotImplementedException();
+        var obj = Find(uid);
+        if (obj == null)
+        {
+            return false;
+        }
+        else
+        {
+            _dbContext.Properties.Remove(obj);
+            return true;
+        }
     }
 }

@@ -5,6 +5,8 @@ public class Animal
     public Animal(Guid uid)
     {
         Uid = uid;
+        FoodCurrent = 0;
+        FoodMax = 1;
         Properties = new List<Property>();
     }
 
@@ -22,10 +24,33 @@ public class Animal
 
     #endregion DTO properties
 
+    public void Update(int? foodCurrent = null, int? foodMax = null, InGameUser? user = null)
+    {
+        if (foodCurrent.HasValue)
+        {
+            SetFood(foodCurrent.Value);
+        }
+
+        if (foodMax.HasValue)
+        {
+            SetMaxFood(foodMax.Value);
+        }
+
+        if (user != null)
+        {
+            InGameUser = user;
+        }
+    }
+
     public void AddProperty(Property property)
     {
         // TODO: проверка совместимости свойств
         Properties.Add(property);
+    }
+
+    public void RemoveProperty(Property property)
+    {
+        Properties.Remove(property);
     }
 
     public void EnableProperties(IReadOnlyCollection<Guid> disabledPropertiesOnAttack)
@@ -50,12 +75,12 @@ public class Animal
         }
     }
 
-    public void SetMaxFood(int value)
+    private void SetMaxFood(int value)
     {
         FoodMax = value;
     }
 
-    public void SetFood(int value)
+    private void SetFood(int value)
     {
         FoodCurrent = value;
     }
