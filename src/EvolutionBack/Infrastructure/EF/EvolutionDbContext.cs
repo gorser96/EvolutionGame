@@ -20,24 +20,23 @@ public class EvolutionDbContext : DbContext
 
     public virtual DbSet<Addition> Additions { get; set; }
 
-    public virtual DbSet<IProperty> Properties { get; set; }
+    public virtual DbSet<Property> Properties { get; set; }
 
     public virtual DbSet<Animal> Animals { get; set; }
+
+    public virtual DbSet<Card> Cards { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomConfiguration());
+        modelBuilder.ApplyConfiguration(new PropertyConfiguration());
+        modelBuilder.ApplyConfiguration(new InGameUserConfiguration());
+        modelBuilder.ApplyConfiguration(new CardConfiguration());
+        modelBuilder.ApplyConfiguration(new AnimalConfiguration());
+        modelBuilder.ApplyConfiguration(new AdditionConfiguration());
 
         base.OnModelCreating(modelBuilder);
-    }
-
-    public static DbContextOptionsBuilder SetOptions(string connectionString, DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(connectionString);
-
-        optionsBuilder.UseLazyLoadingProxies();
-
-        return optionsBuilder;
     }
 }

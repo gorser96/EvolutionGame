@@ -6,12 +6,12 @@ public class Addition
     {
         Uid = uid;
         Name = name;
-        Properties = new List<IProperty>();
+        Cards = new List<Card>();
     }
 
-    public Guid Uid { get; set; }
+    public Guid Uid { get; private set; }
 
-    public string Name { get; set; }
+    public string Name { get; private set; }
 
-    public virtual ICollection<IProperty> Properties { get; set; }
+    public virtual ICollection<Card> Cards { get; private set; }
 }

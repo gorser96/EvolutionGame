@@ -9,11 +9,13 @@ public class User
         Uid = uid;
     }
 
-    public Guid Uid { get; set; }
+    public Guid Uid { get; private set; }
     
-    public string Login { get; set; }
+    public string Login { get; private set; }
 
-    public string Password { get; set; }
+    public string Password { get; private set; }
+
+    public virtual InGameUser? InGameUser { get; private set; }
 
     // TODO: очки, рейтинг
 }

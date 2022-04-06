@@ -9,9 +9,13 @@ public class InGameUser
         Animals = new List<Animal>();
     }
 
-    public Guid UserUid { get; set; }
+    public Guid UserUid { get; private set; }
 
-    public Guid RoomUid { get; set; }
+    public virtual User? User { get; private set; }
+
+    public Guid RoomUid { get; private set; }
+
+    public virtual Room? Room { get; private set; }
 
     public virtual ICollection<Animal> Animals { get; set; }
 }

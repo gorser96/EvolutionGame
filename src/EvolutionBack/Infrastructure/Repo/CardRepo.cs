@@ -3,14 +3,14 @@ using Domain.Repo;
 
 namespace Infrastructure.Repo;
 
-public class PropertyRepo : IPropertyRepo
+public class CardRepo : ICardRepo
 {
-    public Property Create(Guid uid)
+    public Card Create(Guid uid, Guid firstPropertyUid, Guid? secondPropertyUid)
     {
         throw new NotImplementedException();
     }
 
-    public Property Find(Guid uid)
+    public Card Find(Guid uid)
     {
         throw new NotImplementedException();
     }

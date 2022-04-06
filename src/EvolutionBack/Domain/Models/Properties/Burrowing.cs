@@ -1,29 +1,12 @@
 ﻿namespace Domain.Models;
 
-public class Burrowing : IPropertyAction
+public class Burrowing : Property, IPropertyAction
 {
-    public Burrowing(Guid uid, string name, bool isPair, bool isOnEnemy, Guid additionalUid)
+    public Burrowing(Guid uid, string name, bool isPair, bool isOnEnemy) 
+        : base(uid, name, isPair, isOnEnemy, nameof(Burrowing))
     {
-        Uid = uid;
-        Name = name;
-        IsPair = isPair;
-        IsOnEnemy = isOnEnemy;
-        AdditionalUid = additionalUid;
-        
         IsActive = true;
     }
-
-    public Guid Uid { get; set; }
-
-    public string Name { get; set; }
-
-    public bool IsPair { get; set; }
-
-    public bool IsOnEnemy { get; set; }
-
-    public Guid AdditionalUid { get; set; }
-
-    public string AssemblyName => nameof(Burrowing);
 
     public bool IsActive { get; set; }
 

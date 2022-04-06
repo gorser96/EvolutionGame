@@ -6,12 +6,12 @@ public class Room
     {
         Uid = uid;
         Name = name;
-        Users = new List<InGameUser>();
+        InGameUsers = new List<InGameUser>();
     }
 
-    public Guid Uid { get; set; }
+    public Guid Uid { get; private set; }
 
-    public string Name { get; set; }
+    public string Name { get; private set; }
 
-    public virtual ICollection<InGameUser> Users { get; set; }
+    public virtual ICollection<InGameUser> InGameUsers { get; private set; }
 }

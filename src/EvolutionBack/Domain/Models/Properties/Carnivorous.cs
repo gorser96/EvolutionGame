@@ -1,31 +1,14 @@
 ﻿namespace Domain.Models;
 
-public class Carnivorous : IPropertyAction
+public class Carnivorous : Property, IPropertyAction
 {
-    public Carnivorous(Guid uid, string name, bool isPair, bool isOnEnemy, Guid additionalUid)
+    public Carnivorous(Guid uid, string name, bool isPair, bool isOnEnemy) 
+        : base(uid, name, isPair, isOnEnemy, nameof(Carnivorous))
     {
-        Uid = uid;
-        Name = name;
-        IsPair = isPair;
-        IsOnEnemy = isOnEnemy;
-        AdditionalUid = additionalUid;
-
         IsActive = true;
     }
 
     public bool IsActive { get; set; }
-
-    public Guid Uid { get; set; }
-
-    public string Name { get; set; }
-
-    public string AssemblyName => nameof(Carnivorous);
-
-    public bool IsPair { get; set; }
-
-    public bool IsOnEnemy { get; set; }
-
-    public Guid AdditionalUid { get; set; }
 
     public void SetIsActive(bool value)
     {

@@ -1,6 +1,6 @@
 ﻿namespace Domain.Models;
 
-public interface IPropertyAction : IProperty
+public interface IPropertyAction
 {
     public bool IsActive { get; set; }
 

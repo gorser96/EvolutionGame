@@ -2,28 +2,27 @@
 
 public class Animal
 {
-    public Animal(Guid uid, Guid userUid)
+    public Animal(Guid uid)
     {
         Uid = uid;
-        InGameUserUid = userUid;
-        Properties = new List<IPropertyAction>();
+        Properties = new List<Property>();
     }
 
     #region DTO properties
 
     public Guid Uid { get; private set; }
 
-    public Guid InGameUserUid { get; private set; }
+    public virtual InGameUser? InGameUser { get; private set; }
 
     public int FoodCurrent { get; private set; }
 
     public int FoodMax { get; private set; }
 
-    public virtual ICollection<IPropertyAction> Properties { get; private set; }
+    public virtual ICollection<Property> Properties { get; private set; }
 
     #endregion DTO properties
 
-    public void AddProperty(IPropertyAction property)
+    public void AddProperty(Property property)
     {
         // TODO: проверка совместимости свойств
         Properties.Add(property);
@@ -33,7 +32,10 @@ public class Animal
     {
         foreach (var property in Properties.Where(x => disabledPropertiesOnAttack.Contains(x.Uid)))
         {
-            property.SetIsActive(true);
+            if (property is IPropertyAction propertyAction)
+            {
+                propertyAction.SetIsActive(true);
+            }
         }
     }
 
@@ -41,7 +43,10 @@ public class Animal
     {
         foreach (var property in Properties.Where(x => disabledPropertiesOnAttack.Contains(x.Uid)))
         {
-            property.SetIsActive(false);
+            if (property is IPropertyAction propertyAction)
+            {
+                propertyAction.SetIsActive(false);
+            }
         }
     }
 
@@ -57,6 +62,6 @@ public class Animal
 
     public bool Attack(Animal enemy)
     {
-        return !enemy.Properties.All(x => x.OnDefense(this, enemy) ?? false);
+        return !enemy.Properties.Cast<IPropertyAction>().All(x => x.OnDefense(this, enemy) ?? false);
     }
 }
