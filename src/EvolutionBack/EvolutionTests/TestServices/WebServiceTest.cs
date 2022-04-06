@@ -1,6 +1,9 @@
 ﻿using EvolutionBack.Core;
+using Infrastructure.EF;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Reflection;
 
 namespace EvolutionTests.TestServices;
@@ -13,8 +16,15 @@ internal class WebServiceTest
     {
         var services = new ServiceCollection();
 
+        services.AddDbContextPool<EvolutionDbContext>(opt =>
+        {
+            opt.UseInMemoryDatabase(databaseName: "EvolutionDb");
+
+            opt.UseLazyLoadingProxies();
+        });
+
         // mediator
-        services.AddMediatR(Assembly.GetExecutingAssembly());
+        services.AddMediatR(Assembly.GetAssembly(typeof(EvolutionBack.Controllers.UserController)) ?? throw new NullReferenceException());
 
         // services
         services.AddServices();
@@ -31,5 +41,5 @@ internal class WebServiceTest
         _serviceProvider = services.BuildServiceProvider();
     }
 
-    public TService? Get<TService>() => _serviceProvider.GetService<TService>();
+    public TService Get<TService>() where TService : class => _serviceProvider.GetRequiredService<TService>();
 }

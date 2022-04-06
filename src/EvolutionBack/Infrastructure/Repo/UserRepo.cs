@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repo;
 using Infrastructure.EF;
+using Infrastructure.EF.Configurations;
 
 namespace Infrastructure.Repo;
 
@@ -21,6 +22,13 @@ public class UserRepo : IUserRepo
     public User? Find(Guid uid)
     {
         return _dbContext.Users.Find(uid);
+    }
+
+    public User? Login(string login, string password)
+    {
+        return _dbContext.Users.FirstOrDefault(x =>
+            x.Login == login &&
+            x.Password == PasswordComputing.GetHash(password));
     }
 
     public bool Remove(Guid uid)

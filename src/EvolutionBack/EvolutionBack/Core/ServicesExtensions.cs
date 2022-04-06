@@ -21,7 +21,7 @@ public static class ServicesExtensions
             .ToList();
         foreach (var service in customServices)
         {
-            services.AddTransient(service);
+            services.AddScoped(service);
         }
 
         return services;
@@ -49,7 +49,7 @@ public static class ServicesExtensions
             .ToList();
         foreach (var handler in handlers)
         {
-            services.AddTransient(handler);
+            services.AddScoped(handler);
         }
 
         return services;
@@ -57,12 +57,12 @@ public static class ServicesExtensions
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddTransient<IUserRepo, UserRepo>();
-        services.AddTransient<IRoomRepo, RoomRepo>();
-        services.AddTransient<IAdditionRepo, AdditionRepo>();
-        services.AddTransient<IPropertyRepo, PropertyRepo>();
-        services.AddTransient<IAnimalRepo, AnimalRepo>();
-        services.AddTransient<IInGameUserRepo, InGameUserRepo>();
+        services.AddScoped<IUserRepo, UserRepo>();
+        services.AddScoped<IRoomRepo, RoomRepo>();
+        services.AddScoped<IAdditionRepo, AdditionRepo>();
+        services.AddScoped<IPropertyRepo, PropertyRepo>();
+        services.AddScoped<IAnimalRepo, AnimalRepo>();
+        services.AddScoped<IInGameUserRepo, InGameUserRepo>();
 
         return services;
     }

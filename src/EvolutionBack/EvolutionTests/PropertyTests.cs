@@ -10,7 +10,7 @@ public class PropertyTests
 
     public PropertyTests()
     {
-        _services = new WebServiceTest();
+        _services = new();
     }
 
     [Fact]

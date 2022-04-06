@@ -1,4 +1,7 @@
-﻿using EvolutionBack.Core;
+﻿using EvolutionBack.Commands;
+using EvolutionBack.Core;
+using EvolutionBack.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,16 +11,22 @@ namespace EvolutionBack.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        [HttpPost]
         [Authorize(AuthPolicies.User)]
-        public async Task Login()
+        public async Task<UserViewModel> Login([FromBody] UserLoginCommand loginCommand, [FromServices] IMediator mediator)
         {
-            throw new NotImplementedException();
+            // TODO: передавать хеш из фронта
+            var user = await mediator.Send(loginCommand);
+
+            return user;
         }
 
+        [HttpPost()]
         [Authorize(AuthPolicies.Guest)]
-        public async Task Register()
+        public async Task<UserViewModel> Register([FromBody] UserCreateCommand createCommand, [FromServices] IMediator mediator)
         {
-            throw new NotImplementedException();
+            var user = await mediator.Send(createCommand);
+            return user;
         }
     }
 }
