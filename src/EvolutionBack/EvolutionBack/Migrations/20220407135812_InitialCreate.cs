@@ -14,7 +14,7 @@ namespace EvolutionBack.Migrations
                 columns: table => new
                 {
                     Uid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,7 +27,7 @@ namespace EvolutionBack.Migrations
                 {
                     Uid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AssemblyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AssemblyName = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     IsPair = table.Column<bool>(type: "bit", nullable: false),
                     IsOnEnemy = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -53,7 +53,7 @@ namespace EvolutionBack.Migrations
                 columns: table => new
                 {
                     Uid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Login = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Login = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -161,6 +161,12 @@ namespace EvolutionBack.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Additions_Name",
+                table: "Additions",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AnimalProperty_PropertiesUid",
                 table: "AnimalProperty",
                 column: "PropertiesUid");
@@ -197,6 +203,18 @@ namespace EvolutionBack.Migrations
                 name: "IX_InGameUsers_UserUid",
                 table: "InGameUsers",
                 column: "UserUid",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Properties_AssemblyName",
+                table: "Properties",
+                column: "AssemblyName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Login",
+                table: "Users",
+                column: "Login",
                 unique: true);
         }
 

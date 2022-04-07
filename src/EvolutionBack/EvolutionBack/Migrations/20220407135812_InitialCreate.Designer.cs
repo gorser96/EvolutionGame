@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EvolutionBack.Migrations
 {
     [DbContext(typeof(EvolutionDbContext))]
-    [Migration("20220406115055_InitialCreate")]
+    [Migration("20220407135812_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,14 +42,17 @@ namespace EvolutionBack.Migrations
             modelBuilder.Entity("Domain.Models.Addition", b =>
                 {
                     b.Property<Guid>("Uid")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.HasKey("Uid");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Additions", (string)null);
                 });
@@ -57,7 +60,6 @@ namespace EvolutionBack.Migrations
             modelBuilder.Entity("Domain.Models.Animal", b =>
                 {
                     b.Property<Guid>("Uid")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("FoodCurrent")
@@ -82,7 +84,6 @@ namespace EvolutionBack.Migrations
             modelBuilder.Entity("Domain.Models.Card", b =>
                 {
                     b.Property<Guid>("Uid")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("AdditionUid")
@@ -129,12 +130,12 @@ namespace EvolutionBack.Migrations
             modelBuilder.Entity("Domain.Models.Property", b =>
                 {
                     b.Property<Guid>("Uid")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AssemblyName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<bool>("IsOnEnemy")
                         .HasColumnType("bit");
@@ -148,13 +149,15 @@ namespace EvolutionBack.Migrations
 
                     b.HasKey("Uid");
 
+                    b.HasIndex("AssemblyName")
+                        .IsUnique();
+
                     b.ToTable("Properties", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Room", b =>
                 {
                     b.Property<Guid>("Uid")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -169,18 +172,21 @@ namespace EvolutionBack.Migrations
             modelBuilder.Entity("Domain.Models.User", b =>
                 {
                     b.Property<Guid>("Uid")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Uid");
+
+                    b.HasIndex("Login")
+                        .IsUnique();
 
                     b.ToTable("Users", (string)null);
                 });

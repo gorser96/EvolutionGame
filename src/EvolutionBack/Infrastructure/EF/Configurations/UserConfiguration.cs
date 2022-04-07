@@ -18,5 +18,7 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Uid).ValueGeneratedNever();
         builder.Property(x => x.Password).HasConversion(converter);
         builder.HasOne(x => x.InGameUser).WithOne(x => x.User);
+        builder.Property(x => x.Login).HasMaxLength(30);
+        builder.HasIndex(x => x.Login).IsUnique();
     }
 }

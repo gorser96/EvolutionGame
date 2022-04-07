@@ -11,5 +11,7 @@ internal class AdditionConfiguration : IEntityTypeConfiguration<Addition>
         builder.ToTable("Additions");
         builder.HasKey(x => x.Uid);
         builder.Property(x => x.Uid).ValueGeneratedNever();
+        builder.Property(x => x.Name).HasMaxLength(300);
+        builder.HasIndex(x => x.Name).IsUnique();
     }
 }

@@ -12,5 +12,7 @@ internal class PropertyConfiguration : IEntityTypeConfiguration<Property>
         builder.HasKey(x => x.Uid);
         builder.Property(x => x.Uid).ValueGeneratedNever();
         builder.Property(x => x.AssemblyName);
+        builder.Property(x => x.AssemblyName).HasMaxLength(300);
+        builder.HasIndex(x => x.AssemblyName).IsUnique();
     }
 }

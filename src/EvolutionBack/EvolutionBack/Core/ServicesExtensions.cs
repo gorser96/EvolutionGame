@@ -45,7 +45,8 @@ public static class ServicesExtensions
         var handlers = _assembly.DefinedTypes
             .Where(x => x.ImplementedInterfaces.Where(i => i.IsGenericType).Any(i =>
                 i.GetGenericTypeDefinition() == typeof(IRequestHandler<>) ||
-                i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)))
+                i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>) ||
+                i.GetGenericTypeDefinition() == typeof(INotificationHandler<>)))
             .ToList();
         foreach (var handler in handlers)
         {
