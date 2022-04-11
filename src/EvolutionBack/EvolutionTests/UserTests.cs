@@ -1,14 +1,15 @@
 ﻿using Domain.Repo;
 using EvolutionBack.Commands;
 using EvolutionTests.TestServices;
-using Infrastructure.EF;
+using Infrastructure.EF.Configurations;
 using MediatR;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace EvolutionTests;
 
-public class UserTests
+public class UserTests : IDisposable
 {
     private readonly WebServiceTest _services;
 
@@ -37,11 +38,16 @@ public class UserTests
     public async Task Can_login_user()
     {
         await Can_register_user();
-        var command = new UserLoginCommand("test_user", "123test");
+        var command = new UserLoginCommand("test_user", PasswordComputing.GetHash("123test"));
         var mediator = _services.Get<IMediator>();
         
         var userView = await mediator.Send(command);
         
         Assert.Equal(command.Login, userView.Login);
+    }
+
+    public void Dispose()
+    {
+        _services.Dispose();
     }
 }

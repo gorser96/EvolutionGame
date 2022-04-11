@@ -15,7 +15,7 @@ public class RoomRepo : IRoomRepo
 
     public Room Create(Guid uid, string name)
     {
-        return _dbContext.Rooms.Add(new Room(uid, name)).Entity;
+        return _dbContext.Rooms.Add(new Room(uid, name, DateTime.UtcNow)).Entity;
     }
 
     public Room? Find(Guid uid)

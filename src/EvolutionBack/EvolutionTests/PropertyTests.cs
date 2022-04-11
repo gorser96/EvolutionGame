@@ -1,10 +1,11 @@
 ﻿using Domain.Repo;
 using EvolutionTests.TestServices;
+using System;
 using Xunit;
 
 namespace EvolutionTests;
 
-public class PropertyTests
+public class PropertyTests : IDisposable
 {
     private readonly WebServiceTest _services;
 
@@ -22,5 +23,10 @@ public class PropertyTests
     [Fact]
     public void Carnivorous_test()
     {
+    }
+
+    public void Dispose()
+    {
+        _services.Dispose();
     }
 }

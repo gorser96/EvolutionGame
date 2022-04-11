@@ -13,5 +13,8 @@ public class UserLoginCommand : IRequest<UserViewModel>
 
     public string Login { get; private set; }
 
+    /// <summary>
+    /// Hash of password
+    /// </summary>
     public string Password { get; private set; }
 }

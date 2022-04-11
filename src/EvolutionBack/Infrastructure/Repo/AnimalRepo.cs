@@ -13,7 +13,7 @@ public class AnimalRepo : IAnimalRepo
         _dbContext = dbContext;
     }
 
-    public Animal Create(Guid uid, Guid userUid)
+    public Animal Create(Guid uid)
     {
         return _dbContext.Animals.Add(new Animal(uid)).Entity;
     }
