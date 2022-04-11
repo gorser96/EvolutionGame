@@ -32,6 +32,69 @@ public class Room
 
     public bool IsPaused { get; private set; }
 
+    private void SetName(string name)
+    {
+        if (Name != name)
+        {
+            Name = name;
+        }
+    }
+
+    private void SetFinishedDateTime(DateTime? finishedDateTime)
+    {
+        if (FinishedDateTime != finishedDateTime)
+        {
+            FinishedDateTime = finishedDateTime;
+        }
+    }
+
+    private void SetMaxTimeLeft(TimeSpan? maxTimeLeft)
+    {
+        if (MaxTimeLeft != maxTimeLeft)
+        {
+            MaxTimeLeft = maxTimeLeft;
+        }
+    }
+
+    private void SetStepNumber(int stepNumber)
+    {
+        if (StepNumber != stepNumber)
+        {
+            StepNumber = stepNumber;
+        }
+    }
+
+    private void SetIsStarted(bool isStarted)
+    {
+        if (IsStarted != isStarted)
+        {
+            IsStarted = isStarted;
+        }
+    }
+
+    private void SetIsPaused(bool isPaused)
+    {
+        if (IsPaused != isPaused)
+        {
+            IsPaused = isPaused;
+        }
+    }
+
+    private void SetAdditions(ICollection<Addition> additions)
+    {
+        if (additions.Select(x => x.Uid).Except(Additions.Select(x => x.Uid)).Any() || additions.Count != Additions.Count)
+        {
+            Additions = additions;
+        }
+    }
+
+    public void Update(RoomUpdateModel editModel)
+    {
+        SetName(editModel.Name);
+        SetMaxTimeLeft(editModel.MaxTimeLeft);
+        SetAdditions(editModel.Additions);
+    }
+
     public virtual ICollection<InGameUser> InGameUsers { get; private set; }
 
     public virtual ICollection<Addition> Additions { get; private set; }

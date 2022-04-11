@@ -67,4 +67,11 @@ public static class ServicesExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddMapper(this IServiceCollection services)
+    {
+        services.AddAutoMapper(_assembly);
+
+        return services;
+    }
 }
