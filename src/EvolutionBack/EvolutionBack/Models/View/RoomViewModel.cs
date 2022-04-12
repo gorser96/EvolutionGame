@@ -3,10 +3,11 @@
 public class RoomViewModel
 {
     public RoomViewModel(
-        Guid uid, string name, 
-        DateTime createdDateTime, DateTime? finishedDateTime, TimeSpan? maxTimeLeft, 
-        int stepNumber, bool isStarted, bool isPaused, 
-        IEnumerable<InGameUserViewModel> inGameUsers, IEnumerable<AdditionViewModel> additions)
+        Guid uid, string name,
+        DateTime createdDateTime, DateTime? finishedDateTime, TimeSpan? maxTimeLeft,
+        int stepNumber, bool isStarted, bool isPaused,
+        IEnumerable<InGameUserViewModel> inGameUsers, IEnumerable<AdditionViewModel> additions, 
+        DateTime? startDateTime, DateTime? pauseStartedTime)
     {
         Uid = uid;
         Name = name;
@@ -18,6 +19,8 @@ public class RoomViewModel
         IsPaused = isPaused;
         InGameUsers = inGameUsers.ToList();
         Additions = additions.ToList();
+        StartDateTime = startDateTime;
+        PauseStartedTime = pauseStartedTime;
     }
 
     public Guid Uid { get; private set; }
@@ -25,6 +28,8 @@ public class RoomViewModel
     public string Name { get; private set; }
 
     public DateTime CreatedDateTime { get; private set; }
+
+    public DateTime? StartDateTime { get; private set; }
 
     public DateTime? FinishedDateTime { get; private set; }
 
@@ -35,6 +40,8 @@ public class RoomViewModel
     public bool IsStarted { get; private set; }
 
     public bool IsPaused { get; private set; }
+
+    public DateTime? PauseStartedTime { get; private set; }
 
     public IReadOnlyCollection<InGameUserViewModel> InGameUsers { get; private set; }
 

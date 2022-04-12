@@ -14,6 +14,8 @@ public class Room
         IsPaused = false;
         FinishedDateTime = null;
         MaxTimeLeft = null;
+        StartDateTime = null;
+        PauseStartedTime = null;
     }
 
     public Guid Uid { get; private set; }
@@ -21,6 +23,8 @@ public class Room
     public string Name { get; private set; }
 
     public DateTime CreatedDateTime { get; private set; }
+
+    public DateTime? StartDateTime { get; private set; }
 
     public DateTime? FinishedDateTime { get; private set; }
 
@@ -31,6 +35,10 @@ public class Room
     public bool IsStarted { get; private set; }
 
     public bool IsPaused { get; private set; }
+
+    public DateTime? PauseStartedTime { get; private set; }
+
+    private bool IsFinished => FinishedDateTime.HasValue;
 
     private void SetName(string name)
     {
@@ -48,15 +56,12 @@ public class Room
         }
     }
 
-    public void RemoveUser(Guid userUid)
+    private void SetStartDateTime()
     {
-        var user = InGameUsers.FirstOrDefault(x => x.UserUid == userUid) ?? throw new NullReferenceException(nameof(userUid));
-        InGameUsers.Remove(user);
-    }
-
-    public void AddUser(Guid userUid)
-    {
-        InGameUsers.Add(new InGameUser(userUid, Uid));
+        if (StartDateTime is null)
+        {
+            StartDateTime = DateTime.UtcNow;
+        }
     }
 
     private void SetMaxTimeLeft(TimeSpan? maxTimeLeft)
@@ -119,19 +124,103 @@ public class Room
         }
     }
 
+    public void StartGame()
+    {
+        if (!IsStarted && !IsFinished)
+        {
+            SetIsStarted(true);
+            SetStartDateTime();
+
+            var firstUser = InGameUsers.First(x => x.Order == 0);
+            firstUser.Update(new(isCurrent: true));
+        }
+    }
+
+    public void NextStep()
+    {
+        if (IsStarted)
+        {
+            var currentUser = InGameUsers.Single(x => x.IsCurrent);
+            var nextUser = InGameUsers.First(x => x.Order == (currentUser.Order + 1) % InGameUsers.Count);
+
+            currentUser.Update(new(isCurrent: false));
+            nextUser.Update(new(isCurrent: true));
+
+            SetStepNumber(StepNumber + 1);
+        }
+    }
+
+    public void Pause()
+    {
+        if (IsStarted && !IsPaused)
+        {
+            SetIsPaused(true);
+            PauseStartedTime = DateTime.UtcNow;
+        }
+    }
+
+    public void Resume()
+    {
+        if (IsStarted && IsPaused)
+        {
+            SetIsPaused(false);
+            PauseStartedTime = null;
+        }
+    }
+
+    public void EndGame()
+    {
+        if (IsStarted)
+        {
+            SetIsStarted(false);
+            SetFinishedDateTime(DateTime.UtcNow);
+        }
+    }
+
     public void Update(RoomUpdateModel editModel)
     {
-        if (editModel.Name is not null)
-        {
-            SetName(editModel.Name);
-        }
-        if (editModel.MaxTimeLeft is not null)
+        if (!IsStarted && !IsFinished)
         {
             SetMaxTimeLeft(editModel.MaxTimeLeft);
+
+            if (editModel.Name is not null)
+            {
+                SetName(editModel.Name);
+            }
+            if (editModel.Additions is not null)
+            {
+                UpdateAdditions(editModel.Additions);
+            }
+            if (editModel.UserOrder is not null)
+            {
+                if (editModel.UserOrder.Count != InGameUsers.Count)
+                {
+                    throw new ApplicationException($"Count of users is wrong!");
+                }
+
+                foreach (var user in InGameUsers)
+                {
+                    var (userUid, order) = editModel.UserOrder.Single(x => x.userUid == user.UserUid);
+                    user.Update(new(order: order));
+                }
+            }
         }
-        if (editModel.Additions is not null)
+    }
+
+    public void RemoveUser(Guid userUid)
+    {
+        if (!IsStarted && !IsFinished)
         {
-            UpdateAdditions(editModel.Additions);
+            var user = InGameUsers.FirstOrDefault(x => x.UserUid == userUid) ?? throw new NullReferenceException(nameof(userUid));
+            InGameUsers.Remove(user);
+        }
+    }
+
+    public void AddUser(Guid userUid)
+    {
+        if (!IsStarted && !IsFinished)
+        {
+            InGameUsers.Add(new InGameUser(userUid, Uid));
         }
     }
 
