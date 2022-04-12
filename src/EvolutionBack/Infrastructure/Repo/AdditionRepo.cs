@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repo;
 using Infrastructure.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repo;
 
@@ -13,15 +14,23 @@ public class AdditionRepo : IAdditionRepo
         _dbContext = dbContext;
     }
 
-    public Addition Create(Guid uid, string name)
+    public Addition Create(Guid uid, string name, bool isBase)
     {
-        return _dbContext.Additions.Add(new Addition(uid, name)).Entity;
+        return _dbContext.Additions.Add(new Addition(uid, name, isBase)).Entity;
     }
 
     public Addition? Find(Guid uid)
     {
-        return _dbContext.Additions.Find(uid);
+        return _dbContext.Additions
+            .Include(x => x.Cards).ThenInclude(x => x.FirstProperty)
+            .Include(x => x.Cards).ThenInclude(x => x.SecondProperty)
+            .FirstOrDefault(x => x.Uid == uid);
     }
+
+    public Addition? GetBaseAddition() => _dbContext.Additions
+        .Include(x => x.Cards).ThenInclude(x => x.FirstProperty)
+        .Include(x => x.Cards).ThenInclude(x => x.SecondProperty)
+        .SingleOrDefault(x => x.IsBase);
 
     public bool Remove(Guid uid)
     {

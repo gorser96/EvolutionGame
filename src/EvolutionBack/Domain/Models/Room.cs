@@ -32,6 +32,109 @@ public class Room
 
     public bool IsPaused { get; private set; }
 
+    private void SetName(string name)
+    {
+        if (Name != name)
+        {
+            Name = name;
+        }
+    }
+
+    private void SetFinishedDateTime(DateTime? finishedDateTime)
+    {
+        if (FinishedDateTime != finishedDateTime)
+        {
+            FinishedDateTime = finishedDateTime;
+        }
+    }
+
+    public void RemoveUser(Guid userUid)
+    {
+        var user = InGameUsers.FirstOrDefault(x => x.UserUid == userUid) ?? throw new NullReferenceException(nameof(userUid));
+        InGameUsers.Remove(user);
+    }
+
+    public void AddUser(Guid userUid)
+    {
+        InGameUsers.Add(new InGameUser(userUid, Uid));
+    }
+
+    private void SetMaxTimeLeft(TimeSpan? maxTimeLeft)
+    {
+        if (MaxTimeLeft != maxTimeLeft)
+        {
+            MaxTimeLeft = maxTimeLeft;
+        }
+    }
+
+    private void SetStepNumber(int stepNumber)
+    {
+        if (StepNumber != stepNumber)
+        {
+            StepNumber = stepNumber;
+        }
+    }
+
+    private void SetIsStarted(bool isStarted)
+    {
+        if (IsStarted != isStarted)
+        {
+            IsStarted = isStarted;
+        }
+    }
+
+    private void SetIsPaused(bool isPaused)
+    {
+        if (IsPaused != isPaused)
+        {
+            IsPaused = isPaused;
+        }
+    }
+
+    private void UpdateAdditions(ICollection<Addition> additions)
+    {
+        var source = Additions.ToList();
+
+        foreach (var addition in additions)
+        {
+            var exist = source.FirstOrDefault(x => x.Uid == addition.Uid);
+            if (exist is null)
+            {
+                Additions.Add(addition);
+            }
+        }
+
+        var listToRemove = new List<Addition>();
+        foreach (var addition in source)
+        {
+            if (!additions.Any(x => x.Uid == addition.Uid))
+            {
+                listToRemove.Add(addition);
+            }
+        }
+
+        foreach (var addition in listToRemove)
+        {
+            Additions.Remove(addition);
+        }
+    }
+
+    public void Update(RoomUpdateModel editModel)
+    {
+        if (editModel.Name is not null)
+        {
+            SetName(editModel.Name);
+        }
+        if (editModel.MaxTimeLeft is not null)
+        {
+            SetMaxTimeLeft(editModel.MaxTimeLeft);
+        }
+        if (editModel.Additions is not null)
+        {
+            UpdateAdditions(editModel.Additions);
+        }
+    }
+
     public virtual ICollection<InGameUser> InGameUsers { get; private set; }
 
     public virtual ICollection<Addition> Additions { get; private set; }

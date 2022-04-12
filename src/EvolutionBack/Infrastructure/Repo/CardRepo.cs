@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repo;
 using Infrastructure.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repo;
 
@@ -20,7 +21,11 @@ public class CardRepo : ICardRepo
 
     public Card? Find(Guid uid)
     {
-        return _dbContext.Cards.Find(uid);
+        return _dbContext.Cards
+            .Include(x => x.Addition)
+            .Include(x => x.FirstProperty)
+            .Include(x => x.SecondProperty)
+            .FirstOrDefault(x => x.Uid == uid);
     }
 
     public bool Remove(Guid uid)

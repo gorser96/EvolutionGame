@@ -2,16 +2,19 @@
 
 public class Addition
 {
-    public Addition(Guid uid, string name)
+    public Addition(Guid uid, string name, bool isBase)
     {
         Uid = uid;
         Name = name;
+        IsBase = isBase;
         Cards = new List<Card>();
     }
 
     public Guid Uid { get; private set; }
 
     public string Name { get; private set; }
+
+    public bool IsBase { get; private set; }
 
     public virtual ICollection<Card> Cards { get; private set; }
 

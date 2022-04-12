@@ -25,6 +25,9 @@ builder.Services.AddDbContextPool<EvolutionDbContext>(opt =>
 // mediator
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
+// AutoMapper
+builder.Services.AddMapper();
+
 // services
 builder.Services.AddServices();
 
