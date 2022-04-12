@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repo;
 using Infrastructure.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repo;
 
@@ -20,7 +21,10 @@ public class AnimalRepo : IAnimalRepo
 
     public Animal? Find(Guid uid)
     {
-        return _dbContext.Animals.Find(uid);
+        return _dbContext.Animals
+            .Include(x => x.Properties)
+            .Include(x => x.InGameUser)
+            .FirstOrDefault(x => x.Uid == uid);
     }
 
     public bool Remove(Guid uid)

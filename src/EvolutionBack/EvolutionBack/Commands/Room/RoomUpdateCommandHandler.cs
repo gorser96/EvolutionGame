@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using AutoMapper;
+using Domain.Models;
 using Domain.Repo;
 using EvolutionBack.Models;
 using EvolutionBack.Queries;
@@ -10,22 +11,28 @@ namespace EvolutionBack.Commands;
 public class RoomUpdateCommandHandler : IRequestHandler<RoomUpdateCommand, RoomViewModel>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IMapper _mapper;
 
-    public RoomUpdateCommandHandler(IServiceScopeFactory serviceScopeFactory)
+    public RoomUpdateCommandHandler(IServiceScopeFactory serviceScopeFactory, IMapper mapper)
     {
         _serviceScopeFactory = serviceScopeFactory;
+        _mapper = mapper;
     }
 
-    public Task<RoomViewModel> Handle(RoomUpdateCommand request, CancellationToken cancellationToken)
+    public async Task<RoomViewModel> Handle(RoomUpdateCommand request, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
+        using var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
         var additionRepo = scope.ServiceProvider.GetRequiredService<IAdditionRepo>();
         var repo = scope.ServiceProvider.GetRequiredService<IRoomRepo>();
 
-        var additions = request.EditModel.Additions
-            .Select(x => additionRepo.Find(x) ?? throw new NullReferenceException($"Addition with uid=[{x}] not found!"))
-            .ToArray();
+        Addition[]? additions = null;
+        if (request.EditModel.Additions is not null)
+        {
+            additions = request.EditModel.Additions
+               .Select(x => additionRepo.Find(x) ?? throw new NullReferenceException($"Addition with uid=[{x}] not found!"))
+               .ToArray();
+        }
         var obj = repo.Find(request.EditModel.Uid);
         if (obj is null)
         {
@@ -33,8 +40,8 @@ public class RoomUpdateCommandHandler : IRequestHandler<RoomUpdateCommand, RoomV
         }
 
         obj.Update(new RoomUpdateModel(request.EditModel.Name, request.EditModel.MaxTimeLeft, additions));
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
-        return Task.FromResult(scope.ServiceProvider.GetRequiredService<RoomQueries>().GetRoomViewModel(request.EditModel.Uid));
+        return _mapper.Map<RoomViewModel>(obj);
     }
 }

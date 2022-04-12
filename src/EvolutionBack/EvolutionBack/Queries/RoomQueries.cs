@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EvolutionBack.Models;
 using Infrastructure.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace EvolutionBack.Queries;
 
@@ -15,12 +16,16 @@ public class RoomQueries : IQueries
         _mapper = mapper;
     }
 
-    public RoomViewModel GetRoomViewModel(Guid uid)
+    public RoomViewModel? GetRoomViewModel(Guid uid)
     {
-        var obj = _dbContext.Rooms.Find(uid);
+        var obj = _dbContext.Rooms.AsNoTracking()
+            .Include(x => x.Additions)
+            .Include(x => x.InGameUsers).ThenInclude(x => x.User)
+            .Include(x => x.InGameUsers).ThenInclude(x => x.Animals)
+            .FirstOrDefault(x => x.Uid == uid);
         if (obj is null)
         {
-            throw new NullReferenceException($"Object room.Uid=[{uid}] not found!");
+            return null;
         }
 
         return _mapper.Map<RoomViewModel>(obj);

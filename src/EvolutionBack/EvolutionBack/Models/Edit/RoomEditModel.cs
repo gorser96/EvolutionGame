@@ -2,7 +2,7 @@
 
 public class RoomEditModel
 {
-    public RoomEditModel(Guid uid, string name, TimeSpan? maxTimeLeft, ICollection<Guid> additions)
+    public RoomEditModel(Guid uid, string name, TimeSpan? maxTimeLeft = null, ICollection<Guid>? additions = null)
     {
         Uid = uid;
         Name = name;
@@ -16,5 +16,5 @@ public class RoomEditModel
 
     public TimeSpan? MaxTimeLeft { get; private set; }
 
-    public ICollection<Guid> Additions { get; private set; }
+    public ICollection<Guid>? Additions { get; private set; }
 }

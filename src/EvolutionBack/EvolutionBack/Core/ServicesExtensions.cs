@@ -1,4 +1,7 @@
-﻿using Domain.Repo;
+﻿using AutoMapper;
+using Domain.Models;
+using Domain.Repo;
+using EvolutionBack.Models;
 using Infrastructure.Repo;
 using MediatR;
 using System.Reflection;
@@ -70,7 +73,16 @@ public static class ServicesExtensions
 
     public static IServiceCollection AddMapper(this IServiceCollection services)
     {
-        services.AddAutoMapper(_assembly);
+        services.AddAutoMapper(cfg =>
+        {
+            cfg.SourceMemberNamingConvention = new LowerUnderscoreNamingConvention();
+            cfg.DestinationMemberNamingConvention = new LowerUnderscoreNamingConvention();
+
+            cfg.CreateMap<User, UserViewModel>();
+            cfg.CreateMap<Room, RoomViewModel>();
+            cfg.CreateMap<Addition, AdditionViewModel>();
+            cfg.CreateMap<InGameUser, InGameUserViewModel>();
+        }, _assembly);
 
         return services;
     }

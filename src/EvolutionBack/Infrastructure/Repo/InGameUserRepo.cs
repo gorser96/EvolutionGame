@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repo;
 using Infrastructure.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repo;
 
@@ -18,22 +19,12 @@ public class InGameUserRepo : IInGameUserRepo
         return _dbContext.InGameUsers.Add(new InGameUser(userUid, roomUid)).Entity;
     }
 
-    public InGameUser? Find(Guid uid)
+    public InGameUser? Find(Guid userUid, Guid roomUid)
     {
-        return _dbContext.InGameUsers.Find(uid);
-    }
-
-    public bool Remove(Guid uid)
-    {
-        var obj = Find(uid);
-        if (obj == null)
-        {
-            return false;
-        }
-        else
-        {
-            _dbContext.InGameUsers.Remove(obj);
-            return true;
-        }
+        return _dbContext.InGameUsers
+            .Include(x => x.User)
+            .Include(x => x.Room).ThenInclude(x => x.Additions)
+            .Include(x => x.Animals).ThenInclude(x => x.Properties)
+            .FirstOrDefault(x => x.UserUid == userUid && x.RoomUid == roomUid);
     }
 }

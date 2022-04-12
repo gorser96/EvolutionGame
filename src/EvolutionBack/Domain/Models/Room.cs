@@ -48,6 +48,17 @@ public class Room
         }
     }
 
+    public void RemoveUser(Guid userUid)
+    {
+        var user = InGameUsers.FirstOrDefault(x => x.UserUid == userUid) ?? throw new NullReferenceException(nameof(userUid));
+        InGameUsers.Remove(user);
+    }
+
+    public void AddUser(Guid userUid)
+    {
+        InGameUsers.Add(new InGameUser(userUid, Uid));
+    }
+
     private void SetMaxTimeLeft(TimeSpan? maxTimeLeft)
     {
         if (MaxTimeLeft != maxTimeLeft)
@@ -80,19 +91,48 @@ public class Room
         }
     }
 
-    private void SetAdditions(ICollection<Addition> additions)
+    private void UpdateAdditions(ICollection<Addition> additions)
     {
-        if (additions.Select(x => x.Uid).Except(Additions.Select(x => x.Uid)).Any() || additions.Count != Additions.Count)
+        var source = Additions.ToList();
+
+        foreach (var addition in additions)
         {
-            Additions = additions;
+            var exist = source.FirstOrDefault(x => x.Uid == addition.Uid);
+            if (exist is null)
+            {
+                Additions.Add(addition);
+            }
+        }
+
+        var listToRemove = new List<Addition>();
+        foreach (var addition in source)
+        {
+            if (!additions.Any(x => x.Uid == addition.Uid))
+            {
+                listToRemove.Add(addition);
+            }
+        }
+
+        foreach (var addition in listToRemove)
+        {
+            Additions.Remove(addition);
         }
     }
 
     public void Update(RoomUpdateModel editModel)
     {
-        SetName(editModel.Name);
-        SetMaxTimeLeft(editModel.MaxTimeLeft);
-        SetAdditions(editModel.Additions);
+        if (editModel.Name is not null)
+        {
+            SetName(editModel.Name);
+        }
+        if (editModel.MaxTimeLeft is not null)
+        {
+            SetMaxTimeLeft(editModel.MaxTimeLeft);
+        }
+        if (editModel.Additions is not null)
+        {
+            UpdateAdditions(editModel.Additions);
+        }
     }
 
     public virtual ICollection<InGameUser> InGameUsers { get; private set; }

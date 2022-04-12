@@ -21,9 +21,9 @@ public class UserTests : IDisposable
     [Fact]
     public async Task Can_register_user()
     {
-        var command = new UserCreateCommand("test_user", "123test");
         var mediator = _services.Get<IMediator>();
-        
+
+        var command = new UserCreateCommand("test_user", "123test");
         var userView = await mediator.Send(command);
         
         Assert.Equal(command.Login, userView.Login);
@@ -38,9 +38,9 @@ public class UserTests : IDisposable
     public async Task Can_login_user()
     {
         await Can_register_user();
-        var command = new UserLoginCommand("test_user", PasswordComputing.GetHash("123test"));
         var mediator = _services.Get<IMediator>();
-        
+
+        var command = new UserLoginCommand("test_user", PasswordComputing.GetHash("123test"));
         var userView = await mediator.Send(command);
         
         Assert.Equal(command.Login, userView.Login);

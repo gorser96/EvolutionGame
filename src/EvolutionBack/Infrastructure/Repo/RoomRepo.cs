@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Repo;
 using Infrastructure.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repo;
 
@@ -20,7 +21,11 @@ public class RoomRepo : IRoomRepo
 
     public Room? Find(Guid uid)
     {
-        return _dbContext.Rooms.Find(uid);
+        return _dbContext.Rooms
+            .Include(x => x.Additions)
+            .Include(x => x.InGameUsers).ThenInclude(x => x.User)
+            .Include(x => x.InGameUsers).ThenInclude(x => x.Animals)
+            .FirstOrDefault(x => x.Uid == uid);
     }
 
     public bool Remove(Guid uid)

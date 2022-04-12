@@ -1,5 +1,13 @@
-﻿namespace EvolutionBack.Commands;
+﻿using MediatR;
 
-public class RoomRemoveCommand
+namespace EvolutionBack.Commands;
+
+public class RoomRemoveCommand : IRequest
 {
+    public RoomRemoveCommand(Guid uid)
+    {
+        Uid = uid;
+    }
+
+    public Guid Uid { get; init; }
 }

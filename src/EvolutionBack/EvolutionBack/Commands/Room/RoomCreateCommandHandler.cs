@@ -18,12 +18,21 @@ public class RoomCreateCommandHandler : IRequestHandler<RoomCreateCommand, RoomV
     public Task<RoomViewModel> Handle(RoomCreateCommand request, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
+        using var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
         var repo = scope.ServiceProvider.GetRequiredService<IRoomRepo>();
+        var additionRepo = scope.ServiceProvider.GetRequiredService<IAdditionRepo>();
         var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
         var obj = repo.Create(request.Uid, request.Name);
-        
+
+        var baseAddition = additionRepo.GetBaseAddition();
+        if (baseAddition is not null)
+        {
+            obj.Update(new Domain.Models.RoomUpdateModel(additions: new[] { baseAddition }));
+        }
+
+        dbContext.SaveChanges();
+
         return Task.FromResult(mapper.Map<RoomViewModel>(obj));
     }
 }

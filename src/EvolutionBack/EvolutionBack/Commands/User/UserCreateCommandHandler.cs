@@ -1,4 +1,5 @@
-﻿using Domain.Repo;
+﻿using AutoMapper;
+using Domain.Repo;
 using EvolutionBack.Models;
 using Infrastructure.EF;
 using MediatR;
@@ -8,10 +9,12 @@ namespace EvolutionBack.Commands;
 public class UserCreateCommandHandler : IRequestHandler<UserCreateCommand, UserViewModel>
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IMapper _mapper;
 
-    public UserCreateCommandHandler(IServiceScopeFactory scopeFactory)
+    public UserCreateCommandHandler(IServiceScopeFactory scopeFactory, IMapper mapper)
     {
         _scopeFactory = scopeFactory;
+        _mapper = mapper;
     }
 
     public async Task<UserViewModel> Handle(UserCreateCommand request, CancellationToken cancellationToken)
@@ -24,6 +27,6 @@ public class UserCreateCommandHandler : IRequestHandler<UserCreateCommand, UserV
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new UserViewModel(user.Login, user.Uid);
+        return _mapper.Map<UserViewModel>(user);
     }
 }

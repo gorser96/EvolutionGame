@@ -41,7 +41,20 @@ internal class WebServiceTest : IDisposable
         // repositories
         services.AddRepositories();
 
+        // AutoMapper
+        services.AddMapper();
+
         _serviceProvider = services.BuildServiceProvider();
+
+        Init();
+    }
+
+    private void Init()
+    {
+        using var scope = GetScope();
+        using var db = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
+        db.Additions.Add(new Domain.Models.Addition(Guid.NewGuid(), "Test.BaseAddition", true));
+        db.SaveChanges();
     }
 
     public TService Get<TService>() where TService : class => _serviceProvider.GetRequiredService<TService>();
