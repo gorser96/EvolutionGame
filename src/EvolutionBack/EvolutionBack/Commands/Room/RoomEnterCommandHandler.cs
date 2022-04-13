@@ -5,6 +5,7 @@ using EvolutionBack.Core;
 using EvolutionBack.Models;
 using Infrastructure.EF;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace EvolutionBack.Commands;
 
@@ -24,7 +25,7 @@ public class RoomEnterCommandHandler : IRequestHandler<RoomEnterCommand, RoomVie
         using var scope = _serviceScopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
         var repo = scope.ServiceProvider.GetRequiredService<IRoomRepo>();
-        var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepo>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
         var obj = repo.Find(request.RoomUid);
         if (obj is null)
@@ -32,7 +33,7 @@ public class RoomEnterCommandHandler : IRequestHandler<RoomEnterCommand, RoomVie
             throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
-        var userObj = userRepo.Find(request.UserUid);
+        var userObj = userManager.FindByIdAsync(request.UserUid.ToString());
         if (userObj is null)
         {
             throw new ObjectNotFoundException(request.UserUid, nameof(User));

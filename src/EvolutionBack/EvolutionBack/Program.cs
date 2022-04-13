@@ -22,6 +22,8 @@ builder.Services.AddDbContextPool<EvolutionDbContext>(opt =>
     opt.UseLazyLoadingProxies();
 });
 
+builder.Services.AddCustomAuthentication(builder.Configuration);
+
 // mediator
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
@@ -49,6 +51,7 @@ if (app.Environment.IsDevelopment())
     //app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

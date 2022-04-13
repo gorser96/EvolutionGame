@@ -1,18 +1,17 @@
 ﻿using Domain.Models;
 using Infrastructure.EF.Configurations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.EF;
 
-public class EvolutionDbContext : DbContext
+public class EvolutionDbContext : IdentityDbContext<User>
 {
 #pragma warning disable CS8618
     public EvolutionDbContext(DbContextOptions options) : base(options)
     {
     }
 #pragma warning restore CS8618
-
-    public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<Room> Rooms { get; set; }
 

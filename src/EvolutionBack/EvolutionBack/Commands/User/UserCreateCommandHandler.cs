@@ -1,32 +1,33 @@
-﻿using AutoMapper;
-using Domain.Repo;
-using EvolutionBack.Models;
-using Infrastructure.EF;
+﻿using Domain.Models;
+using EvolutionBack.Core;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace EvolutionBack.Commands;
 
-public class UserCreateCommandHandler : IRequestHandler<UserCreateCommand, UserViewModel>
+public class UserCreateCommandHandler : IRequestHandler<UserCreateCommand>
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly IMapper _mapper;
+    private readonly UserManager<User> _userManager;
 
-    public UserCreateCommandHandler(IServiceScopeFactory scopeFactory, IMapper mapper)
+    public UserCreateCommandHandler(UserManager<User> userManager)
     {
-        _scopeFactory = scopeFactory;
-        _mapper = mapper;
+        _userManager = userManager;
     }
 
-    public async Task<UserViewModel> Handle(UserCreateCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(UserCreateCommand request, CancellationToken cancellationToken)
     {
-        using var scope = _scopeFactory.CreateScope();
-        using var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
-        var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepo>();
+        var userExists = await _userManager.FindByNameAsync(request.Login);
+        if (userExists != null)
+        {
+            throw new UserAlreadyRegisteredException();
+        }
+        var user = new User(request.Login, Guid.NewGuid().ToString());
+        var result = await _userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
+        {
+            throw new RegistrationException(result.Errors);
+        }
 
-        var user = userRepo.Create(request.Login, request.Password, Guid.NewGuid());
-
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        return _mapper.Map<UserViewModel>(user);
+        return Unit.Value;
     }
 }

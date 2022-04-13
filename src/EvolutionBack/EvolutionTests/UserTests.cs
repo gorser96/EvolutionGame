@@ -1,9 +1,10 @@
-﻿using Domain.Repo;
-using EvolutionBack.Commands;
+﻿using EvolutionBack.Commands;
 using EvolutionTests.TestServices;
+using Infrastructure.EF;
 using Infrastructure.EF.Configurations;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,14 +25,11 @@ public class UserTests : IDisposable
         var mediator = _services.Get<IMediator>();
 
         var command = new UserCreateCommand("test_user", "123test");
-        var userView = await mediator.Send(command);
-        
-        Assert.Equal(command.Login, userView.Login);
-        
-        var userRepo = _services.Get<IUserRepo>();
-        var user = userRepo.Find(userView.Uid);
-        Assert.NotNull(user);
-        Assert.Equal(command.Login, user?.Login);
+        await mediator.Send(command);
+
+        var db = _services.Get<EvolutionDbContext>();
+        Assert.Single(db.Users);
+        Assert.Equal(command.Login, db.Users.Single().UserName);
     }
 
     [Fact]
@@ -40,10 +38,11 @@ public class UserTests : IDisposable
         await Can_register_user();
         var mediator = _services.Get<IMediator>();
 
-        var command = new UserLoginCommand("test_user", PasswordComputing.GetHash("123test"));
+        var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
-        
-        Assert.Equal(command.Login, userView.Login);
+
+        Assert.Equal(command.Login, userView.UserName);
+        Assert.NotEmpty(userView.Token);
     }
 
     public void Dispose()
