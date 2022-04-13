@@ -3,9 +3,9 @@
 public class InGameUser
 {
 #pragma warning disable CS8618
-    public InGameUser(Guid userUid, Guid roomUid)
+    public InGameUser(string userId, Guid roomUid)
     {
-        UserUid = userUid;
+        UserId = userId;
         RoomUid = roomUid;
         Animals = new List<Animal>();
         IsCurrent = false;
@@ -14,7 +14,7 @@ public class InGameUser
     }
 #pragma warning restore CS8618
 
-    public Guid UserUid { get; private set; }
+    public string UserId { get; private set; }
 
     public virtual User User { get; private set; }
 

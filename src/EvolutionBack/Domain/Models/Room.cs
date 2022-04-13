@@ -200,7 +200,7 @@ public class Room
 
                 foreach (var user in InGameUsers)
                 {
-                    var (userUid, order) = editModel.UserOrder.Single(x => x.userUid == user.UserUid);
+                    var (userUid, order) = editModel.UserOrder.Single(x => x.userUid.ToString() == user.UserId);
                     user.Update(new(order: order));
                 }
             }
@@ -211,7 +211,7 @@ public class Room
     {
         if (!IsStarted && !IsFinished)
         {
-            var user = InGameUsers.FirstOrDefault(x => x.UserUid == userUid) ?? throw new NullReferenceException(nameof(userUid));
+            var user = InGameUsers.FirstOrDefault(x => x.UserId == userUid.ToString()) ?? throw new NullReferenceException(nameof(userUid));
             InGameUsers.Remove(user);
         }
     }
@@ -220,7 +220,7 @@ public class Room
     {
         if (!IsStarted && !IsFinished)
         {
-            InGameUsers.Add(new InGameUser(userUid, Uid));
+            InGameUsers.Add(new InGameUser(userUid.ToString(), Uid));
         }
     }
 

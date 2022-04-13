@@ -12,10 +12,9 @@ namespace EvolutionBack.Controllers
     public class UserController : ControllerBase
     {
         [HttpPost]
-        [Authorize(AuthPolicies.User)]
+        [Authorize(AuthPolicies.Guest)]
         public async Task<UserViewModel> Login([FromBody] UserLoginCommand loginCommand, [FromServices] IMediator mediator)
         {
-            // TODO: передавать хеш из фронта
             var user = await mediator.Send(loginCommand);
 
             return user;
@@ -23,10 +22,9 @@ namespace EvolutionBack.Controllers
 
         [HttpPost()]
         [Authorize(AuthPolicies.Guest)]
-        public async Task<UserViewModel> Register([FromBody] UserCreateCommand createCommand, [FromServices] IMediator mediator)
+        public async Task Register([FromBody] UserCreateCommand createCommand, [FromServices] IMediator mediator)
         {
             var user = await mediator.Send(createCommand);
-            return user;
         }
     }
 }

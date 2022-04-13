@@ -2,9 +2,14 @@
 using Domain.Models;
 using Domain.Repo;
 using EvolutionBack.Models;
+using Infrastructure.EF;
 using Infrastructure.Repo;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 
 namespace EvolutionBack.Core;
 
@@ -61,7 +66,6 @@ public static class ServicesExtensions
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IUserRepo, UserRepo>();
         services.AddScoped<IRoomRepo, RoomRepo>();
         services.AddScoped<IAdditionRepo, AdditionRepo>();
         services.AddScoped<IPropertyRepo, PropertyRepo>();
@@ -83,6 +87,44 @@ public static class ServicesExtensions
             cfg.CreateMap<Addition, AdditionViewModel>();
             cfg.CreateMap<InGameUser, InGameUserViewModel>();
         }, _assembly);
+
+        return services;
+    }
+
+    public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+
+                options.User.RequireUniqueEmail = false;
+            })
+            .AddEntityFrameworkStores<EvolutionDbContext>()
+            .AddDefaultTokenProviders();
+
+        services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = configuration["JWT:ValidAudience"],
+                    ValidIssuer = configuration["JWT:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+                };
+            });
 
         return services;
     }

@@ -1,31 +1,58 @@
-﻿using AutoMapper;
-using Domain.Repo;
+﻿using Domain.Models;
 using EvolutionBack.Models;
 using MediatR;
-using System.Security.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace EvolutionBack.Commands;
 
 public class UserLoginCommandHandler : IRequestHandler<UserLoginCommand, UserViewModel>
 {
-    private readonly IUserRepo _userRepo;
-    private readonly IMapper _mapper;
+    private readonly UserManager<User> _userManager;
+    private readonly IConfiguration _configuration;
 
-    public UserLoginCommandHandler(IUserRepo userRepo, IMapper mapper)
+    public UserLoginCommandHandler(UserManager<User> userManager, IConfiguration configuration)
     {
-        _userRepo = userRepo;
-        _mapper = mapper;
+        _userManager = userManager;
+        _configuration = configuration;
     }
 
-    public Task<UserViewModel> Handle(UserLoginCommand request, CancellationToken cancellationToken)
+    public async Task<UserViewModel> Handle(UserLoginCommand request, CancellationToken cancellationToken)
     {
-        var user = _userRepo.Login(request.Login, request.Password);
-
-        if (user is null)
+        var user = await _userManager.FindByNameAsync(request.Login);
+        if (user is not null)
         {
-            throw new AuthenticationException("Login or password invalid!");
+            if (await _userManager.CheckPasswordAsync(user, request.Password))
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
+
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+                var token = new JwtSecurityToken(
+                    issuer: _configuration["JWT:ValidIssuer"],
+                    audience: _configuration["JWT:ValidAudience"],
+                    expires: DateTime.Now.AddHours(3),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                    );
+
+                return new UserViewModel(user.UserName, user.Uid, new JwtSecurityTokenHandler().WriteToken(token), token.ValidTo);
+            }
         }
 
-        return Task.FromResult(_mapper.Map<UserViewModel>(user));
+        throw new UnauthorizedAccessException();
     }
 }

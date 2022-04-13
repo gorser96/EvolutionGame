@@ -60,7 +60,10 @@ public class RoomTests : IDisposable
         var mediator = _services.Get<IMediator>();
 
         var userCreateCommand = new UserCreateCommand("test_user", "123test");
-        var userView = await mediator.Send(userCreateCommand);
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
 
         var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
         await mediator.Send(createCommand);
@@ -88,7 +91,10 @@ public class RoomTests : IDisposable
         var mediator = _services.Get<IMediator>();
 
         var userCreateCommand = new UserCreateCommand("test_user", "123test");
-        var userView = await mediator.Send(userCreateCommand);
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
 
         var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
         await mediator.Send(createCommand);
@@ -120,7 +126,10 @@ public class RoomTests : IDisposable
         var mediator = _services.Get<IMediator>();
 
         var userCreateCommand = new UserCreateCommand("test_user", "123test");
-        var userView = await mediator.Send(userCreateCommand);
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
 
         var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
         await mediator.Send(createCommand);
@@ -152,7 +161,10 @@ public class RoomTests : IDisposable
         var mediator = _services.Get<IMediator>();
 
         var userCreateCommand = new UserCreateCommand("test_user", "123test");
-        var userView = await mediator.Send(userCreateCommand);
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
 
         var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
         await mediator.Send(createCommand);
@@ -192,7 +204,10 @@ public class RoomTests : IDisposable
         var mediator = _services.Get<IMediator>();
 
         var userCreateCommand = new UserCreateCommand("test_user", "123test");
-        var userView = await mediator.Send(userCreateCommand);
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
 
         var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
         await mediator.Send(createCommand);
@@ -235,7 +250,10 @@ public class RoomTests : IDisposable
         var mediator = _services.Get<IMediator>();
 
         var userCreateCommand = new UserCreateCommand("test_user", "123test");
-        var userView = await mediator.Send(userCreateCommand);
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
 
         var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
         await mediator.Send(createCommand);
@@ -282,7 +300,10 @@ public class RoomTests : IDisposable
         var mediator = _services.Get<IMediator>();
 
         var userCreateCommand = new UserCreateCommand("test_user", "123test");
-        var userView = await mediator.Send(userCreateCommand);
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
 
         var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
         await mediator.Send(createCommand);
@@ -335,7 +356,10 @@ public class RoomTests : IDisposable
         var mediator = _services.Get<IMediator>();
 
         var userCreateCommand = new UserCreateCommand("test_user", "123test");
-        var userView = await mediator.Send(userCreateCommand);
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
 
         var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
         await mediator.Send(createCommand);

@@ -1,19 +1,16 @@
-﻿namespace Domain.Models;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class User
+namespace Domain.Models;
+
+public class User : IdentityUser
 {
-    public User(string login, string password, Guid uid)
+    public User(string userName, string Id)
     {
-        Login = login;
-        Password = password;
-        Uid = uid;
+        UserName = userName;
+        base.Id = Id;
     }
 
-    public Guid Uid { get; private set; }
-    
-    public string Login { get; private set; }
-
-    public string Password { get; private set; }
+    public Guid Uid => Guid.Parse(Id);
 
     public virtual InGameUser? InGameUser { get; private set; }
 
