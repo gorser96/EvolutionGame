@@ -5,13 +5,16 @@ namespace EvolutionBack.Commands;
 
 public class RoomUpdateCommand : IRequest<RoomViewModel>
 {
-    public RoomUpdateCommand(RoomEditModel editModel, Guid userUid)
+    public RoomUpdateCommand(RoomEditModel editModel, UserCredentials user, Guid roomUid)
     {
         EditModel = editModel;
-        UserUid = userUid;
+        User = user;
+        RoomUid = roomUid;
     }
+
+    public Guid RoomUid { get; set; }
 
     public RoomEditModel EditModel { get; init; }
 
-    public Guid UserUid { get; init; }
+    public UserCredentials User { get; init; }
 }

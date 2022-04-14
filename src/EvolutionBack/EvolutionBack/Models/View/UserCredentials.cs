@@ -1,8 +1,8 @@
 ﻿namespace EvolutionBack.Models;
 
-public class UserViewModel
+public class UserCredentials
 {
-    public UserViewModel(string userName)
+    public UserCredentials(string userName)
     {
         UserName = userName;
     }

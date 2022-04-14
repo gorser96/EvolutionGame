@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EvolutionBack.Migrations
 {
     [DbContext(typeof(EvolutionDbContext))]
-    [Migration("20220414070014_update_0005")]
-    partial class update_0005
+    [Migration("20220414113548_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -79,12 +79,12 @@ namespace EvolutionBack.Migrations
                     b.Property<Guid?>("InGameUserRoomUid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("InGameUserUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid?>("InGameUserUserUid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Uid");
 
-                    b.HasIndex("InGameUserUserId", "InGameUserRoomUid");
+                    b.HasIndex("InGameUserUserUid", "InGameUserRoomUid");
 
                     b.ToTable("Animals", (string)null);
                 });
@@ -119,8 +119,8 @@ namespace EvolutionBack.Migrations
 
             modelBuilder.Entity("Domain.Models.InGameUser", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserUid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("RoomUid")
                         .HasColumnType("uniqueidentifier");
@@ -137,11 +137,11 @@ namespace EvolutionBack.Migrations
                     b.Property<DateTime?>("StartStepTime")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("UserId", "RoomUid");
+                    b.HasKey("UserUid", "RoomUid");
 
                     b.HasIndex("RoomUid");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("UserUid")
                         .IsUnique();
 
                     b.ToTable("InGameUsers", (string)null);
@@ -215,8 +215,8 @@ namespace EvolutionBack.Migrations
 
             modelBuilder.Entity("Domain.Models.User", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -282,10 +282,11 @@ namespace EvolutionBack.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -309,7 +310,7 @@ namespace EvolutionBack.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -323,9 +324,8 @@ namespace EvolutionBack.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -334,7 +334,7 @@ namespace EvolutionBack.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -348,9 +348,8 @@ namespace EvolutionBack.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -359,7 +358,7 @@ namespace EvolutionBack.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -370,9 +369,8 @@ namespace EvolutionBack.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -381,13 +379,13 @@ namespace EvolutionBack.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -396,10 +394,10 @@ namespace EvolutionBack.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -441,7 +439,7 @@ namespace EvolutionBack.Migrations
                 {
                     b.HasOne("Domain.Models.InGameUser", "InGameUser")
                         .WithMany("Animals")
-                        .HasForeignKey("InGameUserUserId", "InGameUserRoomUid");
+                        .HasForeignKey("InGameUserUserUid", "InGameUserRoomUid");
 
                     b.Navigation("InGameUser");
                 });
@@ -481,7 +479,7 @@ namespace EvolutionBack.Migrations
 
                     b.HasOne("Domain.Models.User", "User")
                         .WithOne("InGameUser")
-                        .HasForeignKey("Domain.Models.InGameUser", "UserId")
+                        .HasForeignKey("Domain.Models.InGameUser", "UserUid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -490,16 +488,16 @@ namespace EvolutionBack.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.HasOne("Domain.Models.User", null)
                         .WithMany()
@@ -508,7 +506,7 @@ namespace EvolutionBack.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.HasOne("Domain.Models.User", null)
                         .WithMany()
@@ -517,9 +515,9 @@ namespace EvolutionBack.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -532,7 +530,7 @@ namespace EvolutionBack.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
                     b.HasOne("Domain.Models.User", null)
                         .WithMany()

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace EvolutionBack.Commands;
 
-public class UserLoginCommandHandler : IRequestHandler<UserLoginCommand, UserViewModel>
+public class UserLoginCommandHandler : IRequestHandler<UserLoginCommand, UserTokenViewModel>
 {
     private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
@@ -20,7 +20,7 @@ public class UserLoginCommandHandler : IRequestHandler<UserLoginCommand, UserVie
         _configuration = configuration;
     }
 
-    public async Task<UserViewModel> Handle(UserLoginCommand request, CancellationToken cancellationToken)
+    public async Task<UserTokenViewModel> Handle(UserLoginCommand request, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByNameAsync(request.Login);
         if (user is not null)
@@ -49,7 +49,7 @@ public class UserLoginCommandHandler : IRequestHandler<UserLoginCommand, UserVie
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                     );
 
-                return new UserViewModel(user.UserName, user.Uid, new JwtSecurityTokenHandler().WriteToken(token), token.ValidTo);
+                return new UserTokenViewModel(user.UserName, new JwtSecurityTokenHandler().WriteToken(token), token.ValidTo);
             }
         }
 

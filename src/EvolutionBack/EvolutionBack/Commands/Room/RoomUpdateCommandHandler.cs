@@ -3,9 +3,9 @@ using Domain.Models;
 using Domain.Repo;
 using EvolutionBack.Core;
 using EvolutionBack.Models;
-using EvolutionBack.Queries;
 using Infrastructure.EF;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace EvolutionBack.Commands;
 
@@ -24,8 +24,11 @@ public class RoomUpdateCommandHandler : IRequestHandler<RoomUpdateCommand, RoomV
     {
         using var scope = _serviceScopeFactory.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
-        var additionRepo = scope.ServiceProvider.GetRequiredService<IAdditionRepo>();
         var repo = scope.ServiceProvider.GetRequiredService<IRoomRepo>();
+        var additionRepo = scope.ServiceProvider.GetRequiredService<IAdditionRepo>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        var user = await userManager.FindByNameAsync(request.User.UserName);
 
         Addition[]? additions = null;
         if (request.EditModel.Additions is not null)
@@ -34,13 +37,13 @@ public class RoomUpdateCommandHandler : IRequestHandler<RoomUpdateCommand, RoomV
                .Select(x => additionRepo.Find(x) ?? throw new ObjectNotFoundException($"Addition with uid=[{x}] not found!"))
                .ToArray();
         }
-        var obj = repo.Find(request.EditModel.Uid);
+        var obj = repo.Find(request.RoomUid);
         if (obj is null)
         {
-            throw new ObjectNotFoundException($"Room with uid=[{request.EditModel.Uid}] not found!");
+            throw new ObjectNotFoundException($"Room with uid=[{request.RoomUid}] not found!");
         }
 
-        obj.Update(new RoomUpdateModel(request.EditModel.Name, request.EditModel.MaxTimeLeft, additions), request.UserUid);
+        obj.Update(new RoomUpdateModel(request.EditModel.Name, request.EditModel.MaxTimeLeft, additions), user.Id);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<RoomViewModel>(obj);

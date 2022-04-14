@@ -20,7 +20,7 @@ public class UserQueries : IQueries
     {
         var room = _dbContext.Rooms
             .Include(x => x.InGameUsers)
-            .FirstOrDefault(x => x.InGameUsers.Select(u => u.UserId).Contains(userUid.ToString()));
+            .FirstOrDefault(x => x.InGameUsers.Select(u => u.UserUid).Contains(userUid));
         return _mapper.Map<RoomViewModel>(room);
     }
 }

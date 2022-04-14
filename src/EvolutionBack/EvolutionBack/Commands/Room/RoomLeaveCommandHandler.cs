@@ -5,6 +5,7 @@ using EvolutionBack.Core;
 using EvolutionBack.Models;
 using Infrastructure.EF;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace EvolutionBack.Commands;
 
@@ -24,6 +25,9 @@ public class RoomLeaveCommandHandler : IRequestHandler<RoomLeaveCommand, RoomVie
         using var scope = _serviceScopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
         var repo = scope.ServiceProvider.GetRequiredService<IRoomRepo>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        var user = await userManager.FindByNameAsync(request.User.UserName);
 
         var obj = repo.Find(request.RoomUid);
         if (obj is null)
@@ -31,7 +35,7 @@ public class RoomLeaveCommandHandler : IRequestHandler<RoomLeaveCommand, RoomVie
             throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
-        obj.RemoveUser(request.UserUid);
+        obj.RemoveUser(user.Id);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

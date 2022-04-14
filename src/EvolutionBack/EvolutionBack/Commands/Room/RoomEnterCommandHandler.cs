@@ -33,13 +33,9 @@ public class RoomEnterCommandHandler : IRequestHandler<RoomEnterCommand, RoomVie
             throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
-        var userObj = userManager.FindByIdAsync(request.UserUid.ToString());
-        if (userObj is null)
-        {
-            throw new ObjectNotFoundException(request.UserUid, nameof(User));
-        }
+        var user = await userManager.FindByNameAsync(request.User.UserName);
 
-        obj.AddUser(request.UserUid);
+        obj.AddUser(user.Id);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

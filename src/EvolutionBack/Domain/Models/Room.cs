@@ -216,7 +216,7 @@ public class Room
 
                 foreach (var user in InGameUsers)
                 {
-                    var (_, order) = editModel.UserOrder.Single(x => x.userUid.ToString() == user.UserId);
+                    var (_, order) = editModel.UserOrder.Single(x => x.userUid == user.UserUid);
                     user.Update(new(order: order));
                 }
             }
@@ -229,7 +229,7 @@ public class Room
 
         if (!IsStarted && !IsFinished)
         {
-            var user = InGameUsers.FirstOrDefault(x => x.UserId == userUid.ToString()) ?? throw new NullReferenceException(nameof(userUid));
+            var user = InGameUsers.FirstOrDefault(x => x.UserUid == userUid) ?? throw new NullReferenceException(nameof(userUid));
             InGameUsers.Remove(user);
         }
     }
@@ -242,7 +242,7 @@ public class Room
         {
             // первый игрок, который заходит в комнату становится хостом
             bool isUserHost = !InGameUsers.Any();
-            InGameUsers.Add(new InGameUser(userUid.ToString(), Uid, isUserHost));
+            InGameUsers.Add(new InGameUser(userUid, Uid, isUserHost));
             InGameUsers.Last().Update(new InGameUserUpdateModel(order: InGameUsers.Count - 1));
 
         }
@@ -259,6 +259,6 @@ public class Room
 
     public InGameUser? FindUserByUid(Guid uid)
     {
-        return InGameUsers.FirstOrDefault(x => x.UserId == uid.ToString());
+        return InGameUsers.FirstOrDefault(x => x.UserUid == uid);
     }
 }

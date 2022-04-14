@@ -2,15 +2,13 @@
 
 namespace Domain.Models;
 
-public class User : IdentityUser
+public class User : IdentityUser<Guid>
 {
-    public User(string userName, string Id)
+    public User(string userName, Guid Id)
     {
         UserName = userName;
         base.Id = Id;
     }
-
-    public Guid Uid => Guid.Parse(Id);
 
     public virtual InGameUser? InGameUser { get; private set; }
 

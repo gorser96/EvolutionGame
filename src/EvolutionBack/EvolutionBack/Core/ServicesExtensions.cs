@@ -103,7 +103,7 @@ public static class ServicesExtensions
     public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddIdentity<User, IdentityRole>(options =>
+            .AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;

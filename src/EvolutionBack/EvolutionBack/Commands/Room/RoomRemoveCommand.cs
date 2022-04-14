@@ -4,10 +4,10 @@ namespace EvolutionBack.Commands;
 
 public class RoomRemoveCommand : IRequest
 {
-    public RoomRemoveCommand(Guid uid)
+    public RoomRemoveCommand(Guid roomUid)
     {
-        Uid = uid;
+        RoomUid = roomUid;
     }
 
-    public Guid Uid { get; init; }
+    public Guid RoomUid { get; init; }
 }

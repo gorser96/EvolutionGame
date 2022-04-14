@@ -3,6 +3,7 @@ using Domain.Repo;
 using EvolutionBack.Core;
 using Infrastructure.EF;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace EvolutionBack.Commands;
 
@@ -15,11 +16,14 @@ public class ResumeGameCommandHandler : IRequestHandler<ResumeGameCommand>
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public Task<Unit> Handle(ResumeGameCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(ResumeGameCommand request, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         using var db = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
         var roomRepo = scope.ServiceProvider.GetRequiredService<IRoomRepo>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        var user = await userManager.FindByNameAsync(request.User.UserName);
 
         var room = roomRepo.Find(request.RoomUid);
         if (room is null)
@@ -27,10 +31,10 @@ public class ResumeGameCommandHandler : IRequestHandler<ResumeGameCommand>
             throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
-        room.Resume(request.UserUid);
+        room.Resume(user.Id);
 
         db.SaveChanges();
 
-        return Task.FromResult(Unit.Value);
+        return Unit.Value;
     }
 }

@@ -21,9 +21,9 @@ public class RoomRemoveCommandHandler : IRequestHandler<RoomRemoveCommand>
         var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
         var repo = scope.ServiceProvider.GetRequiredService<IRoomRepo>();
 
-        if (!repo.Remove(request.Uid))
+        if (!repo.Remove(request.RoomUid))
         {
-            throw new ObjectNotFoundException(request.Uid, nameof(Room));
+            throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

@@ -1,16 +1,17 @@
-﻿using MediatR;
+﻿using EvolutionBack.Models;
+using MediatR;
 
 namespace EvolutionBack.Commands;
 
 public class ResumeGameCommand : IRequest
 {
-    public ResumeGameCommand(Guid roomUid, Guid userUid)
+    public ResumeGameCommand(Guid roomUid, UserCredentials user)
     {
         RoomUid = roomUid;
-        UserUid = userUid;
+        User = user;
     }
 
     public Guid RoomUid { get; init; }
 
-    public Guid UserUid { get; init; }
+    public UserCredentials User { get; init; }
 }

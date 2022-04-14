@@ -16,7 +16,7 @@ public class InGameUserRepo : IInGameUserRepo
 
     public InGameUser Create(Guid userUid, Guid roomUid, bool isHost)
     {
-        return _dbContext.InGameUsers.Add(new InGameUser(userUid.ToString(), roomUid, isHost)).Entity;
+        return _dbContext.InGameUsers.Add(new InGameUser(userUid, roomUid, isHost)).Entity;
     }
 
     public InGameUser? Find(Guid userUid, Guid roomUid)
@@ -25,6 +25,6 @@ public class InGameUserRepo : IInGameUserRepo
             .Include(x => x.User)
             .Include(x => x.Room).ThenInclude(x => x.Additions)
             .Include(x => x.Animals).ThenInclude(x => x.Properties)
-            .FirstOrDefault(x => x.UserId == userUid.ToString() && x.RoomUid == roomUid);
+            .FirstOrDefault(x => x.UserUid == userUid && x.RoomUid == roomUid);
     }
 }

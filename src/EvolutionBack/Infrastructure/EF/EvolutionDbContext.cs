@@ -1,11 +1,12 @@
 ﻿using Domain.Models;
 using Infrastructure.EF.Configurations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.EF;
 
-public class EvolutionDbContext : IdentityDbContext<User>
+public class EvolutionDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
 #pragma warning disable CS8618
     public EvolutionDbContext(DbContextOptions options) : base(options)

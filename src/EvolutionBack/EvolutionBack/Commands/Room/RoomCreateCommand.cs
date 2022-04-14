@@ -5,16 +5,13 @@ namespace EvolutionBack.Commands;
 
 public class RoomCreateCommand : IRequest<RoomViewModel>
 {
-    public RoomCreateCommand(Guid uid, string name, Guid userUid)
+    public RoomCreateCommand(string name, UserCredentials user)
     {
-        Uid = uid;
         Name = name;
-        UserUid = userUid;
+        User = user;
     }
-
-    public Guid Uid { get; init; }
 
     public string Name { get; init; }
 
-    public Guid UserUid { get; init; }
+    public UserCredentials User { get; init; }
 }

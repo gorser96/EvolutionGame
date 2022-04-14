@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EvolutionBack.Commands;
 
-public class UserLoginCommand : IRequest<UserViewModel>
+public class UserLoginCommand : IRequest<UserTokenViewModel>
 {
     public UserLoginCommand(string login, string password)
     {

@@ -21,7 +21,7 @@ public class UserCreateCommandHandler : IRequestHandler<UserCreateCommand>
         {
             throw new UserAlreadyRegisteredException();
         }
-        var user = new User(request.Login, Guid.NewGuid().ToString());
+        var user = new User(request.Login, Guid.NewGuid());
         var result = await _userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
         {

@@ -5,13 +5,13 @@ namespace EvolutionBack.Commands;
 
 public class RoomLeaveCommand : IRequest<RoomViewModel>
 {
-    public RoomLeaveCommand(Guid roomUid, Guid userUid)
+    public RoomLeaveCommand(Guid roomUid, UserCredentials user)
     {
         RoomUid = roomUid;
-        UserUid = userUid;
+        User = user;
     }
 
     public Guid RoomUid { get; init; }
 
-    public Guid UserUid { get; init; }
+    public UserCredentials User { get; init; }
 }

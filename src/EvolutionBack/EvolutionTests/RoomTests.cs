@@ -31,10 +31,8 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
-
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
         Assert.NotNull(roomViewModel);
         Assert.Equal("test room", roomViewModel?.Name);
@@ -52,13 +50,13 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
-        var updateCommand = new RoomUpdateCommand(new RoomEditModel(createCommand.Uid, "updated test room", TimeSpan.FromMinutes(2)), userView.Uid);
+        var updateCommand = new RoomUpdateCommand(new RoomEditModel("updated test room", TimeSpan.FromMinutes(2)), new(userView.UserName), roomViewModel.Uid);
         await mediator.Send(updateCommand);
 
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(roomViewModel.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Equal(updateCommand.EditModel.Name, roomViewModel?.Name);
@@ -83,18 +81,18 @@ public class RoomTests : IDisposable
         var command2 = new UserLoginCommand("test_user2", "123test");
         var userView2 = await mediator.Send(command2);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
+        var enterCommand = new RoomEnterCommand(roomViewModel.Uid, new(userView2.UserName));
         await mediator.Send(enterCommand);
 
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(roomViewModel.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Single(roomViewModel?.Additions);
         Assert.Equal(2, roomViewModel?.InGameUsers.Count);
-        Assert.Equal(userView.Uid, roomViewModel?.InGameUsers.First(x => x.IsHost).User.Uid);
+        Assert.Equal(userView.UserName, roomViewModel?.InGameUsers.First(x => x.IsHost).User.UserName);
 
         var db = _services.Get<EvolutionDbContext>();
         Assert.Equal(2, db.InGameUsers.Count());
@@ -120,16 +118,16 @@ public class RoomTests : IDisposable
         var command2 = new UserLoginCommand("test_user2", "123test");
         var userView2 = await mediator.Send(command2);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
+        var enterCommand = new RoomEnterCommand(roomViewModel.Uid, new(userView2.UserName));
         await mediator.Send(enterCommand);
 
-        var leaveCommand = new RoomLeaveCommand(createCommand.Uid, userView2.Uid);
+        var leaveCommand = new RoomLeaveCommand(roomViewModel.Uid, new(userView2.UserName));
         await mediator.Send(leaveCommand);
 
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(roomViewModel.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Single(roomViewModel?.Additions);
@@ -161,19 +159,19 @@ public class RoomTests : IDisposable
         var command2 = new UserLoginCommand("test_user2", "123test");
         var userView2 = await mediator.Send(command2);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
+        var enterCommand = new RoomEnterCommand(roomViewModel.Uid, new(userView2.UserName));
         await mediator.Send(enterCommand);
 
-        var leaveCommand = new RoomLeaveCommand(createCommand.Uid, userView.Uid);
+        var leaveCommand = new RoomLeaveCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(leaveCommand);
 
-        var removeCommand = new RoomRemoveCommand(createCommand.Uid);
+        var removeCommand = new RoomRemoveCommand(roomViewModel.Uid);
         await mediator.Send(removeCommand);
 
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(roomViewModel.Uid);
 
         Assert.Null(roomViewModel);
 
@@ -202,16 +200,16 @@ public class RoomTests : IDisposable
         var command2 = new UserLoginCommand("test_user2", "123test");
         var userView2 = await mediator.Send(command2);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
+        var enterCommand = new RoomEnterCommand(roomViewModel.Uid, new(userView2.UserName));
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
+        var startCommand = new StartGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(startCommand);
 
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(roomViewModel.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Equal(2, roomViewModel?.InGameUsers.Count);
@@ -251,19 +249,19 @@ public class RoomTests : IDisposable
         var command2 = new UserLoginCommand("test_user2", "123test");
         var userView2 = await mediator.Send(command2);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
+        var enterCommand = new RoomEnterCommand(roomViewModel.Uid, new(userView2.UserName));
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
+        var startCommand = new StartGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(startCommand);
 
-        var pauseCommand = new PauseGameCommand(createCommand.Uid, userView.Uid);
+        var pauseCommand = new PauseGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(pauseCommand);
 
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(roomViewModel.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Equal(2, roomViewModel?.InGameUsers.Count);
@@ -303,22 +301,22 @@ public class RoomTests : IDisposable
         var command2 = new UserLoginCommand("test_user2", "123test");
         var userView2 = await mediator.Send(command2);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
+        var enterCommand = new RoomEnterCommand(roomViewModel.Uid, new(userView2.UserName));
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
+        var startCommand = new StartGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(startCommand);
 
-        var pauseCommand = new PauseGameCommand(createCommand.Uid, userView.Uid);
+        var pauseCommand = new PauseGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(pauseCommand);
 
-        var resumeCommand = new ResumeGameCommand(createCommand.Uid, userView.Uid);
+        var resumeCommand = new ResumeGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(resumeCommand);
 
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(roomViewModel.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Equal(2, roomViewModel?.InGameUsers.Count);
@@ -359,28 +357,28 @@ public class RoomTests : IDisposable
         var command2 = new UserLoginCommand("test_user2", "123test");
         var userView2 = await mediator.Send(command2);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
+        var enterCommand = new RoomEnterCommand(roomViewModel.Uid, new(userView2.UserName));
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
+        var startCommand = new StartGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(startCommand);
 
-        var pauseCommand = new PauseGameCommand(createCommand.Uid, userView.Uid);
+        var pauseCommand = new PauseGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(pauseCommand);
 
-        var resumeCommand = new ResumeGameCommand(createCommand.Uid, userView.Uid);
+        var resumeCommand = new ResumeGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(resumeCommand);
 
-        var nextStepCommand = new NextStepCommand(createCommand.Uid);
+        var nextStepCommand = new NextStepCommand(roomViewModel.Uid);
         await mediator.Send(nextStepCommand);
 
-        var endCommand = new EndGameCommand(createCommand.Uid);
+        var endCommand = new EndGameCommand(roomViewModel.Uid);
         await mediator.Send(endCommand);
 
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(roomViewModel.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Equal(2, roomViewModel?.InGameUsers.Count);
@@ -421,25 +419,25 @@ public class RoomTests : IDisposable
         var command2 = new UserLoginCommand("test_user2", "123test");
         var userView2 = await mediator.Send(command2);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
-        await mediator.Send(createCommand);
+        var createCommand = new RoomCreateCommand("test room", new(userView.UserName));
+        var roomViewModel = await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
+        var enterCommand = new RoomEnterCommand(roomViewModel.Uid, new(userView2.UserName));
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
+        var startCommand = new StartGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(startCommand);
 
-        var pauseCommand = new PauseGameCommand(createCommand.Uid, userView.Uid);
+        var pauseCommand = new PauseGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(pauseCommand);
 
-        var resumeCommand = new ResumeGameCommand(createCommand.Uid, userView.Uid);
+        var resumeCommand = new ResumeGameCommand(roomViewModel.Uid, new(userView.UserName));
         await mediator.Send(resumeCommand);
 
-        var nextStepCommand = new NextStepCommand(createCommand.Uid);
+        var nextStepCommand = new NextStepCommand(roomViewModel.Uid);
         await mediator.Send(nextStepCommand);
 
-        var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
+        roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(roomViewModel.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Equal(2, roomViewModel?.InGameUsers.Count);

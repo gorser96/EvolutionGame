@@ -1,5 +1,4 @@
 ﻿using EvolutionBack.Commands;
-using EvolutionBack.Core;
 using EvolutionBack.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -9,80 +8,125 @@ namespace EvolutionBack.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RoomController : ControllerBase
     {
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
-        public async Task<RoomViewModel> Create([FromBody] RoomCreateCommand command, [FromServices] IMediator mediator)
+        [HttpPost("create")]
+        public async Task<RoomViewModel> Create([FromBody] string roomName, [FromServices] IMediator mediator)
         {
-            var roomViewModel = await mediator.Send(command);            
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            var roomViewModel = await mediator.Send(new RoomCreateCommand(roomName, new(user.Name)));
             return roomViewModel;
         }
 
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
-        public async Task<RoomViewModel> Enter([FromBody] RoomEnterCommand command, [FromServices] IMediator mediator)
+        [HttpPost("{roomUid:guid}/enter")]
+        public async Task<RoomViewModel> Enter(Guid roomUid, [FromServices] IMediator mediator)
         {
-            var roomViewModel = await mediator.Send(command);
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            var roomViewModel = await mediator.Send(new RoomEnterCommand(roomUid, new(user.Name)));
             return roomViewModel;
         }
 
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
+        [HttpPost("enter-viewer")]
         public Task EnterViewer()
         {
             throw new NotImplementedException();
         }
 
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
-        public async Task<RoomViewModel> Update([FromBody] RoomUpdateCommand command, [FromServices] IMediator mediator)
+        [HttpPost("{roomUid:guid}/update")]
+        public async Task<RoomViewModel> Update(Guid roomUid, [FromBody] RoomEditModel editModel, [FromServices] IMediator mediator)
         {
-            var roomViewModel = await mediator.Send(command);
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            var roomViewModel = await mediator.Send(new RoomUpdateCommand(editModel, new(user.Name), roomUid));
             return roomViewModel;
         }
 
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
-        public async Task<RoomViewModel> Leave([FromBody] RoomLeaveCommand command, [FromServices] IMediator mediator)
+        [HttpPost("{roomUid:guid}/leave")]
+        public async Task<RoomViewModel> Leave(Guid roomUid, [FromServices] IMediator mediator)
         {
-            var roomViewModel = await mediator.Send(command);
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            var roomViewModel = await mediator.Send(new RoomLeaveCommand(roomUid, new(user.Name)));
             return roomViewModel;
         }
 
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
-        public async Task Start([FromBody] StartGameCommand command, [FromServices] IMediator mediator)
+        [HttpPost("{roomUid:guid}/start")]
+        public async Task Start(Guid roomUid, [FromServices] IMediator mediator)
         {
-            await mediator.Send(command);
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            await mediator.Send(new StartGameCommand(roomUid, new(user.Name)));
         }
 
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
-        public async Task Pause([FromBody] PauseGameCommand command, [FromServices] IMediator mediator)
+        [HttpPost("{roomUid:guid}/pause")]
+        public async Task Pause(Guid roomUid, [FromServices] IMediator mediator)
         {
-            await mediator.Send(command);
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            await mediator.Send(new PauseGameCommand(roomUid, new(user.Name)));
         }
 
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
-        public async Task Resume([FromBody] ResumeGameCommand command, [FromServices] IMediator mediator)
+        [HttpPost("{roomUid:guid}/resume")]
+        public async Task Resume(Guid roomUid, [FromServices] IMediator mediator)
         {
-            await mediator.Send(command);
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            await mediator.Send(new ResumeGameCommand(roomUid, new(user.Name)));
         }
 
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
-        public async Task End([FromBody] EndGameCommand command, [FromServices] IMediator mediator)
+        [HttpPost("{roomUid:guid}/end")]
+        public async Task End(Guid roomUid, [FromServices] IMediator mediator)
         {
-            await mediator.Send(command);
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            await mediator.Send(new EndGameCommand(roomUid));
         }
 
-        [HttpPost]
-        [Authorize(AuthPolicies.User)]
-        public async Task Remove([FromBody] RoomRemoveCommand command, [FromServices] IMediator mediator)
+        [HttpPost("{roomUid:guid}/remove")]
+        public async Task Remove(Guid roomUid, [FromServices] IMediator mediator)
         {
-            await mediator.Send(command);
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            await mediator.Send(new RoomRemoveCommand(roomUid));
         }
     }
 }
