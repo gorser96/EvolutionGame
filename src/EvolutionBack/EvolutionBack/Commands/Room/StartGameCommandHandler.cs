@@ -27,7 +27,7 @@ public class StartGameCommandHandler : IRequestHandler<StartGameCommand>
             throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
-        room.StartGame();
+        room.StartGame(request.UserUid);
 
         db.SaveChanges();
 

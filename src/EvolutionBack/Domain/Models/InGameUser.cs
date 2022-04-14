@@ -3,7 +3,7 @@
 public class InGameUser
 {
 #pragma warning disable CS8618
-    public InGameUser(string userId, Guid roomUid)
+    public InGameUser(string userId, Guid roomUid, bool isHost)
     {
         UserId = userId;
         RoomUid = roomUid;
@@ -11,6 +11,7 @@ public class InGameUser
         IsCurrent = false;
         StartStepTime = null;
         Order = 0;
+        IsHost = isHost;
     }
 #pragma warning restore CS8618
 
@@ -29,6 +30,8 @@ public class InGameUser
     public DateTime? StartStepTime { get; private set; }
 
     public int Order { get; private set; }
+
+    public bool IsHost { get; private set; }
 
     private void StartStep()
     {

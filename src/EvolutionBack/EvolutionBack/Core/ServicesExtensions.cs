@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using Domain.Repo;
+using Domain.Validators;
 using EvolutionBack.Models;
 using Infrastructure.EF;
 using Infrastructure.Repo;
+using Infrastructure.Validators;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -87,6 +89,13 @@ public static class ServicesExtensions
             cfg.CreateMap<Addition, AdditionViewModel>();
             cfg.CreateMap<InGameUser, InGameUserViewModel>();
         }, _assembly);
+
+        return services;
+    }
+
+    public static IServiceCollection AddValidators(this IServiceCollection services)
+    {
+        services.AddScoped<IRoomValidator, RoomValidator>();
 
         return services;
     }

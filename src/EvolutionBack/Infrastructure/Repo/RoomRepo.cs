@@ -1,5 +1,6 @@
 ﻿using Domain.Models;
 using Domain.Repo;
+using Domain.Validators;
 using Infrastructure.EF;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,24 +9,30 @@ namespace Infrastructure.Repo;
 public class RoomRepo : IRoomRepo
 {
     private readonly EvolutionDbContext _dbContext;
+    private readonly IRoomValidator _roomValidator;
 
-    public RoomRepo(EvolutionDbContext dbContext)
+    public RoomRepo(EvolutionDbContext dbContext, IRoomValidator roomValidator)
     {
         _dbContext = dbContext;
+        _roomValidator = roomValidator;
     }
 
     public Room Create(Guid uid, string name)
     {
-        return _dbContext.Rooms.Add(new Room(uid, name, DateTime.UtcNow)).Entity;
+        var obj = _dbContext.Rooms.Add(new Room(uid, name, DateTime.UtcNow)).Entity;
+        obj.SetValidator(_roomValidator);
+        return obj;
     }
 
     public Room? Find(Guid uid)
     {
-        return _dbContext.Rooms
+        var obj = _dbContext.Rooms
             .Include(x => x.Additions)
             .Include(x => x.InGameUsers).ThenInclude(x => x.User)
             .Include(x => x.InGameUsers).ThenInclude(x => x.Animals)
             .FirstOrDefault(x => x.Uid == uid);
+        obj?.SetValidator(_roomValidator);
+        return obj;
     }
 
     public bool Remove(Guid uid)

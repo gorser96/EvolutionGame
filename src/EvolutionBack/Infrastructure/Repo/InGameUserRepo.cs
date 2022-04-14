@@ -14,9 +14,9 @@ public class InGameUserRepo : IInGameUserRepo
         _dbContext = dbContext;
     }
 
-    public InGameUser Create(Guid userUid, Guid roomUid)
+    public InGameUser Create(Guid userUid, Guid roomUid, bool isHost)
     {
-        return _dbContext.InGameUsers.Add(new InGameUser(userUid.ToString(), roomUid)).Entity;
+        return _dbContext.InGameUsers.Add(new InGameUser(userUid.ToString(), roomUid, isHost)).Entity;
     }
 
     public InGameUser? Find(Guid userUid, Guid roomUid)

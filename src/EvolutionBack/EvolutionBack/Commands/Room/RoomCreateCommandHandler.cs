@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Domain.Repo;
 using EvolutionBack.Models;
+using EvolutionBack.Queries;
 using Infrastructure.EF;
 using MediatR;
+using System.ComponentModel.DataAnnotations;
 
 namespace EvolutionBack.Commands;
 
@@ -22,13 +24,21 @@ public class RoomCreateCommandHandler : IRequestHandler<RoomCreateCommand, RoomV
         var repo = scope.ServiceProvider.GetRequiredService<IRoomRepo>();
         var additionRepo = scope.ServiceProvider.GetRequiredService<IAdditionRepo>();
         var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
+        var userQueries = scope.ServiceProvider.GetRequiredService<UserQueries>();
+
+        var userRoom = userQueries.FindRoomWithUserHost(request.UserUid);
+        if (userRoom is not null)
+        {
+            throw new ValidationException("User already host in other room!");
+        }
 
         var obj = repo.Create(request.Uid, request.Name);
+        obj.AddUser(request.UserUid);
 
         var baseAddition = additionRepo.GetBaseAddition();
         if (baseAddition is not null)
         {
-            obj.Update(new Domain.Models.RoomUpdateModel(additions: new[] { baseAddition }));
+            obj.Init(new[] { baseAddition });
         }
 
         dbContext.SaveChanges();

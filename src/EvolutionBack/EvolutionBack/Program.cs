@@ -42,6 +42,9 @@ builder.Services.AddCommandHandlers();
 // repositories
 builder.Services.AddRepositories();
 
+// validators
+builder.Services.AddValidators();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

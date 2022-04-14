@@ -25,7 +25,13 @@ public class RoomTests : IDisposable
     {
         var mediator = _services.Get<IMediator>();
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand = new UserCreateCommand("test_user", "123test");
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
         var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
@@ -40,10 +46,16 @@ public class RoomTests : IDisposable
     {
         var mediator = _services.Get<IMediator>();
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand = new UserCreateCommand("test_user", "123test");
+        await mediator.Send(userCreateCommand);
+
+        var command = new UserLoginCommand("test_user", "123test");
+        var userView = await mediator.Send(command);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
-        var updateCommand = new RoomUpdateCommand(new RoomEditModel(createCommand.Uid, "updated test room", TimeSpan.FromMinutes(2)));
+        var updateCommand = new RoomUpdateCommand(new RoomEditModel(createCommand.Uid, "updated test room", TimeSpan.FromMinutes(2)), userView.Uid);
         await mediator.Send(updateCommand);
 
         var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
@@ -65,23 +77,29 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand2 = new UserCreateCommand("test_user2", "123test");
+        await mediator.Send(userCreateCommand2);
+
+        var command2 = new UserLoginCommand("test_user2", "123test");
+        var userView2 = await mediator.Send(command2);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView.Uid);
+        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
         await mediator.Send(enterCommand);
 
         var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Single(roomViewModel?.Additions);
-        Assert.Single(roomViewModel?.InGameUsers);
-        Assert.Equal(userView.Uid, roomViewModel?.InGameUsers.Single().User.Uid);
+        Assert.Equal(2, roomViewModel?.InGameUsers.Count);
+        Assert.Equal(userView.Uid, roomViewModel?.InGameUsers.First(x => x.IsHost).User.Uid);
 
         var db = _services.Get<EvolutionDbContext>();
-        Assert.Single(db.InGameUsers);
+        Assert.Equal(2, db.InGameUsers.Count());
         Assert.Single(db.Rooms);
-        Assert.Single(db.Users);
+        Assert.Equal(2, db.Users.Count());
         Assert.Single(db.Additions);
     }
 
@@ -96,27 +114,33 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand2 = new UserCreateCommand("test_user2", "123test");
+        await mediator.Send(userCreateCommand2);
+
+        var command2 = new UserLoginCommand("test_user2", "123test");
+        var userView2 = await mediator.Send(command2);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView.Uid);
+        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
         await mediator.Send(enterCommand);
 
-        var leaveCommand = new RoomLeaveCommand(createCommand.Uid, userView.Uid);
+        var leaveCommand = new RoomLeaveCommand(createCommand.Uid, userView2.Uid);
         await mediator.Send(leaveCommand);
 
         var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
 
         Assert.NotNull(roomViewModel);
         Assert.Single(roomViewModel?.Additions);
-        Assert.Empty(roomViewModel?.InGameUsers);
+        Assert.Single(roomViewModel?.InGameUsers);
 
         var db = _services.Get<EvolutionDbContext>();
-        Assert.Empty(db.InGameUsers);
+        Assert.Single(db.InGameUsers);
         Assert.Empty(db.Animals);
         // TODO: удалять комнату при отсутствии игроков
         Assert.Single(db.Rooms);
-        Assert.Single(db.Users);
+        Assert.Equal(2, db.Users.Count());
         Assert.Single(db.Additions);
     }
 
@@ -131,10 +155,16 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand2 = new UserCreateCommand("test_user2", "123test");
+        await mediator.Send(userCreateCommand2);
+
+        var command2 = new UserLoginCommand("test_user2", "123test");
+        var userView2 = await mediator.Send(command2);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView.Uid);
+        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
         await mediator.Send(enterCommand);
 
         var leaveCommand = new RoomLeaveCommand(createCommand.Uid, userView.Uid);
@@ -151,7 +181,7 @@ public class RoomTests : IDisposable
         Assert.Empty(db.InGameUsers);
         Assert.Empty(db.Animals);
         Assert.Empty(db.Rooms);
-        Assert.Single(db.Users);
+        Assert.Equal(2, db.Users.Count());
         Assert.Single(db.Additions);
     }
 
@@ -166,19 +196,25 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand2 = new UserCreateCommand("test_user2", "123test");
+        await mediator.Send(userCreateCommand2);
+
+        var command2 = new UserLoginCommand("test_user2", "123test");
+        var userView2 = await mediator.Send(command2);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView.Uid);
+        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid);
+        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(startCommand);
 
         var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
 
         Assert.NotNull(roomViewModel);
-        Assert.Single(roomViewModel?.InGameUsers);
+        Assert.Equal(2, roomViewModel?.InGameUsers.Count);
         Assert.Single(roomViewModel?.Additions);
         Assert.True(roomViewModel?.IsStarted);
         Assert.False(roomViewModel?.IsPaused);
@@ -186,15 +222,15 @@ public class RoomTests : IDisposable
         Assert.Null(roomViewModel?.PauseStartedTime);
         Assert.NotNull(roomViewModel?.StartDateTime);
 
-        Assert.Equal(0, roomViewModel?.InGameUsers.Single().Order);
-        Assert.True(roomViewModel?.InGameUsers.Single().IsCurrent);
-        Assert.NotNull(roomViewModel?.InGameUsers.Single().StartStepTime);
+        Assert.Equal(0, roomViewModel?.InGameUsers.First(x => x.IsHost).Order);
+        Assert.True(roomViewModel?.InGameUsers.First(x => x.IsHost).IsCurrent);
+        Assert.NotNull(roomViewModel?.InGameUsers.First(x => x.IsHost).StartStepTime);
 
         var db = _services.Get<EvolutionDbContext>();
-        Assert.Single(db.InGameUsers);
+        Assert.Equal(2, db.InGameUsers.Count());
         Assert.Empty(db.Animals);
         Assert.Single(db.Rooms);
-        Assert.Single(db.Users);
+        Assert.Equal(2, db.Users.Count());
         Assert.Single(db.Additions);
     }
 
@@ -209,22 +245,28 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand2 = new UserCreateCommand("test_user2", "123test");
+        await mediator.Send(userCreateCommand2);
+
+        var command2 = new UserLoginCommand("test_user2", "123test");
+        var userView2 = await mediator.Send(command2);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView.Uid);
+        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid);
+        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(startCommand);
 
-        var pauseCommand = new PauseGameCommand(createCommand.Uid);
+        var pauseCommand = new PauseGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(pauseCommand);
 
         var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
 
         Assert.NotNull(roomViewModel);
-        Assert.Single(roomViewModel?.InGameUsers);
+        Assert.Equal(2, roomViewModel?.InGameUsers.Count);
         Assert.Single(roomViewModel?.Additions);
         Assert.True(roomViewModel?.IsStarted);
         Assert.True(roomViewModel?.IsPaused);
@@ -232,15 +274,15 @@ public class RoomTests : IDisposable
         Assert.NotNull(roomViewModel?.PauseStartedTime);
         Assert.NotNull(roomViewModel?.StartDateTime);
 
-        Assert.Equal(0, roomViewModel?.InGameUsers.Single().Order);
-        Assert.True(roomViewModel?.InGameUsers.Single().IsCurrent);
-        Assert.NotNull(roomViewModel?.InGameUsers.Single().StartStepTime);
+        Assert.Equal(0, roomViewModel?.InGameUsers.First(x => x.IsHost).Order);
+        Assert.True(roomViewModel?.InGameUsers.First(x => x.IsHost).IsCurrent);
+        Assert.NotNull(roomViewModel?.InGameUsers.First(x => x.IsHost).StartStepTime);
 
         var db = _services.Get<EvolutionDbContext>();
-        Assert.Single(db.InGameUsers);
+        Assert.Equal(2, db.InGameUsers.Count());
         Assert.Empty(db.Animals);
         Assert.Single(db.Rooms);
-        Assert.Single(db.Users);
+        Assert.Equal(2, db.Users.Count());
         Assert.Single(db.Additions);
     }
 
@@ -255,25 +297,31 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand2 = new UserCreateCommand("test_user2", "123test");
+        await mediator.Send(userCreateCommand2);
+
+        var command2 = new UserLoginCommand("test_user2", "123test");
+        var userView2 = await mediator.Send(command2);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView.Uid);
+        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid);
+        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(startCommand);
 
-        var pauseCommand = new PauseGameCommand(createCommand.Uid);
+        var pauseCommand = new PauseGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(pauseCommand);
 
-        var resumeCommand = new ResumeGameCommand(createCommand.Uid);
+        var resumeCommand = new ResumeGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(resumeCommand);
 
         var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
 
         Assert.NotNull(roomViewModel);
-        Assert.Single(roomViewModel?.InGameUsers);
+        Assert.Equal(2, roomViewModel?.InGameUsers.Count);
         Assert.Single(roomViewModel?.Additions);
         Assert.True(roomViewModel?.IsStarted);
         Assert.False(roomViewModel?.IsPaused);
@@ -282,15 +330,15 @@ public class RoomTests : IDisposable
         Assert.NotNull(roomViewModel?.StartDateTime);
         Assert.Equal(0, roomViewModel?.StepNumber);
 
-        Assert.Equal(0, roomViewModel?.InGameUsers.Single().Order);
-        Assert.True(roomViewModel?.InGameUsers.Single().IsCurrent);
-        Assert.NotNull(roomViewModel?.InGameUsers.Single().StartStepTime);
+        Assert.Equal(0, roomViewModel?.InGameUsers.First(x => x.IsHost).Order);
+        Assert.True(roomViewModel?.InGameUsers.First(x => x.IsHost).IsCurrent);
+        Assert.NotNull(roomViewModel?.InGameUsers.First(x => x.IsHost).StartStepTime);
 
         var db = _services.Get<EvolutionDbContext>();
-        Assert.Single(db.InGameUsers);
+        Assert.Equal(2, db.InGameUsers.Count());
         Assert.Empty(db.Animals);
         Assert.Single(db.Rooms);
-        Assert.Single(db.Users);
+        Assert.Equal(2, db.Users.Count());
         Assert.Single(db.Additions);
     }
 
@@ -305,19 +353,25 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand2 = new UserCreateCommand("test_user2", "123test");
+        await mediator.Send(userCreateCommand2);
+
+        var command2 = new UserLoginCommand("test_user2", "123test");
+        var userView2 = await mediator.Send(command2);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView.Uid);
+        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid);
+        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(startCommand);
 
-        var pauseCommand = new PauseGameCommand(createCommand.Uid);
+        var pauseCommand = new PauseGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(pauseCommand);
 
-        var resumeCommand = new ResumeGameCommand(createCommand.Uid);
+        var resumeCommand = new ResumeGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(resumeCommand);
 
         var nextStepCommand = new NextStepCommand(createCommand.Uid);
@@ -329,7 +383,7 @@ public class RoomTests : IDisposable
         var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
 
         Assert.NotNull(roomViewModel);
-        Assert.Single(roomViewModel?.InGameUsers);
+        Assert.Equal(2, roomViewModel?.InGameUsers.Count);
         Assert.Single(roomViewModel?.Additions);
         Assert.False(roomViewModel?.IsStarted);
         Assert.False(roomViewModel?.IsPaused);
@@ -338,15 +392,15 @@ public class RoomTests : IDisposable
         Assert.NotNull(roomViewModel?.StartDateTime);
         Assert.Equal(1, roomViewModel?.StepNumber);
 
-        Assert.Equal(0, roomViewModel?.InGameUsers.Single().Order);
-        Assert.True(roomViewModel?.InGameUsers.Single().IsCurrent);
-        Assert.NotNull(roomViewModel?.InGameUsers.Single().StartStepTime);
+        Assert.Equal(0, roomViewModel?.InGameUsers.First(x => x.IsHost).Order);
+        Assert.True(roomViewModel?.InGameUsers.First(x => !x.IsHost).IsCurrent);
+        Assert.NotNull(roomViewModel?.InGameUsers.First(x => !x.IsHost).StartStepTime);
 
         var db = _services.Get<EvolutionDbContext>();
-        Assert.Single(db.InGameUsers);
+        Assert.Equal(2, db.InGameUsers.Count());
         Assert.Empty(db.Animals);
         Assert.Single(db.Rooms);
-        Assert.Single(db.Users);
+        Assert.Equal(2, db.Users.Count());
         Assert.Single(db.Additions);
     }
 
@@ -361,19 +415,25 @@ public class RoomTests : IDisposable
         var command = new UserLoginCommand("test_user", "123test");
         var userView = await mediator.Send(command);
 
-        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room");
+        var userCreateCommand2 = new UserCreateCommand("test_user2", "123test");
+        await mediator.Send(userCreateCommand2);
+
+        var command2 = new UserLoginCommand("test_user2", "123test");
+        var userView2 = await mediator.Send(command2);
+
+        var createCommand = new RoomCreateCommand(Guid.NewGuid(), "test room", userView.Uid);
         await mediator.Send(createCommand);
 
-        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView.Uid);
+        var enterCommand = new RoomEnterCommand(createCommand.Uid, userView2.Uid);
         await mediator.Send(enterCommand);
 
-        var startCommand = new StartGameCommand(createCommand.Uid);
+        var startCommand = new StartGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(startCommand);
 
-        var pauseCommand = new PauseGameCommand(createCommand.Uid);
+        var pauseCommand = new PauseGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(pauseCommand);
 
-        var resumeCommand = new ResumeGameCommand(createCommand.Uid);
+        var resumeCommand = new ResumeGameCommand(createCommand.Uid, userView.Uid);
         await mediator.Send(resumeCommand);
 
         var nextStepCommand = new NextStepCommand(createCommand.Uid);
@@ -382,7 +442,7 @@ public class RoomTests : IDisposable
         var roomViewModel = _services.Get<RoomQueries>().GetRoomViewModel(createCommand.Uid);
 
         Assert.NotNull(roomViewModel);
-        Assert.Single(roomViewModel?.InGameUsers);
+        Assert.Equal(2, roomViewModel?.InGameUsers.Count);
         Assert.Single(roomViewModel?.Additions);
         Assert.True(roomViewModel?.IsStarted);
         Assert.False(roomViewModel?.IsPaused);
@@ -391,15 +451,15 @@ public class RoomTests : IDisposable
         Assert.NotNull(roomViewModel?.StartDateTime);
         Assert.Equal(1, roomViewModel?.StepNumber);
 
-        Assert.Equal(0, roomViewModel?.InGameUsers.Single().Order);
-        Assert.True(roomViewModel?.InGameUsers.Single().IsCurrent);
-        Assert.NotNull(roomViewModel?.InGameUsers.Single().StartStepTime);
+        Assert.Equal(0, roomViewModel?.InGameUsers.First(x => x.IsHost).Order);
+        Assert.True(roomViewModel?.InGameUsers.First(x => !x.IsHost).IsCurrent);
+        Assert.NotNull(roomViewModel?.InGameUsers.First(x => !x.IsHost).StartStepTime);
 
         var db = _services.Get<EvolutionDbContext>();
-        Assert.Single(db.InGameUsers);
+        Assert.Equal(2, db.InGameUsers.Count());
         Assert.Empty(db.Animals);
         Assert.Single(db.Rooms);
-        Assert.Single(db.Users);
+        Assert.Equal(2, db.Users.Count());
         Assert.Single(db.Additions);
     }
 

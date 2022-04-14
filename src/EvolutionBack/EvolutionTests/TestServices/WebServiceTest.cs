@@ -71,6 +71,9 @@ internal class WebServiceTest : IDisposable
         // repositories
         services.AddRepositories();
 
+        // validators
+        services.AddValidators();
+
         // AutoMapper
         services.AddMapper();
 

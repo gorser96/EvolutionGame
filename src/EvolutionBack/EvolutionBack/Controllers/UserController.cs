@@ -24,7 +24,7 @@ namespace EvolutionBack.Controllers
         [Authorize(AuthPolicies.Guest)]
         public async Task Register([FromBody] UserCreateCommand createCommand, [FromServices] IMediator mediator)
         {
-            var user = await mediator.Send(createCommand);
+            await mediator.Send(createCommand);
         }
     }
 }

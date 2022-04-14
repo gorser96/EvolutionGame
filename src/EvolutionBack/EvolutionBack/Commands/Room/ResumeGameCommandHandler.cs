@@ -27,7 +27,7 @@ public class ResumeGameCommandHandler : IRequestHandler<ResumeGameCommand>
             throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
-        room.Resume();
+        room.Resume(request.UserUid);
 
         db.SaveChanges();
 

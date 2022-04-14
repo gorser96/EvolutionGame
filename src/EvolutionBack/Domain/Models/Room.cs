@@ -1,7 +1,11 @@
-﻿namespace Domain.Models;
+﻿using Domain.Validators;
+
+namespace Domain.Models;
 
 public class Room
 {
+    private IRoomValidator? _roomValidator;
+
     public Room(Guid uid, string name, DateTime createdDateTime)
     {
         Uid = uid;
@@ -124,8 +128,10 @@ public class Room
         }
     }
 
-    public void StartGame()
+    public void StartGame(Guid userUid)
     {
+        _roomValidator?.CanUserStart(this, userUid);
+
         if (!IsStarted && !IsFinished)
         {
             SetIsStarted(true);
@@ -150,8 +156,10 @@ public class Room
         }
     }
 
-    public void Pause()
+    public void Pause(Guid userUid)
     {
+        _roomValidator?.CanUserPause(this, userUid);
+
         if (IsStarted && !IsPaused)
         {
             SetIsPaused(true);
@@ -159,8 +167,9 @@ public class Room
         }
     }
 
-    public void Resume()
+    public void Resume(Guid userUid)
     {
+        _roomValidator?.CanUserResume(this, userUid);
         if (IsStarted && IsPaused)
         {
             SetIsPaused(false);
@@ -177,8 +186,15 @@ public class Room
         }
     }
 
-    public void Update(RoomUpdateModel editModel)
+    public void Init(ICollection<Addition> additions)
     {
+        UpdateAdditions(additions);
+    }
+
+    public void Update(RoomUpdateModel editModel, Guid userUid)
+    {
+        _roomValidator?.CanUserUpdate(this, userUid);
+
         if (!IsStarted && !IsFinished)
         {
             SetMaxTimeLeft(editModel.MaxTimeLeft);
@@ -200,7 +216,7 @@ public class Room
 
                 foreach (var user in InGameUsers)
                 {
-                    var (userUid, order) = editModel.UserOrder.Single(x => x.userUid.ToString() == user.UserId);
+                    var (_, order) = editModel.UserOrder.Single(x => x.userUid.ToString() == user.UserId);
                     user.Update(new(order: order));
                 }
             }
@@ -209,6 +225,8 @@ public class Room
 
     public void RemoveUser(Guid userUid)
     {
+        _roomValidator?.CanUserLeave(this, userUid);
+
         if (!IsStarted && !IsFinished)
         {
             var user = InGameUsers.FirstOrDefault(x => x.UserId == userUid.ToString()) ?? throw new NullReferenceException(nameof(userUid));
@@ -218,13 +236,29 @@ public class Room
 
     public void AddUser(Guid userUid)
     {
+        _roomValidator?.CanUserEnter(this, userUid);
+
         if (!IsStarted && !IsFinished)
         {
-            InGameUsers.Add(new InGameUser(userUid.ToString(), Uid));
+            // первый игрок, который заходит в комнату становится хостом
+            bool isUserHost = !InGameUsers.Any();
+            InGameUsers.Add(new InGameUser(userUid.ToString(), Uid, isUserHost));
+            InGameUsers.Last().Update(new InGameUserUpdateModel(order: InGameUsers.Count - 1));
+
         }
+    }
+
+    public void SetValidator(IRoomValidator roomValidator)
+    {
+        _roomValidator = roomValidator;
     }
 
     public virtual ICollection<InGameUser> InGameUsers { get; private set; }
 
     public virtual ICollection<Addition> Additions { get; private set; }
+
+    public InGameUser? FindUserByUid(Guid uid)
+    {
+        return InGameUsers.FirstOrDefault(x => x.UserId == uid.ToString());
+    }
 }

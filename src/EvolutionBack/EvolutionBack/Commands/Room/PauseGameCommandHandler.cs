@@ -27,7 +27,7 @@ public class PauseGameCommandHandler : IRequestHandler<PauseGameCommand>
             throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
-        room.Pause();
+        room.Pause(request.UserUid);
 
         db.SaveChanges();
 

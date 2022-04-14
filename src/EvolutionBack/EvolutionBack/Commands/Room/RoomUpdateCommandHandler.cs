@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using Domain.Repo;
+using EvolutionBack.Core;
 using EvolutionBack.Models;
 using EvolutionBack.Queries;
 using Infrastructure.EF;
@@ -30,16 +31,16 @@ public class RoomUpdateCommandHandler : IRequestHandler<RoomUpdateCommand, RoomV
         if (request.EditModel.Additions is not null)
         {
             additions = request.EditModel.Additions
-               .Select(x => additionRepo.Find(x) ?? throw new NullReferenceException($"Addition with uid=[{x}] not found!"))
+               .Select(x => additionRepo.Find(x) ?? throw new ObjectNotFoundException($"Addition with uid=[{x}] not found!"))
                .ToArray();
         }
         var obj = repo.Find(request.EditModel.Uid);
         if (obj is null)
         {
-            throw new NullReferenceException($"Room with uid=[{request.EditModel.Uid}] not found!");
+            throw new ObjectNotFoundException($"Room with uid=[{request.EditModel.Uid}] not found!");
         }
 
-        obj.Update(new RoomUpdateModel(request.EditModel.Name, request.EditModel.MaxTimeLeft, additions));
+        obj.Update(new RoomUpdateModel(request.EditModel.Name, request.EditModel.MaxTimeLeft, additions), request.UserUid);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<RoomViewModel>(obj);
