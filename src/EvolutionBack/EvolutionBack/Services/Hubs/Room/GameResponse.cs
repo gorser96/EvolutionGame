@@ -1,8 +1,8 @@
 ﻿namespace EvolutionBack.Services.Hubs;
 
-public class RoomHubResponse
+public class GameResponse
 {
-    public RoomHubResponse(bool isSuccess)
+    public GameResponse(bool isSuccess)
     {
         IsSuccess = isSuccess;
     }

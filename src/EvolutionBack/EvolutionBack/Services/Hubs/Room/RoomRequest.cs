@@ -1,8 +1,8 @@
 ﻿namespace EvolutionBack.Services.Hubs;
 
-public class RoomHubRequest
+public class RoomRequest
 {
-    public RoomHubRequest(Guid roomUid, RequestType requestType)
+    public RoomRequest(Guid roomUid, RoomRequestType requestType)
     {
         RoomUid = roomUid;
         RequestType = requestType;
@@ -10,10 +10,10 @@ public class RoomHubRequest
 
     public Guid RoomUid { get; init; }
 
-    public RequestType RequestType { get; init; }
+    public RoomRequestType RequestType { get; init; }
 }
 
-public enum RequestType
+public enum RoomRequestType
 {
     StartGame = 1,
     StartUserStep = 2,

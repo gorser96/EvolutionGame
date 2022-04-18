@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EvolutionBack.Commands;
 using EvolutionBack.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -39,24 +40,32 @@ public class RoomHub : Hub
         return base.OnDisconnectedAsync(exception);
     }
 
-    public ChannelReader<RoomHubResponse> RoomCommand(RoomHubRequest request, CancellationToken cancellationToken)
+    public async Task<ChannelReader<RoomResponse>> RoomCommand(RoomRequest request, CancellationToken cancellationToken)
     {
-        var channel = Channel.CreateBounded<RoomHubResponse>(new BoundedChannelOptions(int.MaxValue));
-        ProcessRequest(channel.Writer, request, cancellationToken);
+        var channel = Channel.CreateBounded<RoomResponse>(new BoundedChannelOptions(int.MaxValue));
+        await ProcessRoomRequest(channel.Writer, request, cancellationToken);
         return channel.Reader;
     }
 
-    private void ProcessRequest(ChannelWriter<RoomHubResponse> writer, RoomHubRequest request, CancellationToken cancellationToken)
+    public async Task<ChannelReader<GameResponse>> GameCommand(GameRequest request, CancellationToken cancellationToken)
+    {
+        var channel = Channel.CreateBounded<GameResponse>(new BoundedChannelOptions(int.MaxValue));
+        await ProcessGameRequest(channel.Writer, request, cancellationToken);
+        return channel.Reader;
+    }
+
+    private async Task ProcessRoomRequest(ChannelWriter<RoomResponse> writer, RoomRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Request[{Context.ConnectionId}]: {request.RequestType} for room ({request.RoomUid})");
 
         Exception? localException = null;
         RoomInfo? room = null;
+        string? userName = null;
         try
         {
             switch (request.RequestType)
             {
-                case RequestType.StartGame:
+                case RoomRequestType.StartGame:
                     if (_rooms.Select(x => x.RoomUid).Contains(request.RoomUid))
                     {
                         throw new ApplicationException("Room already started");
@@ -64,39 +73,86 @@ public class RoomHub : Hub
                     var roomGameService = new GameService(_serviceScopeFactory, request.RoomUid, cancellationToken);
                     room = new RoomInfo(request.RoomUid, Context.ConnectionId, roomGameService);
                     _rooms.Add(room);
-                    roomGameService.StartGame();
+                    await roomGameService.StartGame();
                     roomGameService.MessageEvent += OnMessage;
                     break;
-                case RequestType.EndGame:
+                case RoomRequestType.EndGame:
                     room = _rooms.FirstOrDefault(x => x.RoomUid == request.RoomUid);
                     room?.GameService.StopGame();
                     break;
-                case RequestType.StartUserStep:
+                case RoomRequestType.StartUserStep:
                     break;
-                case RequestType.EndUserStep:
+                case RoomRequestType.EndUserStep:
                     break;
-                case RequestType.StartEvolutionPhase:
+                case RoomRequestType.StartEvolutionPhase:
+                    room = _rooms.FirstOrDefault(x => x.RoomUid == request.RoomUid);
+                    room?.GameService.StartEvolutionPhase();
                     break;
-                case RequestType.EndEvolutionPhase:
+                case RoomRequestType.EndEvolutionPhase:
                     break;
-                case RequestType.StartFeedPhase:
+                case RoomRequestType.StartFeedPhase:
+                    room = _rooms.FirstOrDefault(x => x.RoomUid == request.RoomUid);
+                    room?.GameService.StartFeedPhase();
                     break;
-                case RequestType.EndFeedPhase:
+                case RoomRequestType.EndFeedPhase:
                     break;
-                case RequestType.StartExtinctionPhase:
+                case RoomRequestType.StartExtinctionPhase:
+                    room = _rooms.FirstOrDefault(x => x.RoomUid == request.RoomUid);
+                    room?.GameService.StartExtinctionPhase();
                     break;
-                case RequestType.EndExtinctionPhase:
+                case RoomRequestType.EndExtinctionPhase:
                     break;
-                case RequestType.StartPlantGrowingPhase:
+                case RoomRequestType.StartPlantGrowingPhase:
+                case RoomRequestType.EndPlantGrowingPhase:
+                    throw new NotImplementedException();
+                case RoomRequestType.PauseGame:
+                    userName = Context.User?.Identity?.Name ?? throw new UnauthorizedAccessException();
+                    await _mediator.Send(new PauseGameCommand(request.RoomUid, new UserCredentials(userName)), cancellationToken);
                     break;
-                case RequestType.EndPlantGrowingPhase:
-                    break;
-                case RequestType.PauseGame:
-                    break;
-                case RequestType.ResumeGame:
+                case RoomRequestType.ResumeGame:
+                    userName = Context.User?.Identity?.Name ?? throw new UnauthorizedAccessException();
+                    await _mediator.Send(new ResumeGameCommand(request.RoomUid, new UserCredentials(userName)), cancellationToken);
                     break;
                 default:
+                    throw new NotSupportedException($"{request.RequestType} not supported!");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error on streaming");
+            localException = ex;
+        }
+        finally
+        {
+            writer.Complete(localException);
+        }
+    }
+
+    private async Task ProcessGameRequest(ChannelWriter<GameResponse> writer, GameRequest request, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation($"Request[{Context.ConnectionId}]: {request.RequestType} for room ({request.RoomUid})");
+
+        Exception? localException = null;
+        var room = _rooms.FirstOrDefault(x => x.RoomUid == request.RoomUid);
+        var userName = Context.User?.Identity?.Name ?? throw new UnauthorizedAccessException();
+        try
+        {
+            switch (request.RequestType)
+            {
+                case GameRequestType.CreateAnimal:
                     break;
+                case GameRequestType.AddProperty:
+                    break;
+                case GameRequestType.AddPairProperty:
+                    break;
+                case GameRequestType.GetFood:
+                    break;
+                case GameRequestType.Attack:
+                    break;
+                case GameRequestType.UseProperty:
+                    break;
+                default:
+                    throw new NotSupportedException($"{request.RequestType} not supported!");
             }
         }
         catch (Exception ex)

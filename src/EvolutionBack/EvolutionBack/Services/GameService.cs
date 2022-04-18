@@ -4,6 +4,7 @@ using EvolutionBack.Models;
 using EvolutionBack.Queries;
 using EvolutionBack.Services.Hubs;
 using MediatR;
+using System.ComponentModel.DataAnnotations;
 
 namespace EvolutionBack.Services;
 
@@ -15,6 +16,7 @@ public class GameService
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
     private bool _isStarted = false;
+    private PhaseType _currentPhase;
 
     public GameService(IServiceScopeFactory serviceScopeFactory, Guid roomUid, CancellationToken cancellationToken)
     {
@@ -32,6 +34,8 @@ public class GameService
             throw new InvalidOperationException($"Room[{_roomUid}] already started!");
         }
 
+        _currentPhase = PhaseType.Evolution;
+
         return Task.Run(GameLoop, _cancellationToken);
     }
 
@@ -40,12 +44,39 @@ public class GameService
         _isStarted = false;
     }
 
+    public void StartEvolutionPhase()
+    {
+        if (_currentPhase != PhaseType.Extinction)
+        {
+            throw new ValidationException("Ошибка смены фазы игры. Перед фазой развития должна быть фаза вымирания.");
+        }
+        _currentPhase = PhaseType.Evolution;
+    }
+
+    internal void StartFeedPhase()
+    {
+        if (_currentPhase != PhaseType.Evolution)
+        {
+            throw new ValidationException("Ошибка смены фазы игры. Перед фазой питания должна быть фаза развития.");
+        }
+        _currentPhase = PhaseType.Feed;
+    }
+
+    internal void StartExtinctionPhase()
+    {
+        if (_currentPhase != PhaseType.Feed && _currentPhase != PhaseType.PlantGrowing)
+        {
+            throw new ValidationException("Ошибка смены фазы игры. Перед фазой вымирания должна быть фаза питания или фаза роста.");
+        }
+        _currentPhase = PhaseType.Extinction;
+    }
+
     private async Task GameLoop()
     {
         _isStarted = true;
 
         RoomViewModel roomViewModel;
-        
+
         while (_isStarted && !_cancellationToken.IsCancellationRequested)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
