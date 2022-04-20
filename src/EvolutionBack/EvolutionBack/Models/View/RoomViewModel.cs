@@ -47,3 +47,11 @@ public class RoomViewModel
 
     public IReadOnlyCollection<AdditionViewModel> Additions { get; private set; }
 }
+
+public enum PhaseType
+{
+    Evolution = 1,
+    Feed = 2,
+    Extinction = 3,
+    PlantGrowing = 4,
+}

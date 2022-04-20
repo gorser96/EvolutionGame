@@ -1,20 +1,27 @@
-﻿using MediatR;
+﻿using EvolutionBack.Models;
+using MediatR;
 
 namespace EvolutionBack.Commands;
 
 public class AttackCommand : IRequest
 {
     public AttackCommand(Guid attackerUid, Guid defensiveUid,
-        IEnumerable<Guid> disabledPropertiesOnAttack)
+        IEnumerable<Guid>? disabledPropertiesOnAttack, Guid roomUid, UserCredentials user)
     {
         AttackerUid = attackerUid;
         DefensiveUid = defensiveUid;
-        DisabledPropertiesOnAttack = disabledPropertiesOnAttack.ToList();
+        DisabledPropertiesOnAttack = disabledPropertiesOnAttack?.ToList() ?? new List<Guid>();
+        RoomUid = roomUid;
+        User = user;
     }
 
-    public Guid AttackerUid { get; private set; }
+    public Guid RoomUid { get; init; }
 
-    public Guid DefensiveUid { get; private set; }
+    public UserCredentials User { get; init; }
 
-    public IReadOnlyCollection<Guid> DisabledPropertiesOnAttack { get; private set; }
+    public Guid AttackerUid { get; init; }
+
+    public Guid DefensiveUid { get; init; }
+
+    public IReadOnlyCollection<Guid> DisabledPropertiesOnAttack { get; init; }
 }

@@ -3,16 +3,16 @@ using MediatR;
 
 namespace EvolutionBack.Commands;
 
-public class MaxFoodCommandHandler : IRequestHandler<MaxFoodCommand>
+public class GetFoodCommandHandler : IRequestHandler<GetFoodCommand>
 {
     private readonly IAnimalRepo _animalRepo;
 
-    public MaxFoodCommandHandler(IAnimalRepo animalRepo)
+    public GetFoodCommandHandler(IAnimalRepo animalRepo)
     {
         _animalRepo = animalRepo;
     }
 
-    public Task<Unit> Handle(MaxFoodCommand request, CancellationToken cancellationToken)
+    public Task<Unit> Handle(GetFoodCommand request, CancellationToken cancellationToken)
     {
         var animal = _animalRepo.Find(request.AnimalUid);
 
@@ -21,7 +21,7 @@ public class MaxFoodCommandHandler : IRequestHandler<MaxFoodCommand>
             throw new NullReferenceException(nameof(animal));
         }
 
-        animal.Update(foodMax: request.MaxFood);
+        animal.Update(foodCurrent: request.Food);
 
         return Task.FromResult(Unit.Value);
     }

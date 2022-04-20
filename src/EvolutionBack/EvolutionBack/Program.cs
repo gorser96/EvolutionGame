@@ -1,4 +1,5 @@
 using EvolutionBack.Core;
+using EvolutionBack.Services.Hubs;
 using Infrastructure.EF;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,9 @@ builder.Services.AddRepositories();
 // validators
 builder.Services.AddValidators();
 
+// SignalR
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -61,5 +65,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<RoomHub>("/hubs/room");
 
 app.Run();
