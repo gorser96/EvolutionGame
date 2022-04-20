@@ -13,6 +13,7 @@ public class Room
         CreatedDateTime = createdDateTime;
         InGameUsers = new List<InGameUser>();
         Additions = new List<Addition>();
+        Cards = new List<InGameCard>();
         StepNumber = 0;
         IsStarted = false;
         IsPaused = false;
@@ -41,6 +42,12 @@ public class Room
     public bool IsPaused { get; private set; }
 
     public DateTime? PauseStartedTime { get; private set; }
+
+    public virtual ICollection<InGameUser> InGameUsers { get; private set; }
+
+    public virtual ICollection<Addition> Additions { get; private set; }
+
+    public virtual ICollection<InGameCard> Cards { get; private set; }
 
     private bool IsFinished => FinishedDateTime.HasValue;
 
@@ -252,10 +259,6 @@ public class Room
     {
         _roomValidator = roomValidator;
     }
-
-    public virtual ICollection<InGameUser> InGameUsers { get; private set; }
-
-    public virtual ICollection<Addition> Additions { get; private set; }
 
     public InGameUser? FindUserByUid(Guid uid)
     {
