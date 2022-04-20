@@ -140,16 +140,60 @@ public class RoomHub : Hub
             switch (request.RequestType)
             {
                 case GameRequestType.CreateAnimal:
+                    await _mediator.Send(new CreateAnimalCommand(
+                        new UserCredentials(userName),
+                        request.GetFromData<Guid>(nameof(CreateAnimalCommand.CardUid)),
+                        request.RoomUid), cancellationToken);
                     break;
                 case GameRequestType.AddProperty:
+                    await _mediator.Send(
+                        new AddPropertyCommand(
+                            request.RoomUid,
+                            request.GetFromData<Guid>(nameof(AddPropertyCommand.AnimalUid)),
+                            request.GetFromData<Guid>(nameof(AddPropertyCommand.PropertyUid)),
+                            request.GetFromData<Guid>(nameof(AddPropertyCommand.CardUid)),
+                            new UserCredentials(userName)),
+                        cancellationToken);
                     break;
                 case GameRequestType.AddPairProperty:
+                    await _mediator.Send(
+                        new AddPairPropertyCommand(
+                            request.RoomUid,
+                            request.GetFromData<Guid>(nameof(AddPairPropertyCommand.LeftAnimalUid)),
+                            request.GetFromData<Guid>(nameof(AddPairPropertyCommand.RightAnimalUid)),
+                            request.GetFromData<Guid>(nameof(AddPairPropertyCommand.PropertyUid)),
+                            request.GetFromData<Guid>(nameof(AddPairPropertyCommand.CardUid)),
+                            new UserCredentials(userName)),
+                        cancellationToken);
                     break;
                 case GameRequestType.GetFood:
+                    await _mediator.Send(
+                        new GetFoodCommand(
+                            request.GetFromData<Guid>(nameof(GetFoodCommand.AnimalUid)),
+                            request.GetFromData<int>(nameof(GetFoodCommand.Food)),
+                            request.RoomUid,
+                            new UserCredentials(userName)),
+                        cancellationToken);
                     break;
                 case GameRequestType.Attack:
+                    await _mediator.Send(
+                        new AttackCommand(
+                            request.GetFromData<Guid>(nameof(AttackCommand.AttackerUid)),
+                            request.GetFromData<Guid>(nameof(AttackCommand.DefensiveUid)),
+                            request.GetFromData<IEnumerable<Guid>>(nameof(AttackCommand.DisabledPropertiesOnAttack)),
+                            request.RoomUid,
+                            new UserCredentials(userName)),
+                        cancellationToken);
                     break;
                 case GameRequestType.UseProperty:
+                    await _mediator.Send(
+                        new UsePropertyCommand(
+                            request.RoomUid,
+                            request.GetFromData<Guid>(nameof(UsePropertyCommand.SourceAnimalUid)),
+                            request.GetFromData<Guid?>(nameof(UsePropertyCommand.TargetAnimalUid)),
+                            request.GetFromData<Guid>(nameof(UsePropertyCommand.PropertyUid)),
+                            new UserCredentials(userName)),
+                        cancellationToken);
                     break;
                 default:
                     throw new NotSupportedException($"{request.RequestType} not supported!");
