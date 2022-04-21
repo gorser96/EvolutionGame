@@ -3,11 +3,11 @@
 public class InGameCard
 {
 #pragma warning disable CS8618
-    public InGameCard(Guid roomUid, Guid cardUid, int order)
+    public InGameCard(Guid roomUid, Guid cardUid)
     {
         RoomUid = roomUid;
         CardUid = cardUid;
-        Order = order;
+        Order = 0;
     }
 #pragma warning restore CS8618
 
@@ -20,4 +20,9 @@ public class InGameCard
     public virtual Card Card { get; private set; }
 
     public int Order { get; private set; }
+
+    public void Update(int order)
+    {
+        Order = order;
+    }
 }

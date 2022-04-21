@@ -133,6 +133,54 @@ public class Room
         {
             Additions.Remove(addition);
         }
+        UpdateCards(Additions.SelectMany(x => x.Cards).ToArray());
+    }
+
+    private void UpdateCards(ICollection<Card> cards)
+    {
+        var source = Cards.ToList();
+
+        foreach (var card in cards)
+        {
+            var exist = source.FirstOrDefault(x => x.CardUid == card.Uid && x.RoomUid == Uid);
+            if (exist is null)
+            {
+                Cards.Add(new InGameCard(Uid, card.Uid));
+            }
+        }
+
+        var listToRemove = new List<InGameCard>();
+        foreach (var card in source)
+        {
+            if (!cards.Any(x => x.Uid == card.CardUid))
+            {
+                listToRemove.Add(card);
+            }
+        }
+
+        foreach (var card in listToRemove)
+        {
+            Cards.Remove(card);
+        }
+
+        ShuffleCards();
+    }
+
+    private void ShuffleCards()
+    {
+        var rnd = new Random((int)DateTime.Now.Ticks);
+        var orders = Enumerable.Range(0, Cards.Count).ToArray();
+        for (int i = 0; i < orders.Length; i++)
+        {
+            var indexRnd = rnd.Next(0, Cards.Count);
+            var temp = orders[i];
+            orders[i] = orders[indexRnd];
+            orders[indexRnd] = temp;
+        }
+        for (int i = 0; i < orders.Length; i++)
+        {
+            Cards.ElementAt(i).Update(orders[i]);
+        }
     }
 
     public void StartGame(Guid userUid)
