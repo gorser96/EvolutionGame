@@ -2,7 +2,7 @@
 
 public interface IPropertyAction
 {
-    public bool IsActive { get; set; }
+    public bool IsActive { get; }
 
     /// <summary>
     /// Метод изменения состояния свойства <see cref="IsActive"/>

@@ -11,7 +11,6 @@ internal class AnimalConfiguration : IEntityTypeConfiguration<Animal>
         builder.ToTable("Animals");
         builder.HasKey(x => x.Uid);
         builder.Property(x => x.Uid).ValueGeneratedNever();
-        builder.HasOne(x => x.InGameUser).WithMany(x => x.Animals);
-        builder.HasMany(x => x.Properties).WithMany(x => x.Animals);
+        builder.HasOne(x => x.InGameUser).WithMany(x => x.Animals).HasForeignKey(x => new { x.InGameUserUserUid, x.InGameUserRoomUid });
     }
 }

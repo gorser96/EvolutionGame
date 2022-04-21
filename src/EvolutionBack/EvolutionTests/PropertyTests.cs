@@ -1,5 +1,4 @@
-﻿using Domain.Repo;
-using EvolutionTests.TestServices;
+﻿using EvolutionTests.TestServices;
 using System;
 using Xunit;
 
@@ -17,7 +16,6 @@ public class PropertyTests : IDisposable
     [Fact]
     public void Burrowing_test()
     {
-        var animalRepo = _services.Get<IAnimalRepo>();
     }
 
     [Fact]

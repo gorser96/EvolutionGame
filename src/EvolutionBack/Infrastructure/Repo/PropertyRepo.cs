@@ -13,9 +13,9 @@ public class PropertyRepo : IPropertyRepo
         _dbContext = dbContext;
     }
 
-    public Property Create(Guid uid, string name, bool isPair, bool isOnEnemy, string assemblyName)
+    public Property Create(Guid uid, string name, bool isPair, bool isOnEnemy, int? feedIncreasing, string assemblyName)
     {
-        return _dbContext.Properties.Add(new Property(uid, name, isPair, isOnEnemy, assemblyName)).Entity;
+        return _dbContext.Properties.Add(new Property(uid, name, isPair, isOnEnemy, feedIncreasing, assemblyName)).Entity;
     }
 
     public Property? Find(Guid uid)

@@ -3,12 +3,12 @@
 public class Burrowing : Property, IPropertyAction
 {
     public Burrowing(Guid uid, string name, bool isPair, bool isOnEnemy) 
-        : base(uid, name, isPair, isOnEnemy, nameof(Burrowing))
+        : base(uid, name, isPair, isOnEnemy, 0, nameof(Burrowing))
     {
         IsActive = true;
     }
 
-    public bool IsActive { get; set; }
+    public bool IsActive { get; private set; }
 
     public void SetIsActive(bool value)
     {

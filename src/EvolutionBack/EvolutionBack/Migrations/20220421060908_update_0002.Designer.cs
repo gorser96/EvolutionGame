@@ -4,6 +4,7 @@ using Infrastructure.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EvolutionBack.Migrations
 {
     [DbContext(typeof(EvolutionDbContext))]
-    partial class EvolutionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220421060908_update_0002")]
+    partial class update_0002
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +23,21 @@ namespace EvolutionBack.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("AnimalProperty", b =>
+                {
+                    b.Property<Guid>("AnimalsUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PropertiesUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("AnimalsUid", "PropertiesUid");
+
+                    b.HasIndex("PropertiesUid");
+
+                    b.ToTable("AnimalProperty");
+                });
 
             modelBuilder.Entity("Domain.Models.Addition", b =>
                 {
@@ -100,24 +117,6 @@ namespace EvolutionBack.Migrations
                     b.ToTable("Cards", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Models.InAnimalProperty", b =>
-                {
-                    b.Property<Guid>("PropertyUid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AnimalUid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.HasKey("PropertyUid", "AnimalUid");
-
-                    b.HasIndex("AnimalUid");
-
-                    b.ToTable("InAnimalProperties", (string)null);
-                });
-
             modelBuilder.Entity("Domain.Models.InGameCard", b =>
                 {
                     b.Property<Guid>("RoomUid")
@@ -175,9 +174,6 @@ namespace EvolutionBack.Migrations
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
-
-                    b.Property<int?>("FeedIncreasing")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsOnEnemy")
                         .HasColumnType("bit");
@@ -435,6 +431,21 @@ namespace EvolutionBack.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("AnimalProperty", b =>
+                {
+                    b.HasOne("Domain.Models.Animal", null)
+                        .WithMany()
+                        .HasForeignKey("AnimalsUid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.Property", null)
+                        .WithMany()
+                        .HasForeignKey("PropertiesUid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Models.Addition", b =>
                 {
                     b.HasOne("Domain.Models.Room", null)
@@ -476,25 +487,6 @@ namespace EvolutionBack.Migrations
                     b.Navigation("FirstProperty");
 
                     b.Navigation("SecondProperty");
-                });
-
-            modelBuilder.Entity("Domain.Models.InAnimalProperty", b =>
-                {
-                    b.HasOne("Domain.Models.Animal", "Animal")
-                        .WithMany("Properties")
-                        .HasForeignKey("AnimalUid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Models.Property", "Property")
-                        .WithMany("Animals")
-                        .HasForeignKey("PropertyUid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Animal");
-
-                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("Domain.Models.InGameCard", b =>
@@ -591,17 +583,7 @@ namespace EvolutionBack.Migrations
                     b.Navigation("Cards");
                 });
 
-            modelBuilder.Entity("Domain.Models.Animal", b =>
-                {
-                    b.Navigation("Properties");
-                });
-
             modelBuilder.Entity("Domain.Models.InGameUser", b =>
-                {
-                    b.Navigation("Animals");
-                });
-
-            modelBuilder.Entity("Domain.Models.Property", b =>
                 {
                     b.Navigation("Animals");
                 });

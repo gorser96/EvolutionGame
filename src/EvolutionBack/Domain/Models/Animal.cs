@@ -1,18 +1,26 @@
-﻿namespace Domain.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Domain.Models;
 
 public class Animal
 {
-    public Animal(Guid uid)
+    public Animal(Guid uid, Guid inGameUserUserUid, Guid inGameUserRoomUid)
     {
         Uid = uid;
         FoodCurrent = 0;
         FoodMax = 1;
-        Properties = new List<Property>();
+        Properties = new List<InAnimalProperty>();
+        InGameUserUserUid = inGameUserUserUid;
+        InGameUserRoomUid = inGameUserRoomUid;
     }
 
     #region DTO properties
 
     public Guid Uid { get; private set; }
+
+    public Guid InGameUserUserUid { get; init; }
+
+    public Guid InGameUserRoomUid { get; init; }
 
     public virtual InGameUser? InGameUser { get; private set; }
 
@@ -20,58 +28,54 @@ public class Animal
 
     public int FoodMax { get; private set; }
 
-    public virtual ICollection<Property> Properties { get; private set; }
+    public virtual ICollection<InAnimalProperty> Properties { get; private set; }
 
     #endregion DTO properties
 
-    public void Update(int? foodCurrent = null, int? foodMax = null, InGameUser? user = null)
+    public void Reset()
     {
-        if (foodCurrent.HasValue)
-        {
-            SetFood(foodCurrent.Value);
-        }
+        SetFood(0);
+    }
 
-        if (foodMax.HasValue)
-        {
-            SetMaxFood(foodMax.Value);
-        }
-
-        if (user != null)
-        {
-            InGameUser = user;
-        }
+    public void Feed(int foodCount)
+    {
+        SetFood(FoodCurrent + foodCount);
     }
 
     public void AddProperty(Property property)
     {
         // TODO: проверка совместимости свойств
-        Properties.Add(property);
+        Properties.Add(new InAnimalProperty(property.Uid, Uid));
+        if (property.FeedIncreasing.HasValue && property.FeedIncreasing > 0)
+        {
+            SetMaxFood(FoodMax + property.FeedIncreasing.Value);
+        }
     }
 
-    public void RemoveProperty(Property property)
+    public void RemoveProperty(Guid propertyUid)
     {
+        var property = Properties.FirstOrDefault(x => x.AnimalUid == Uid && x.PropertyUid == propertyUid);
+        if (property is null)
+        {
+            throw new ValidationException("Property for animal not found!");
+        }
+
         Properties.Remove(property);
     }
 
     public void EnableProperties(IReadOnlyCollection<Guid> disabledPropertiesOnAttack)
     {
-        foreach (var property in Properties.Where(x => disabledPropertiesOnAttack.Contains(x.Uid)))
+        foreach (var property in Properties.Where(x => disabledPropertiesOnAttack.Contains(x.PropertyUid)))
         {
-            if (property is IPropertyAction propertyAction)
-            {
-                propertyAction.SetIsActive(true);
-            }
+            property.Update(true);
         }
     }
 
     public void DisableProperties(IReadOnlyCollection<Guid> disabledPropertiesOnAttack)
     {
-        foreach (var property in Properties.Where(x => disabledPropertiesOnAttack.Contains(x.Uid)))
+        foreach (var property in Properties.Where(x => disabledPropertiesOnAttack.Contains(x.PropertyUid)))
         {
-            if (property is IPropertyAction propertyAction)
-            {
-                propertyAction.SetIsActive(false);
-            }
+            property.Update(false);
         }
     }
 
@@ -87,6 +91,6 @@ public class Animal
 
     public bool Attack(Animal enemy)
     {
-        return !enemy.Properties.Cast<IPropertyAction>().All(x => x.OnDefense(this, enemy) ?? false);
+        return !enemy.Properties.Select(x => x.GetPropertyAction()).All(x => x.OnDefense(this, enemy) ?? false);
     }
 }

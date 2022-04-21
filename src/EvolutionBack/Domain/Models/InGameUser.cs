@@ -72,4 +72,11 @@ public class InGameUser
             SetOrder(updateModel.Order.Value);
         }
     }
+
+    internal Animal AddAnimal()
+    {
+        var animal = new Animal(Guid.NewGuid(), UserUid, RoomUid);
+        Animals.Add(animal);
+        return animal;
+    }
 }

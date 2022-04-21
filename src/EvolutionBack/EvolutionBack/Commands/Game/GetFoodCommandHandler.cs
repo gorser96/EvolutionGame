@@ -1,28 +1,43 @@
-﻿using Domain.Repo;
+﻿using Domain.Models;
+using Domain.Repo;
+using EvolutionBack.Core;
+using Infrastructure.EF;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 
 namespace EvolutionBack.Commands;
 
 public class GetFoodCommandHandler : IRequestHandler<GetFoodCommand>
 {
-    private readonly IAnimalRepo _animalRepo;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public GetFoodCommandHandler(IAnimalRepo animalRepo)
+    public GetFoodCommandHandler(IServiceScopeFactory serviceScopeFactory)
     {
-        _animalRepo = animalRepo;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public Task<Unit> Handle(GetFoodCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(GetFoodCommand request, CancellationToken cancellationToken)
     {
-        var animal = _animalRepo.Find(request.AnimalUid);
+        using var scope = _serviceScopeFactory.CreateScope();
+        using var db = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
 
-        if (animal is null)
+        var roomRepo = scope.ServiceProvider.GetRequiredService<IRoomRepo>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        var user = await userManager.FindByNameAsync(request.User.UserName);
+
+        var room = roomRepo.Find(request.RoomUid);
+        if (room is null)
         {
-            throw new NullReferenceException(nameof(animal));
+            throw new ObjectNotFoundException(request.RoomUid, nameof(room));
         }
 
-        animal.Update(foodCurrent: request.Food);
+        var animal = room.FindAnimal(user.Id, request.AnimalUid);
 
-        return Task.FromResult(Unit.Value);
+        animal.Feed(request.Food);
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        return Unit.Value;
     }
 }

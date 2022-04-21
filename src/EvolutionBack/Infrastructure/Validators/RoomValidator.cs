@@ -63,4 +63,13 @@ public class RoomValidator : IRoomValidator
         var user = GetUserWithCheck(room, userUid);
         CheckIsHost(user);
     }
+
+    public void CanUserCreateAnimal(Room room, Guid userUid)
+    {
+        var user = GetUserWithCheck(room, userUid);
+        if (!user.IsCurrent)
+        {
+            throw new ValidationException($"User is not current!");
+        }
+    }
 }

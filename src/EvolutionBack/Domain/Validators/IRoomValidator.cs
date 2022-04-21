@@ -15,4 +15,6 @@ public interface IRoomValidator
     public void CanUserLeave(Room room, Guid userUid);
     
     public void CanUserEnter(Room room, Guid userUid);
+    
+    public void CanUserCreateAnimal(Room room, Guid userUid);
 }

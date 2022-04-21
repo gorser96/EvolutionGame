@@ -1,4 +1,5 @@
 ﻿using Domain.Validators;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models;
 
@@ -73,6 +74,29 @@ public class Room
         {
             StartDateTime = DateTime.UtcNow;
         }
+    }
+
+    public bool RemoveAnimal(Guid userUid, Guid animalUid)
+    {
+        var inGameUser = FindUserByUid(userUid);
+        if (inGameUser is null)
+        {
+            throw new ValidationException("User not found in room!");
+        }
+
+        if (!inGameUser.IsCurrent)
+        {
+            throw new ValidationException($"User is not current!");
+        }
+
+        var animal = inGameUser.Animals.FirstOrDefault(x => x.Uid == animalUid);
+        if (animal is null)
+        {
+            throw new ValidationException("Animal for user not found!");
+        }
+
+        return inGameUser.Animals.Remove(animal);
+
     }
 
     private void SetMaxTimeLeft(TimeSpan? maxTimeLeft)
@@ -183,6 +207,48 @@ public class Room
         }
     }
 
+    public Animal CreateAnimalFromCard(Guid cardUid, Guid userUid)
+    {
+        _roomValidator?.CanUserCreateAnimal(this, userUid);
+
+        var card = Cards.FirstOrDefault(x => x.RoomUid == Uid && x.CardUid == cardUid);
+        if (card is null)
+        {
+            throw new ValidationException("Card not found!");
+        }
+        Cards.Remove(card);
+
+        var user = FindUserByUid(userUid) ?? throw new NullReferenceException(nameof(userUid));
+        var animal = user.AddAnimal();
+
+        return animal;
+    }
+
+    public void AddAnimalProperty(Guid userUid, Guid animalUid, Guid cardUid, Guid propertyUid)
+    {
+        var card = Cards.FirstOrDefault(x => x.RoomUid == Uid && x.CardUid == cardUid);
+        if (card is null)
+        {
+            throw new ValidationException("Card not found!");
+        }
+        Property property;
+        if (card.Card.FirstPropertyUid == propertyUid)
+        {
+            property = card.Card.FirstProperty;
+        }
+        else if (card.Card.SecondPropertyUid.HasValue && card.Card.SecondPropertyUid == propertyUid)
+        {
+            property = card.Card.SecondProperty!;
+        }
+        else
+        {
+            throw new ValidationException("Card not contain property!");
+        }
+
+        var animal = FindAnimal(userUid, animalUid);
+        animal.AddProperty(property);
+    }
+
     public void StartGame(Guid userUid)
     {
         _roomValidator?.CanUserStart(this, userUid);
@@ -284,7 +350,7 @@ public class Room
 
         if (!IsStarted && !IsFinished)
         {
-            var user = InGameUsers.FirstOrDefault(x => x.UserUid == userUid) ?? throw new NullReferenceException(nameof(userUid));
+            var user = FindUserByUid(userUid) ?? throw new NullReferenceException(nameof(userUid));
             InGameUsers.Remove(user);
         }
     }
@@ -311,5 +377,27 @@ public class Room
     public InGameUser? FindUserByUid(Guid uid)
     {
         return InGameUsers.FirstOrDefault(x => x.UserUid == uid);
+    }
+
+    public Animal FindAnimal(Guid userUid, Guid animalUid)
+    {
+        var inGameUser = FindUserByUid(userUid);
+        if (inGameUser is null)
+        {
+            throw new ValidationException("User not found in room!");
+        }
+
+        if (!inGameUser.IsCurrent)
+        {
+            throw new ValidationException($"User is not current!");
+        }
+
+        var animal = inGameUser.Animals.FirstOrDefault(x => x.Uid == animalUid);
+        if (animal is null)
+        {
+            throw new ValidationException("Animal for user not found!");
+        }
+
+        return animal;
     }
 }

@@ -19,6 +19,8 @@ public class EvolutionDbContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
     public virtual DbSet<InGameUser> InGameUsers { get; set; }
 
     public virtual DbSet<InGameCard> InGameCards { get; set; }
+    
+    public virtual DbSet<InAnimalProperty> InAnimalProperties { get; set; }
 
     public virtual DbSet<Addition> Additions { get; set; }
 
@@ -33,12 +35,13 @@ public class EvolutionDbContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new RoomConfiguration());
-        modelBuilder.ApplyConfiguration(new PropertyConfiguration());
-        modelBuilder.ApplyConfiguration(new InGameUserConfiguration());
         modelBuilder.ApplyConfiguration(new CardConfiguration());
         modelBuilder.ApplyConfiguration(new AnimalConfiguration());
         modelBuilder.ApplyConfiguration(new AdditionConfiguration());
+        modelBuilder.ApplyConfiguration(new PropertyConfiguration());
+        modelBuilder.ApplyConfiguration(new InGameUserConfiguration());
         modelBuilder.ApplyConfiguration(new InGameCardConfiguration());
+        modelBuilder.ApplyConfiguration(new InAnimalPropertyConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }

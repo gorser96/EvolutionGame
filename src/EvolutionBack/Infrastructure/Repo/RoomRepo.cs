@@ -30,6 +30,7 @@ public class RoomRepo : IRoomRepo
             .Include(x => x.Additions)
             .Include(x => x.InGameUsers).ThenInclude(x => x.User)
             .Include(x => x.InGameUsers).ThenInclude(x => x.Animals)
+            .Include(x => x.InGameUsers).ThenInclude(x => x.Animals).ThenInclude(x => x.Properties)
             .FirstOrDefault(x => x.Uid == uid);
         obj?.SetValidator(_roomValidator);
         return obj;

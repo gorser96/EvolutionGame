@@ -68,11 +68,10 @@ public static class ServicesExtensions
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
+        services.AddScoped<ICardRepo, CardRepo>();
         services.AddScoped<IRoomRepo, RoomRepo>();
         services.AddScoped<IAdditionRepo, AdditionRepo>();
         services.AddScoped<IPropertyRepo, PropertyRepo>();
-        services.AddScoped<IAnimalRepo, AnimalRepo>();
-        services.AddScoped<IInGameUserRepo, InGameUserRepo>();
 
         return services;
     }
