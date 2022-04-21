@@ -20,7 +20,7 @@ public class Carnivorous : Property, IPropertyAction
         return null;
     }
 
-    public void OnUse(Animal self)
+    public void OnUse(Animal self, Animal? target = null)
     {
     }
 }

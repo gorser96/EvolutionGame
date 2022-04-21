@@ -3,6 +3,7 @@ using Domain.Models;
 using Domain.Repo;
 using Domain.Validators;
 using EvolutionBack.Models;
+using EvolutionBack.Resources;
 using Infrastructure.EF;
 using Infrastructure.Repo;
 using Infrastructure.Validators;
@@ -10,6 +11,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.Reflection;
 using System.Text;
 
@@ -135,5 +137,80 @@ public static class ServicesExtensions
             });
 
         return services;
+    }
+
+    public static void UseAnimalProperties(this IServiceProvider provider)
+    {
+        using var scope = provider.CreateScope();
+        using var db = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
+        var cardRepo = scope.ServiceProvider.GetRequiredService<ICardRepo>();
+        var additionRepo = scope.ServiceProvider.GetRequiredService<IAdditionRepo>();
+        var propertyRepo = scope.ServiceProvider.GetRequiredService<IPropertyRepo>();
+
+        var propertyActionType = typeof(IPropertyAction);
+        var assembly = Assembly.GetAssembly(propertyActionType) ?? throw new InvalidOperationException("Domain assembly not found!");
+        var animalProperties = assembly.DefinedTypes
+            .Where(x => x.ImplementedInterfaces.Any(i => i == propertyActionType))
+            .ToDictionary(x => x.Name);
+
+        var cardsJsonStr = File.ReadAllText("Resources/Json/Cards.json");
+        var additionsJsonStr = File.ReadAllText("Resources/Json/Additions.json");
+        var propertiesJsonStr = File.ReadAllText("Resources/Json/AnimalProperties.json");
+
+        var cardsJson = JsonConvert.DeserializeObject<CardJson>(cardsJsonStr) ?? throw new InvalidOperationException("Can't read cards.json");
+        var additionsJson = JsonConvert.DeserializeObject<AdditionJson>(additionsJsonStr) ?? throw new InvalidOperationException("Can't read additions.json");
+        var propertiesJson = JsonConvert.DeserializeObject<AnimalPropertyJson>(propertiesJsonStr) ?? throw new InvalidOperationException("Can't read properties.json");
+
+        db.Cards.RemoveRange(db.Cards);
+        db.Additions.RemoveRange(db.Additions);
+        db.Properties.RemoveRange(db.Properties);
+
+        List<Property> dbProperties = new();
+
+        foreach (var property in propertiesJson.Properties)
+        {
+            if (animalProperties.TryGetValue(property.AssemblyName, out var propertyType))
+            {
+                if (Activator.CreateInstance(propertyType, Guid.NewGuid(),
+                    property.AssemblyName, property.IsPair, property.IsOnEnemy) is Property propertyObj)
+                {
+                    dbProperties.Add(db.Properties.Add(propertyObj).Entity);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Can't create property object!");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Animal property type not found!");
+            }
+        }
+
+        foreach (var addition in additionsJson.Additions)
+        {
+            string name = addition.IsBase ? "Базовый набор" : addition.Id.ToString();
+
+            var additionObj = additionRepo.Create(Guid.NewGuid(), name, addition.IsBase);
+
+            foreach (var card in cardsJson.Cards.Where(x => x.AdditionId == addition.Id))
+            {
+                var firstProperty = dbProperties.FirstOrDefault(x => x.AssemblyName == card.FirstPropertyName);
+                if (firstProperty is null)
+                {
+                    throw new InvalidOperationException($"Property {card.FirstPropertyName} not found!");
+                }
+
+                var secondProperty = dbProperties.FirstOrDefault(x => x.AssemblyName == card.SecondPropertyName);
+                if (!string.IsNullOrEmpty(card.SecondPropertyName) && secondProperty is null)
+                {
+                    throw new InvalidOperationException($"Property {card.SecondPropertyName} not found!");
+                }
+
+                cardRepo.Create(Guid.NewGuid(), additionObj.Uid, firstProperty.Uid, secondProperty?.Uid);
+            }
+        }
+
+        db.SaveChanges();
     }
 }

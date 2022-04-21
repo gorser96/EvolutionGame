@@ -23,6 +23,11 @@ public class PropertyRepo : IPropertyRepo
         return _dbContext.Properties.Find(uid);
     }
 
+    public Property? FindByAssemblyName(string name)
+    {
+        return _dbContext.Properties.FirstOrDefault(x => x.AssemblyName == name);
+    }
+
     public bool Remove(Guid uid)
     {
         var obj = Find(uid);

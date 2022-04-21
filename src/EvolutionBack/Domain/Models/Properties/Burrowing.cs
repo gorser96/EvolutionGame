@@ -29,7 +29,7 @@ public class Burrowing : Property, IPropertyAction
         return false;
     }
 
-    public void OnUse(Animal self)
+    public void OnUse(Animal self, Animal? target = null)
     {
         // это свойство не активируется по требованию (например как "Спячка")
     }

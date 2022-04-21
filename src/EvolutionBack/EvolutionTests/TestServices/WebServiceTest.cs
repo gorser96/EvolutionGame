@@ -79,6 +79,8 @@ internal class WebServiceTest : IDisposable
 
         _serviceProvider = services.BuildServiceProvider();
 
+        _serviceProvider.UseAnimalProperties();
+
         Init();
     }
 

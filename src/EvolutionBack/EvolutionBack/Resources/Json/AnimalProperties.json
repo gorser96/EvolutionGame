@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "assemblyName": "Burrowing",
+      "isPair": false,
+      "isOnEnemy": false
+    },
+    {
+      "assemblyName": "Carnivorous",
+      "isPair": false,
+      "isOnEnemy": false
+    }
+  ]
+}

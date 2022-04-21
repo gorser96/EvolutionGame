@@ -68,4 +68,6 @@ app.MapControllers();
 
 app.MapHub<RoomHub>("/hubs/room");
 
+app.Services.UseAnimalProperties();
+
 app.Run();

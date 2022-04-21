@@ -26,5 +26,6 @@ public interface IPropertyAction
     /// Событие, которое срабатывает при его использовании в свой ход
     /// </summary>
     /// <param name="self">животное, которому принадлежит свойство</param>
-    public void OnUse(Animal self);
+    /// <param name="target">животное, на которое направлено свойство</param>
+    public void OnUse(Animal self, Animal? target);
 }

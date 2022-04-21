@@ -249,6 +249,25 @@ public class Room
         animal.AddProperty(property);
     }
 
+    public void UseAnimalProperty(Guid userUid, Guid sourceAnimalUid, Guid propertyUid, Guid? targetAnimalUid)
+    {
+        Animal? targetAnimal = null;
+
+        var animal = FindAnimal(userUid, sourceAnimalUid);
+        if (targetAnimalUid.HasValue)
+        {
+            targetAnimal = FindAnimal(targetAnimalUid.Value);
+        }
+
+        var property = animal.Properties.FirstOrDefault(x => x.PropertyUid == propertyUid);
+        if (property is null)
+        {
+            throw new ValidationException("Property of animal not found!");
+        }
+
+        property.GetPropertyAction().OnUse(animal, targetAnimal);
+    }
+
     public void StartGame(Guid userUid)
     {
         _roomValidator?.CanUserStart(this, userUid);
@@ -393,6 +412,17 @@ public class Room
         }
 
         var animal = inGameUser.Animals.FirstOrDefault(x => x.Uid == animalUid);
+        if (animal is null)
+        {
+            throw new ValidationException("Animal for user not found!");
+        }
+
+        return animal;
+    }
+
+    public Animal FindAnimal(Guid animalUid)
+    {
+        var animal = InGameUsers.SelectMany(x => x.Animals).FirstOrDefault(x => x.Uid == animalUid);
         if (animal is null)
         {
             throw new ValidationException("Animal for user not found!");
