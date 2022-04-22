@@ -1,75 +1,21 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { Route, Routes } from 'react-router';
+import { Layout } from './components/Layout';
+import { Home } from './components/Home';
+import { Login } from './components/Login/Login';
 import './App.css';
-import { NavLink, Route, Routes } from 'react-router-dom';
-import Menu from './components/Menu';
 
-const AuthContext = React.createContext();
+export default class App extends Component {
+  static displayName = App.name;
 
-const fakeAuth = () =>
-  new Promise((resolve) => {
-    setTimeout(() => resolve('2342f2f1d131rf12'), 250);
-  });
-
-const AuthProvider = ({ children }) => {
-  const [token, setToken] = React.useState(null);
-
-  const handleLogin = async () => {
-    const token = await fakeAuth();
-
-    setToken(token);
-  };
-
-  const handleLogout = () => {
-    setToken(null);
-  };
-
-  const value = {
-    token,
-    onLogin: handleLogin,
-    onLogout: handleLogout,
-  };
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-const useAuth = () => {
-  return React.useContext(AuthContext);
-};
-
-function App() {
-  return (
-    <AuthProvider>
-
-      <div>
-        <h1>Application</h1>
-
-        <Navigation />
-
+  render () {
+    return (
+      <Layout>
         <Routes>
-          <Route path="menu" element={<Menu />} />
+          <Route exact path='/' element={<Login />} />
+          <Route path='/home' element={<Home />} />
         </Routes>
-      </div>
-
-    </AuthProvider>
-  );
+      </Layout>
+    );
+  }
 }
-
-const Navigation = () => {
-  const { token, onLogout } = useAuth();
-  return (
-    <nav>
-      <NavLink to="/menu">Menu</NavLink>
-      {token && (
-        <button type="button" onClick={onLogout}>
-          Sign Out
-        </button>
-      )}
-    </nav>
-  );
-};
-
-export default App;
