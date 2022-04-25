@@ -3,9 +3,10 @@ import { Route, Routes } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
 import { Login } from './components/Login/Login';
+import { connect } from 'react-redux';
 import './App.css';
 
-export default class App extends Component {
+class App extends Component {
   static displayName = App.name;
 
   render () {
@@ -19,3 +20,14 @@ export default class App extends Component {
     );
   }
 }
+
+function mapState(state) {
+  const { alert } = state;
+  return { alert };
+}
+
+const actionCreators = {
+};
+
+const connectedApp = connect(mapState, actionCreators)(App);
+export { connectedApp as App };
