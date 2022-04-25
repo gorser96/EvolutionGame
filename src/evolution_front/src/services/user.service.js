@@ -1,12 +1,10 @@
 import { apiUrl } from '../appsettings';
-//import { authHeader } from '../helpers';
+import { apiStore } from '../helpers';
 
 export const userService = {
     login,
     logout,
-    register,
-    //update,
-    //delete: _delete
+    register
 };
 
 async function login(username, password) {
@@ -22,7 +20,7 @@ async function login(username, password) {
         body: JSON.stringify({ login: username, password: password })
     };
 
-    const response = await fetch(`${apiUrl}/user/login`, requestOptions);
+    const response = await fetch(`${apiUrl}${apiStore.userLogin}`, requestOptions);
     const user = await handleResponse(response);
     // store user details and jwt token in local storage to keep user logged in between page refreshes
     localStorage.setItem('user', JSON.stringify(user));
@@ -41,7 +39,7 @@ async function register(user) {
         body: JSON.stringify(user)
     };
 
-    const response = await fetch(`${apiUrl}/user/register`, requestOptions);
+    const response = await fetch(`${apiUrl}${apiStore.userRegister}`, requestOptions);
     return handleResponse(response);
 }
 /*
