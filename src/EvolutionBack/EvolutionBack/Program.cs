@@ -52,6 +52,11 @@ builder.Services.AddValidators();
 // SignalR
 builder.Services.AddSignalR();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllHeaders", corsBuilder => corsBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -67,6 +72,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<RoomHub>("/hubs/room");
+
+app.UseCors("AllowAllHeaders");
 
 app.Services.UseAnimalProperties();
 
