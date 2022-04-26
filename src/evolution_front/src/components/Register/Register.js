@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Login.css";
+import "./Register.css";
 import logo from "../../img/gekkon.png";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 import { userActions } from "../../actions";
 
-const Login = (props) => {
+const Register = (props) => {
   let navigation = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -23,21 +23,17 @@ const Login = (props) => {
     }
   };
 
-  const handleRegisterBtn = (e) => {
-    navigation('/register');
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     setSubmitted(true);
     if (username && password) {
-      props.login(username, password).then((_) => {
+      props.register(username, password).then((_) => {
         navigation("/menu");
       });
     }
   };
-  const { loggingIn } = props;
+  const { registering } = props;
 
   return (
     <div className="fill-window text-center">
@@ -75,10 +71,9 @@ const Login = (props) => {
           <div className="help-block">Password is required</div>
         )}
         <div className="d-flex justify-content-between w-100 mt-3">
-          <button type="button" className="btn btn-lg btn-success btn-block me-2" onClick={handleRegisterBtn}>Регистрация</button>
-          <button type="submit" className="btn btn-lg btn-success btn-block ms-2">Вход</button>
+          <button type="submit" className="btn btn-lg btn-success btn-block me-2">Регистрация</button>
         </div>
-        {loggingIn && (
+        {registering && (
           <img
             alt="loading"
             src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
@@ -90,14 +85,14 @@ const Login = (props) => {
 };
 
 const mapState = (state) => {
-  const { loggingIn } = state.authentication;
-  return { loggingIn };
+  const { registering } = state.authentication;
+  return { registering };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    login: bindActionCreators(userActions.login, dispatch),
+    register: bindActionCreators(userActions.register, dispatch),
   };
 };
 
-export default connect(mapState, mapDispatchToProps)(Login);
+export default connect(mapState, mapDispatchToProps)(Register);

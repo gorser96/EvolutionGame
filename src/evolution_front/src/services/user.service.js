@@ -10,13 +10,7 @@ export const userService = {
 async function login(username, password) {
     const requestOptions = {
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': 'true',
-            'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Authorization, Origin, Content-Type, X-Auth-Token'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ login: username, password: password })
     };
 
@@ -32,11 +26,11 @@ function logout() {
     localStorage.removeItem('user');
 }
 
-async function register(user) {
+async function register(username, password) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user)
+        body: JSON.stringify({ login: username, password: password })
     };
 
     const response = await fetch(`${apiUrl}${apiStore.userRegister}`, requestOptions);

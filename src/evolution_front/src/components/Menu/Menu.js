@@ -6,7 +6,15 @@ import { bindActionCreators } from "redux";
 import { menuActions } from "../../actions";
 
 const Menu = (props) => {
-  return <div>Hello menu</div>;
+  return (
+  <div className="menuBlock">
+    <div>Поиск игры</div>
+    <div>Создать игру</div>
+    <div>Профиль</div>
+    <div>Настройки</div>
+    <div>Выход</div>
+  </div>
+  );
 };
 
 const mapState = (state) => {

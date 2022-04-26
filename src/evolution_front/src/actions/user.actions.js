@@ -33,17 +33,17 @@ function logout() {
     return { type: userConstants.LOGOUT };
 }
 
-function register(user) {
-    return dispatch => {
-        dispatch(request(user));
+function register(username, password) {
+    return async dispatch => {
+        dispatch(request(username));
 
-        userService.register(user)
+        return userService.register(username, password)
             .then(
                 user => { 
-                    dispatch(success());
+                    return dispatch(success(user));
                 },
                 error => {
-                    dispatch(failure(error.toString()));
+                    return dispatch(failure(error.toString()));
                 }
             );
     };

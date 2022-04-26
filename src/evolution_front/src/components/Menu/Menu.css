@@ -1,0 +1,14 @@
+.menuBlock {
+  width: 100%;
+  height: fit-content;
+  max-width: 330px;
+  padding: 30px 15px 30px 15px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: rgba(224, 224, 224, 0.5);
+}
+
