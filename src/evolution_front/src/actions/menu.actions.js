@@ -2,39 +2,38 @@ import { menuConstants } from '../constants';
 import { menuService } from '../services';
 
 export const menuActions = {
+  create,
+  enter
 };
 
 function create(roomName) {
   return dispatch => {
-    dispatch(request({ username }));
-//TODO
-    userService.login(username, password)
+    dispatch(request({ roomName }));
+    menuService.create(roomName)
       .then(
-        user => {
-          dispatch(success(user));
-          //history.push('/');
+        room => {
+          dispatch(success(room));
         },
         error => {
           dispatch(failure(error.toString()));
-          //dispatch(alertActions.error(error.toString()));
         }
       );
   };
 
-  function request(user) { return { type: menuConstants.LOGIN_REQUEST, user } }
-  function success(user) { return { type: menuConstants.LOGIN_SUCCESS, user } }
-  function failure(error) { return { type: menuConstants.LOGIN_FAILURE, error } }
+  function request(roomName) { return { type: menuConstants.CREATE_REQUEST, roomName } }
+  function success(roomName) { return { type: menuConstants.CREATE_SUCCESS, roomName } }
+  function failure(error) { return { type: menuConstants.CREATE_FAILURE, error } }
 }
 
 
 function enter(roomUid) {
   return dispatch => {
-    dispatch(request(user));
+    dispatch(request(roomUid));
 
-    userService.register(user)
+    menuService.enter(roomUid)
       .then(
-        user => {
-          dispatch(success());
+        room => {
+          dispatch(success(room));
         },
         error => {
           dispatch(failure(error.toString()));
@@ -42,7 +41,7 @@ function enter(roomUid) {
       );
   };
 
-  function request(user) { return { type: menuConstants.REGISTER_REQUEST, user } }
-  function success(user) { return { type: menuConstants.REGISTER_SUCCESS, user } }
-  function failure(error) { return { type: menuConstants.REGISTER_FAILURE, error } }
+  function request(roomName) { return { type: menuConstants.ENTER_REQUEST, roomName } }
+  function success(roomName) { return { type: menuConstants.ENTER_SUCCESS, roomName } }
+  function failure(error) { return { type: menuConstants.ENTER_FAILURE, error } }
 }

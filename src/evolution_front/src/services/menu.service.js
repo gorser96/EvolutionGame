@@ -2,6 +2,8 @@ import { apiUrl } from '../appsettings';
 import { authHeader, apiStore } from '../helpers';
 
 export const menuService = {
+    createRoom,
+    enter
 };
 
 async function createRoom(roomName) {
@@ -13,16 +15,13 @@ async function createRoom(roomName) {
 
     const response = await fetch(`${apiUrl}${apiStore.roomCreate}`, requestOptions);
     const user = await handleResponse(response);
-    // store user details and jwt token in local storage to keep user logged in between page refreshes
-    localStorage.setItem('user', JSON.stringify(user));
     return user;
 }
 
 async function enter(roomUid) {
     const requestOptions = {
         method: 'POST',
-        headers: { ...authHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify(user)
+        headers: { ...authHeader(), 'Content-Type': 'application/json' }
     };
 
     const response = await fetch(`${apiUrl}${apiStore.roomEnter.format(roomUid)}`, requestOptions);
@@ -34,8 +33,6 @@ function handleResponse(response) {
         const data = text && JSON.parse(text);
         if (!response.ok) {
             if (response.status === 401) {
-                // auto logout if 401 response returned from api
-                logout();
                 Location.reload(true);
             }
 
