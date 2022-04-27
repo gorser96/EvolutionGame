@@ -41,9 +41,15 @@
   cursor: pointer;
 }
 
+.menu-btn:hover {
+  background-color: rgb(130 186 122);
+  box-shadow: 0 .2em 0.2em gray;
+  transform: scale(1.05);
+}
+
 .menu-block {
   font-size: 24pt;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: cursive;
   width: fit-content;
   height: fit-content;
   margin: 0 auto;

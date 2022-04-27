@@ -30,4 +30,15 @@ public class RoomQueries : IQueries
 
         return _mapper.Map<RoomViewModel>(obj);
     }
+
+    public ICollection<RoomViewModel> GetRooms()
+    {
+        var objs = _dbContext.Rooms.AsNoTracking()
+            .Include(x => x.Additions)
+            .Include(x => x.InGameUsers).ThenInclude(x => x.User)
+            .Include(x => x.InGameUsers).ThenInclude(x => x.Animals)
+            .Select(x => _mapper.Map<RoomViewModel>(x))
+            .ToArray();
+        return objs;
+    }
 }

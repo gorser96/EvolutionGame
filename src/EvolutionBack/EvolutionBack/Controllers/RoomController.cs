@@ -1,5 +1,6 @@
 ﻿using EvolutionBack.Commands;
 using EvolutionBack.Models;
+using EvolutionBack.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,12 @@ namespace EvolutionBack.Controllers
 
             var roomViewModel = await mediator.Send(new RoomCreateCommand(roomName, new(user.Name)));
             return roomViewModel;
+        }
+
+        [HttpGet("list")]
+        public Task<ICollection<RoomViewModel>> List([FromServices] RoomQueries roomQueries)
+        {
+            return Task.FromResult(roomQueries.GetRooms());
         }
 
         [HttpPost("{roomUid:guid}/enter")]
