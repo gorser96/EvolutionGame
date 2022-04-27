@@ -1,15 +1,18 @@
 import React from "react";
-import "./Menu.css";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import "./Menu.css";
 
 import { menuActions, userActions } from "../../actions";
 
 const Menu = (props) => {
 
-  const handleCreate = async (_) => {
+  const handleEnter = async (_) => {
     await props.enter('42a7248d-b87c-4bcc-989a-4860c5ea0815');
-    //await props.create(`room of ${props.authentication.user.userName}`);
+  };
+
+  const handleCreate = async (_) => {
+    await props.create(`room of ${props.authentication.user.userName}`);
   };
 
   const handleLogout = (_) => {
@@ -17,13 +20,15 @@ const Menu = (props) => {
   };
 
   return (
-  <div className="menuBlock">
-    <div>Поиск игры</div>
-    <div onClick={handleCreate} style={{cursor: 'pointer'}}>Создать игру</div>
-    <div>Профиль</div>
-    <div>Настройки</div>
-    <div onClick={handleLogout} style={{cursor: 'pointer'}}>Выход</div>
-  </div>
+    <div className="menu-window text-center">
+      <div className="menu-block">
+        <span className="menu-btn" onClick={handleEnter}>Поиск игры</span>
+        <span className="menu-btn" onClick={handleCreate}>Создать игру</span>
+        <span className="menu-btn">Профиль</span>
+        <span className="menu-btn">Настройки</span>
+        <span className="menu-btn" onClick={handleLogout}>Выход</span>
+      </div>
+    </div>
   );
 };
 

@@ -1,4 +1,29 @@
-.fill-window form {
+.login-window {
+  height: 100%;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  align-items: center;
+  display: flex;
+}
+
+.login-window::before {
+  content: "";
+  background-image: url('../../img/2_gekkons.jpeg');
+  background-size: auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.login-window form {
   width: 100%;
   height: fit-content;
   max-width: 330px;

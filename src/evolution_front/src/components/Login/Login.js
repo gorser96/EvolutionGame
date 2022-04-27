@@ -40,7 +40,7 @@ const Login = (props) => {
   const { loggingIn } = props;
 
   return (
-    <div className="fill-window text-center">
+    <div className="login-window text-center">
       <form onSubmit={handleSubmit}>
         <div className="evo-name-block">
           <img
