@@ -2,15 +2,15 @@ import { apiUrl } from '../appsettings';
 import { authHeader, apiStore } from '../helpers';
 
 export const menuService = {
-    createRoom,
+    create,
     enter
 };
 
-async function createRoom(roomName) {
+async function create(roomName) {
     const requestOptions = {
         method: 'POST',
         headers: { ...authHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomName: roomName })
+        body: `"${roomName}"`
     };
 
     const response = await fetch(`${apiUrl}${apiStore.roomCreate}`, requestOptions);
@@ -43,3 +43,4 @@ function handleResponse(response) {
         return data;
     });
 }
+

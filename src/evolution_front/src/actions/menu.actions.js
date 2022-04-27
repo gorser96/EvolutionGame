@@ -7,15 +7,15 @@ export const menuActions = {
 };
 
 function create(roomName) {
-  return dispatch => {
+  return async dispatch => {
     dispatch(request({ roomName }));
-    menuService.create(roomName)
+    return menuService.create(roomName)
       .then(
         room => {
-          dispatch(success(room));
+          return dispatch(success(room));
         },
         error => {
-          dispatch(failure(error.toString()));
+          return dispatch(failure(error.toString()));
         }
       );
   };
@@ -27,16 +27,16 @@ function create(roomName) {
 
 
 function enter(roomUid) {
-  return dispatch => {
+  return async dispatch => {
     dispatch(request(roomUid));
 
-    menuService.enter(roomUid)
+    return menuService.enter(roomUid)
       .then(
         room => {
-          dispatch(success(room));
+          return dispatch(success(room));
         },
         error => {
-          dispatch(failure(error.toString()));
+          return dispatch(failure(error.toString()));
         }
       );
   };
