@@ -1,4 +1,4 @@
-.fill-window {
+.login-window {
   height: 100%;
   position: absolute;
   left: 0;
@@ -8,10 +8,12 @@
   display: flex;
 }
 
-.fill-window::before {
+.login-window::before {
   content: "";
   background-image: url('../../img/2_gekkons.jpeg');
-  background-size: cover;
+  background-size: auto;
+  background-position: center;
+  background-repeat: no-repeat;
   opacity: 0.5;
   top: 0;
   left: 0;
@@ -21,7 +23,7 @@
   z-index: -1;
 }
 
-.fill-window form {
+.login-window form {
   width: 100%;
   height: fit-content;
   max-width: 330px;

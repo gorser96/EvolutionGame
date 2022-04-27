@@ -9,18 +9,16 @@ export const userActions = {
 };
 
 function login(username, password) {
-    return dispatch => {
+    return async dispatch => {
         dispatch(request({ username }));
 
-        userService.login(username, password)
+        return userService.login(username, password)
             .then(
-                user => { 
-                    dispatch(success(user));
-                    //history.push('/');
+                user => {
+                    return dispatch(success(user));
                 },
                 error => {
-                    dispatch(failure(error.toString()));
-                    //dispatch(alertActions.error(error.toString()));
+                    return dispatch(failure(error.toString()));
                 }
             );
     };
@@ -35,20 +33,17 @@ function logout() {
     return { type: userConstants.LOGOUT };
 }
 
-function register(user) {
-    return dispatch => {
-        dispatch(request(user));
+function register(username, password) {
+    return async dispatch => {
+        dispatch(request(username));
 
-        userService.register(user)
+        return userService.register(username, password)
             .then(
                 user => { 
-                    dispatch(success());
-                    //history.push('/login');
-                    //dispatch(alertActions.success('Registration successful'));
+                    return dispatch(success(user));
                 },
                 error => {
-                    dispatch(failure(error.toString()));
-                    //dispatch(alertActions.error(error.toString()));
+                    return dispatch(failure(error.toString()));
                 }
             );
     };

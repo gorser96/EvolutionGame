@@ -1,28 +1,20 @@
 import { apiUrl } from '../appsettings';
-//import { authHeader } from '../helpers';
+import { apiStore } from '../helpers';
 
 export const userService = {
     login,
     logout,
-    register,
-    //update,
-    //delete: _delete
+    register
 };
 
 async function login(username, password) {
     const requestOptions = {
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': 'true',
-            'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Authorization, Origin, Content-Type, X-Auth-Token'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ login: username, password: password })
     };
 
-    const response = await fetch(`${apiUrl}/user/login`, requestOptions);
+    const response = await fetch(`${apiUrl}${apiStore.userLogin}`, requestOptions);
     const user = await handleResponse(response);
     // store user details and jwt token in local storage to keep user logged in between page refreshes
     localStorage.setItem('user', JSON.stringify(user));
@@ -34,14 +26,14 @@ function logout() {
     localStorage.removeItem('user');
 }
 
-async function register(user) {
+async function register(username, password) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user)
+        body: JSON.stringify({ login: username, password: password })
     };
 
-    const response = await fetch(`${apiUrl}/user/register`, requestOptions);
+    const response = await fetch(`${apiUrl}${apiStore.userRegister}`, requestOptions);
     return handleResponse(response);
 }
 /*
