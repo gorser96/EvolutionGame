@@ -207,7 +207,10 @@ public static class ServicesExtensions
                     throw new InvalidOperationException($"Property {card.SecondPropertyName} not found!");
                 }
 
-                cardRepo.Create(Guid.NewGuid(), additionObj.Uid, firstProperty.Uid, secondProperty?.Uid);
+                for (int i = 0; i < card.Count; i++)
+                {
+                    cardRepo.Create(Guid.NewGuid(), additionObj.Uid, firstProperty.Uid, secondProperty?.Uid);
+                }
             }
         }
 

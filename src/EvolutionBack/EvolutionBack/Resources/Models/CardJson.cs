@@ -13,4 +13,6 @@ public class CardJsonElement
     public string FirstPropertyName { get; set; }
 
     public string? SecondPropertyName { get; set; }
+
+    public int Count { get; set; }
 }
