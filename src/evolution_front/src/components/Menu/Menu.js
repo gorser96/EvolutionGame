@@ -1,14 +1,16 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { useNavigate } from "react-router-dom";
 import "./Menu.css";
 
 import { roomActions, userActions } from "../../actions";
 
 const Menu = (props) => {
+  let navigation = useNavigate();
 
   const handleList = async (_) => {
-    await props.list();
+    props.list().then(result => navigation('/room-list', { state: { result } }));
   };
 
   const handleCreate = async (_) => {
