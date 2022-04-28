@@ -3,7 +3,8 @@
     {
       "additionId": 0,
       "firstPropertyName": "Burrowing",
-      "secondPropertyName": "Carnivorous"
+      "secondPropertyName": "Carnivorous",
+      "count": 4
     }
   ]
 }
