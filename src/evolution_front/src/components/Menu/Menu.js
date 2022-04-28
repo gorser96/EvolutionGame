@@ -3,12 +3,12 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import "./Menu.css";
 
-import { menuActions, userActions } from "../../actions";
+import { roomActions, userActions } from "../../actions";
 
 const Menu = (props) => {
 
-  const handleEnter = async (_) => {
-    await props.enter('42a7248d-b87c-4bcc-989a-4860c5ea0815');
+  const handleList = async (_) => {
+    await props.list();
   };
 
   const handleCreate = async (_) => {
@@ -22,7 +22,7 @@ const Menu = (props) => {
   return (
     <div className="menu-window text-center">
       <div className="menu-block">
-        <span className="menu-btn" onClick={handleEnter}>Поиск игры</span>
+        <span className="menu-btn" onClick={handleList}>Поиск игры</span>
         <span className="menu-btn" onClick={handleCreate}>Создать игру</span>
         <span className="menu-btn">Профиль</span>
         <span className="menu-btn">Настройки</span>
@@ -38,8 +38,8 @@ const mapState = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    create: bindActionCreators(menuActions.create, dispatch),
-    enter: bindActionCreators(menuActions.enter, dispatch),
+    create: bindActionCreators(roomActions.create, dispatch),
+    list: bindActionCreators(roomActions.list, dispatch),
     logout: bindActionCreators(userActions.logout, dispatch),
   };
 };
