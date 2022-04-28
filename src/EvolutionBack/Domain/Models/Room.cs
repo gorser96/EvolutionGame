@@ -24,11 +24,11 @@ public class Room
         PauseStartedTime = null;
     }
 
-    public Guid Uid { get; private set; }
+    public Guid Uid { get; init; }
 
     public string Name { get; private set; }
 
-    public DateTime CreatedDateTime { get; private set; }
+    public DateTime CreatedDateTime { get; init; }
 
     public DateTime? StartDateTime { get; private set; }
 

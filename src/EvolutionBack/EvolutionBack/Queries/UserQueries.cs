@@ -18,7 +18,7 @@ public class UserQueries : IQueries
 
     public RoomViewModel? FindRoomWithUserHost(Guid userUid)
     {
-        var room = _dbContext.Rooms
+        var room = _dbContext.Rooms.AsNoTracking()
             .Include(x => x.InGameUsers)
             .FirstOrDefault(x => x.InGameUsers.Select(u => u.UserUid).Contains(userUid));
         return _mapper.Map<RoomViewModel>(room);
