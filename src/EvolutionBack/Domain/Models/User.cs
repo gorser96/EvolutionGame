@@ -12,5 +12,5 @@ public class User : IdentityUser<Guid>
 
     public virtual InGameUser? InGameUser { get; private set; }
 
-    // TODO: очки, рейтинг
+    public virtual GameHistoryUser? GameHistoryUser { get; private set; }
 }
