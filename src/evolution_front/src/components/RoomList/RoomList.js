@@ -1,28 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { useNavigate } from "react-router-dom";
-import "./RoomList.css"
+import "./RoomList.css";
 
 import { roomActions } from "../../actions";
 
 const RoomList = (props) => {
-  let navigation = useNavigate();
-
-  const [ rooms, setRooms ] = useState(props.rooms);
-
   useEffect(() => {
-    if (rooms === undefined) {
-      props.list().then(result => {
-        setRooms(result.rooms);
-      });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    props.list();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const showRooms = () => {
+    let rooms = props.roomState.rooms;
+    if (rooms === undefined) {
+      return "";
+    }
+    return (
+      <div className="list-rooms">
+        {rooms.map((room) => {
+          console.log(room);
+          return (
+            <div className="list-rooms-row" key={room.name}>
+              <div className="list-rooms-row-prop">{room.name}</div>
+              <div className="list-rooms-row-prop">{room.inGameUsers.find((x) => x.isHost).user.userName}</div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
-    <div>
-      test
+    <div className="room-list-window d-flex flex-row">
+      <div className="d-flex flex-column">
+        <div className="list-title">Список игр</div>
+        {showRooms()}
+      </div>
+      <div className="list-options"></div>
     </div>
   );
 };

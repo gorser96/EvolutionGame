@@ -10,7 +10,7 @@ const Menu = (props) => {
   let navigation = useNavigate();
 
   const handleList = async (_) => {
-    props.list().then(result => navigation('/room-list', { state: { result } }));
+    navigation('/room-list');
   };
 
   const handleCreate = async (_) => {
@@ -41,7 +41,6 @@ const mapState = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     create: bindActionCreators(roomActions.create, dispatch),
-    list: bindActionCreators(roomActions.list, dispatch),
     logout: bindActionCreators(userActions.logout, dispatch),
   };
 };

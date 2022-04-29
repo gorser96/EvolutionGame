@@ -2,12 +2,12 @@ import { combineReducers } from 'redux';
 
 import { authentication } from './authentication.reducer';
 import { registration } from './registration.reducer';
-import { roomStates } from './room.reducer';
+import { roomState } from './room.reducer';
 
 const rootReducer = combineReducers({
   authentication,
   registration,
-  roomStates,
+  roomState,
 });
 
 export default rootReducer;

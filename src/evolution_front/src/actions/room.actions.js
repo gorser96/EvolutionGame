@@ -61,7 +61,7 @@ function list() {
       );
   };
 
-  function request() { return { type: roomConstants.LIST_REQUEST } }
+  function request() { return { type: roomConstants.LIST_REQUEST, rooms: [] } }
   function success(rooms) { return { type: roomConstants.LIST_SUCCESS, rooms } }
   function failure(error) { return { type: roomConstants.LIST_FAILURE, error } }
 }
