@@ -86,7 +86,8 @@ public static class ServicesExtensions
             cfg.DestinationMemberNamingConvention = new LowerUnderscoreNamingConvention();
 
             cfg.CreateMap<User, UserViewModel>();
-            cfg.CreateMap<Room, RoomViewModel>();
+            cfg.CreateMap<Room, RoomViewModel>()
+                .ForMember(x => x.NumOfCards, x => x.MapFrom(r => r.Cards.Count));
             cfg.CreateMap<Addition, AdditionViewModel>();
             cfg.CreateMap<InGameUser, InGameUserViewModel>();
         }, _assembly);
@@ -164,6 +165,8 @@ public static class ServicesExtensions
         db.Cards.RemoveRange(db.Cards);
         db.Additions.RemoveRange(db.Additions);
         db.Properties.RemoveRange(db.Properties);
+
+        db.SaveChanges();
 
         List<Property> dbProperties = new();
 

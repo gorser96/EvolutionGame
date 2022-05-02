@@ -1,52 +1,35 @@
 ﻿namespace EvolutionBack.Models;
 
-public class RoomViewModel
+#pragma warning disable CS8618
+public record RoomViewModel
 {
-    public RoomViewModel(
-        Guid uid, string name,
-        DateTime createdDateTime, DateTime? finishedDateTime, TimeSpan? maxTimeLeft,
-        int stepNumber, bool isStarted, bool isPaused,
-        IEnumerable<InGameUserViewModel> inGameUsers, IEnumerable<AdditionViewModel> additions, 
-        DateTime? startDateTime, DateTime? pauseStartedTime)
-    {
-        Uid = uid;
-        Name = name;
-        CreatedDateTime = createdDateTime;
-        FinishedDateTime = finishedDateTime;
-        MaxTimeLeft = maxTimeLeft;
-        StepNumber = stepNumber;
-        IsStarted = isStarted;
-        IsPaused = isPaused;
-        InGameUsers = inGameUsers.ToList();
-        Additions = additions.ToList();
-        StartDateTime = startDateTime;
-        PauseStartedTime = pauseStartedTime;
-    }
+    public Guid Uid { get; init; }
 
-    public Guid Uid { get; private set; }
+    public string Name { get; init; }
 
-    public string Name { get; private set; }
+    public DateTime CreatedDateTime { get; init; }
 
-    public DateTime CreatedDateTime { get; private set; }
+    public DateTime? StartDateTime { get; init; }
 
-    public DateTime? StartDateTime { get; private set; }
+    public DateTime? FinishedDateTime { get; init; }
 
-    public DateTime? FinishedDateTime { get; private set; }
+    public TimeSpan? MaxTimeLeft { get; init; }
 
-    public TimeSpan? MaxTimeLeft { get; private set; }
+    public int StepNumber { get; init; }
 
-    public int StepNumber { get; private set; }
+    public bool IsStarted { get; init; }
 
-    public bool IsStarted { get; private set; }
+    public bool IsPaused { get; init; }
 
-    public bool IsPaused { get; private set; }
+    public DateTime? PauseStartedTime { get; init; }
 
-    public DateTime? PauseStartedTime { get; private set; }
+    public int NumOfCards { get; init; }
 
-    public IReadOnlyCollection<InGameUserViewModel> InGameUsers { get; private set; }
+    public ICollection<InGameUserViewModel> InGameUsers { get; init; }
 
-    public IReadOnlyCollection<AdditionViewModel> Additions { get; private set; }
+    public ICollection<AdditionViewModel> Additions { get; init; }
 }
+#pragma warning restore CS8618
 
 public enum PhaseType
 {

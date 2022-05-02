@@ -4,12 +4,15 @@
   left: 0;
   width: 100%;
   overflow: hidden;
+  align-items: center;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .room-list-window::before {
   content: "";
-  /*background-image: url('../../img/room-list.jpg');*/
+  background-image: url('../../img/menu_back.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -23,15 +26,21 @@
 }
 
 .list-title {
-  height: auto;
+  font-weight: 600;
+  font-size: 16pt;
+  font-family: cursive;
+  border-radius: 0.3rem;
+  background-color: rgba(224, 224, 224, 0.5);
+  padding: 0px 10px 0px 10px;
 }
 
 .list-rooms {
   height: 100%;
-  width: 100%;
+  width: 70%;
   display: flex;
   align-items: top;
   flex-direction: column;
+  margin: 5em;
 }
 
 .list-rooms-row {
@@ -46,4 +55,41 @@
 
 .list-options {
   height: 100%;
+}
+
+.icons svg {
+  color: #5a5a5a;
+  border: 1px solid #b5b3b3;
+  padding: 6px;
+  margin-left: 4px;
+  border-radius: 5px;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  background-color: rgba(224, 224, 224, 0.5);
+}
+
+.list-group li {
+  margin-bottom: 12px
+}
+
+.list li {
+  list-style: none;
+  padding: 10px;
+  border: 1px solid #e3dada;
+  margin-top: 12px;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.checkicon {
+  color: green;
+  font-size: 19px
+}
+
+.date-time {
+  font-size: 12px
+}
+
+.profile-image img {
+  margin-left: 3px
 }

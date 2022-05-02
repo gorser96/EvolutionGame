@@ -8,6 +8,7 @@ public class Addition
         Name = name;
         IsBase = isBase;
         Cards = new List<Card>();
+        Rooms = new List<Room>();
     }
 
     public Guid Uid { get; private set; }
@@ -17,6 +18,8 @@ public class Addition
     public bool IsBase { get; private set; }
 
     public virtual ICollection<Card> Cards { get; private set; }
+
+    public virtual ICollection<Room> Rooms { get; private set; }
 
     public void Update(string name, IList<Card> cards)
     {

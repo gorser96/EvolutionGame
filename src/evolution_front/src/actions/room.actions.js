@@ -22,7 +22,7 @@ function create(roomName) {
   };
 
   function request(roomName) { return { type: roomConstants.CREATE_REQUEST, roomName } }
-  function success(roomName) { return { type: roomConstants.CREATE_SUCCESS, roomName } }
+  function success(room) { return { type: roomConstants.CREATE_SUCCESS, room } }
   function failure(error) { return { type: roomConstants.CREATE_FAILURE, error } }
 }
 

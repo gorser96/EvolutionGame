@@ -11,5 +11,6 @@ internal class RoomConfiguration : IEntityTypeConfiguration<Room>
         builder.ToTable("Rooms");
         builder.HasKey(x => x.Uid);
         builder.Property(x => x.Uid).ValueGeneratedNever();
+        builder.HasMany(x => x.Additions).WithMany(x => x.Rooms);
     }
 }
