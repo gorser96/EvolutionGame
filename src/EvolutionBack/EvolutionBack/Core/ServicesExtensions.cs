@@ -4,6 +4,7 @@ using Domain.Repo;
 using Domain.Validators;
 using EvolutionBack.Models;
 using EvolutionBack.Resources;
+using EvolutionBack.Services;
 using Infrastructure.EF;
 using Infrastructure.Repo;
 using Infrastructure.Validators;
@@ -24,6 +25,12 @@ public static class ServicesExtensions
     static ServicesExtensions()
     {
         _assembly = Assembly.GetExecutingAssembly();
+    }
+
+    public static IServiceCollection AddHostedServices(this IServiceCollection services)
+    {
+        services.AddHostedService<RoomCleanerServiceHosted>();
+        return services;
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)
