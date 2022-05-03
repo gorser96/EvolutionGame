@@ -19,7 +19,7 @@ public class Swimming : Property, IPropertyAction
     {
         if (enemy.Properties.Any(x=>x.Property.AssemblyName == nameof(Swimming)))
         {
-            //Если атакующий водоплавающее
+         //Если атакующий водоплавающее
             return false;
         }
 
