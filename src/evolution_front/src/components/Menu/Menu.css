@@ -39,6 +39,7 @@
   border-radius: 7px;
   box-shadow: 0 .1em 0.1em gray;
   cursor: pointer;
+  transition: transform .1s;
 }
 
 .menu-btn:hover {

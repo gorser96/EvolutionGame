@@ -47,7 +47,6 @@ const RoomList = (props) => {
     return (
       <ul className="list list-inline">
         {rooms.map((room) => {
-          console.log(room);
           return (
             <li className="d-flex justify-content-between" key={room.name}>
               <div className="d-flex flex-row align-items-center">
