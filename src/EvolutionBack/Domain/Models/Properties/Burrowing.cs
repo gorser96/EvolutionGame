@@ -1,5 +1,8 @@
 ﻿namespace Domain.Models;
 
+/// <summary>
+/// Норное
+/// </summary>
 public class Burrowing : Property, IPropertyAction
 {
     public Burrowing(Guid uid, string name, bool isPair, bool isOnEnemy) 

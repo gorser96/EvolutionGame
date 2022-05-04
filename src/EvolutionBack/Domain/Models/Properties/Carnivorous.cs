@@ -1,5 +1,8 @@
 ﻿namespace Domain.Models;
 
+/// <summary>
+/// Хищное 
+/// </summary>
 public class Carnivorous : Property, IPropertyAction
 {
     public Carnivorous(Guid uid, string name, bool isPair, bool isOnEnemy) 

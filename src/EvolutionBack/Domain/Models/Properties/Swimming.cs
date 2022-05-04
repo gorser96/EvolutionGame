@@ -1,5 +1,8 @@
 ﻿namespace Domain.Models;
 
+/// <summary>
+/// Водоплавающее
+/// </summary>
 public class Swimming : Property, IPropertyAction
 {
     public Swimming(Guid uid, string name, bool isPair, bool isOnEnemy)
@@ -17,13 +20,16 @@ public class Swimming : Property, IPropertyAction
 
     public bool? OnDefense(Animal self, Animal enemy)
     {
-        if (enemy.Properties.Any(x=>x.Property.AssemblyName == nameof(Swimming)))
+        if (IsActive)
         {
-         //Если атакующий водоплавающее
-            return false;
+            if (enemy.Properties.Any(x => x.Property.AssemblyName == nameof(Swimming)))
+            {
+                //Если атакующий водоплавающее
+                return false;
+            }
+            return true;
         }
-
-        return null;
+        return false;
     }
 
     public void OnUse(Animal self, Animal? target = null)
