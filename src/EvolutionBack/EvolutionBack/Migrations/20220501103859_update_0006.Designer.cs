@@ -4,6 +4,7 @@ using Infrastructure.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EvolutionBack.Migrations
 {
     [DbContext(typeof(EvolutionDbContext))]
-    partial class EvolutionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220501103859_update_0006")]
+    partial class update_0006
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,9 +102,12 @@ namespace EvolutionBack.Migrations
 
                     b.HasIndex("AdditionUid");
 
-                    b.HasIndex("FirstPropertyUid");
+                    b.HasIndex("FirstPropertyUid")
+                        .IsUnique();
 
-                    b.HasIndex("SecondPropertyUid");
+                    b.HasIndex("SecondPropertyUid")
+                        .IsUnique()
+                        .HasFilter("[SecondPropertyUid] IS NOT NULL");
 
                     b.ToTable("Cards", (string)null);
                 });
@@ -144,7 +149,8 @@ namespace EvolutionBack.Migrations
 
                     b.HasIndex("GameHistoryUid");
 
-                    b.HasIndex("UserUid");
+                    b.HasIndex("UserUid")
+                        .IsUnique();
 
                     b.ToTable("GameHistoryUsers", (string)null);
                 });
@@ -164,8 +170,6 @@ namespace EvolutionBack.Migrations
 
                     b.HasIndex("AnimalUid");
 
-                    b.HasIndex("PropertyUid");
-
                     b.ToTable("InAnimalProperties", (string)null);
                 });
 
@@ -183,8 +187,6 @@ namespace EvolutionBack.Migrations
                     b.HasKey("RoomUid", "CardUid");
 
                     b.HasIndex("CardUid");
-
-                    b.HasIndex("RoomUid");
 
                     b.ToTable("InGameCards", (string)null);
                 });
@@ -213,7 +215,8 @@ namespace EvolutionBack.Migrations
 
                     b.HasIndex("RoomUid");
 
-                    b.HasIndex("UserUid");
+                    b.HasIndex("UserUid")
+                        .IsUnique();
 
                     b.ToTable("InGameUsers", (string)null);
                 });

@@ -4,6 +4,7 @@ using Domain.Repo;
 using Domain.Validators;
 using EvolutionBack.Models;
 using EvolutionBack.Resources;
+using EvolutionBack.Services;
 using Infrastructure.EF;
 using Infrastructure.Repo;
 using Infrastructure.Validators;
@@ -24,6 +25,12 @@ public static class ServicesExtensions
     static ServicesExtensions()
     {
         _assembly = Assembly.GetExecutingAssembly();
+    }
+
+    public static IServiceCollection AddHostedServices(this IServiceCollection services)
+    {
+        services.AddHostedService<RoomCleanerServiceHosted>();
+        return services;
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)
@@ -86,7 +93,8 @@ public static class ServicesExtensions
             cfg.DestinationMemberNamingConvention = new LowerUnderscoreNamingConvention();
 
             cfg.CreateMap<User, UserViewModel>();
-            cfg.CreateMap<Room, RoomViewModel>();
+            cfg.CreateMap<Room, RoomViewModel>()
+                .ForMember(x => x.NumOfCards, x => x.MapFrom(r => r.Cards.Count));
             cfg.CreateMap<Addition, AdditionViewModel>();
             cfg.CreateMap<InGameUser, InGameUserViewModel>();
         }, _assembly);
@@ -164,6 +172,8 @@ public static class ServicesExtensions
         db.Cards.RemoveRange(db.Cards);
         db.Additions.RemoveRange(db.Additions);
         db.Properties.RemoveRange(db.Properties);
+
+        db.SaveChanges();
 
         List<Property> dbProperties = new();
 

@@ -5,6 +5,7 @@ export const roomActions = {
   create,
   enter,
   list,
+  get,
 };
 
 function create(roomName) {
@@ -22,7 +23,7 @@ function create(roomName) {
   };
 
   function request(roomName) { return { type: roomConstants.CREATE_REQUEST, roomName } }
-  function success(roomName) { return { type: roomConstants.CREATE_SUCCESS, roomName } }
+  function success(room) { return { type: roomConstants.CREATE_SUCCESS, room } }
   function failure(error) { return { type: roomConstants.CREATE_FAILURE, error } }
 }
 
@@ -61,7 +62,27 @@ function list() {
       );
   };
 
-  function request() { return { type: roomConstants.LIST_REQUEST } }
+  function request() { return { type: roomConstants.LIST_REQUEST, rooms: [] } }
   function success(rooms) { return { type: roomConstants.LIST_SUCCESS, rooms } }
   function failure(error) { return { type: roomConstants.LIST_FAILURE, error } }
+}
+
+function get(roomUid) {
+  return async dispatch => {
+    dispatch(request());
+
+    return roomService.get(roomUid)
+      .then(
+        room => {
+          return dispatch(success(room));
+        },
+        error => {
+          return dispatch(failure(error.toString()));
+        }
+      );
+  };
+
+  function request() { return { type: roomConstants.GET_REQUEST } }
+  function success(room) { return { type: roomConstants.GET_SUCCESS, room } }
+  function failure(error) { return { type: roomConstants.GET_FAILURE, error } }
 }

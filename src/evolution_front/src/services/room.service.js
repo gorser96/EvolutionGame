@@ -5,7 +5,19 @@ export const roomService = {
     list,
     create,
     enter,
+    get,
 };
+
+async function get(roomUid) {
+    const requestOptions = {
+        method: 'GET',
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+    };
+
+    const response = await fetch(`${apiUrl}${apiStore.roomGet.format(roomUid)}`, requestOptions);
+    const room = await handleResponse(response);
+    return room;
+}
 
 async function list() {
     const requestOptions = {

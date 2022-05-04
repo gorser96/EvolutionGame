@@ -46,6 +46,9 @@ builder.Services.AddCommandHandlers();
 // repositories
 builder.Services.AddRepositories();
 
+// hosted services
+builder.Services.AddHostedServices();
+
 // validators
 builder.Services.AddValidators();
 

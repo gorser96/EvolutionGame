@@ -1,23 +1,16 @@
 ﻿namespace EvolutionBack.Models;
 
-public class InGameUserViewModel
+#pragma warning disable CS8618
+public record InGameUserViewModel
 {
-    public InGameUserViewModel(UserViewModel user, bool isCurrent, DateTime? startStepTime, int order, bool isHost)
-    {
-        User = user;
-        IsCurrent = isCurrent;
-        StartStepTime = startStepTime;
-        Order = order;
-        IsHost = isHost;
-    }
+    public UserViewModel User { get; init; }
 
-    public UserViewModel User { get; private set; }
+    public bool IsCurrent { get; init; }
 
-    public bool IsCurrent { get; private set; }
+    public DateTime? StartStepTime { get; init; }
 
-    public DateTime? StartStepTime { get; private set; }
+    public int Order { get; init; }
 
-    public int Order { get; private set; }
-
-    public bool IsHost { get; private set; }
+    public bool IsHost { get; init; }
 }
+#pragma warning restore CS8618

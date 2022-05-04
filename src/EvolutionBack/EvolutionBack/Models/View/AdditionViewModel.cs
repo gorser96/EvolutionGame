@@ -1,14 +1,10 @@
 ﻿namespace EvolutionBack.Models;
 
-public class AdditionViewModel
+#pragma warning disable CS8618
+public record AdditionViewModel
 {
-    public AdditionViewModel(Guid uid, string name)
-    {
-        Uid = uid;
-        Name = name;
-    }
+    public Guid Uid { get; init; }
 
-    public Guid Uid { get; private set; }
-
-    public string Name { get; private set; }
+    public string Name { get; init; }
 }
+#pragma warning restore CS8618

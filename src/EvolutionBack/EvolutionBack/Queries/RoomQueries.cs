@@ -22,6 +22,7 @@ public class RoomQueries : IQueries
             .Include(x => x.Additions)
             .Include(x => x.InGameUsers).ThenInclude(x => x.User)
             .Include(x => x.InGameUsers).ThenInclude(x => x.Animals)
+            .Include(x => x.Cards).ThenInclude(x => x.Card)
             .FirstOrDefault(x => x.Uid == uid);
         if (obj is null)
         {
@@ -37,6 +38,7 @@ public class RoomQueries : IQueries
             .Include(x => x.Additions)
             .Include(x => x.InGameUsers).ThenInclude(x => x.User)
             .Include(x => x.InGameUsers).ThenInclude(x => x.Animals)
+            .Include(x => x.Cards).ThenInclude(x => x.Card)
             .Select(x => _mapper.Map<RoomViewModel>(x))
             .ToArray();
         return objs;

@@ -1,11 +1,8 @@
 ﻿namespace EvolutionBack.Models;
 
-public class UserViewModel
+#pragma warning disable CS8618
+public record UserViewModel
 {
-    public UserViewModel(string userName)
-    {
-        UserName = userName;
-    }
-
     public string UserName { get; init; }
 }
+#pragma warning restore CS8618

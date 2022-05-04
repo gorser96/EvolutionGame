@@ -1,4 +1,5 @@
 ﻿using EvolutionBack.Commands;
+using EvolutionBack.Core;
 using EvolutionBack.Models;
 using EvolutionBack.Queries;
 using MediatR;
@@ -29,6 +30,17 @@ namespace EvolutionBack.Controllers
         public Task<ICollection<RoomViewModel>> List([FromServices] RoomQueries roomQueries)
         {
             return Task.FromResult(roomQueries.GetRooms());
+        }
+
+        [HttpGet("{uid:guid}")]
+        public Task<RoomViewModel> Get(Guid uid, [FromServices] RoomQueries roomQueries)
+        {
+            var room = roomQueries.GetRoomViewModel(uid);
+            if (room is null)
+            {
+                throw new ObjectNotFoundException(uid, nameof(room));
+            }
+            return Task.FromResult(room);
         }
 
         [HttpPost("{roomUid:guid}/enter")]
