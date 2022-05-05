@@ -81,7 +81,7 @@ internal class WebServiceTest : IDisposable
 
         _serviceProvider.UseAnimalProperties();
 
-        Init();
+        //Init();
     }
 
     private void Init()

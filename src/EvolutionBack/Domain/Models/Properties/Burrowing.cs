@@ -5,35 +5,34 @@
 /// </summary>
 public class Burrowing : Property, IPropertyAction
 {
-    public Burrowing(Guid uid, string name, bool isPair, bool isOnEnemy) 
-        : base(uid, name, isPair, isOnEnemy, 0, nameof(Burrowing))
+    public Burrowing(Guid uid, string name)
+        : base(uid, name, isPair: false, isOnEnemy: false, feedIncreasing: 0, typeof(Burrowing).FullName!)
     {
-        IsActive = true;
     }
 
-    public bool IsActive { get; private set; }
+    public AnimalPropertyType PropertyType => AnimalPropertyType.PassiveDefense;
 
-    public void SetIsActive(bool value)
+    public DefenseResult OnDefense(Animal self, Animal enemy, Guid? targetUid)
     {
-        IsActive = value;
-    }
-
-    public bool? OnDefense(Animal self, Animal enemy)
-    {
-        // если это свойство не заблокировано, например, "Неоплазией" или "Интеллектом"
-        if (IsActive)
-        {
-            if (self.FoodCurrent >= self.FoodMax)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return new(false);
     }
 
     public void OnUse(Animal self, Animal? target = null)
     {
         // это свойство не активируется по требованию (например как "Спячка")
+    }
+
+    public bool CanAttack(Animal self, Animal enemy)
+    {
+        // если это свойство не заблокировано, например, "Неоплазией" или "Интеллектом"
+        if (IsActive(self))
+        {
+            if (self.FoodCurrent >= self.FoodMax)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

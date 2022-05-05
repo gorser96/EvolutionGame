@@ -5,6 +5,8 @@ public record InGameUserViewModel
 {
     public UserViewModel User { get; init; }
 
+    public ICollection<AnimalViewModel> Animals { get; init; }
+
     public bool IsCurrent { get; init; }
 
     public DateTime? StartStepTime { get; init; }

@@ -32,7 +32,7 @@ public class CreateAnimalCommandHandler : IRequestHandler<CreateAnimalCommand>
             throw new ObjectNotFoundException(request.RoomUid, nameof(room));
         }
 
-        var animal = room.CreateAnimalFromCard(request.CardUid, user.Id);
+        var animal = room.CreateAnimalFromNextCard(user.Id);
 
         await db.SaveChangesAsync(cancellationToken);
 

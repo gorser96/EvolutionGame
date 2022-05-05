@@ -3,7 +3,7 @@ using MediatR;
 
 namespace EvolutionBack.Commands;
 
-public class AttackCommand : IRequest
+public class AttackCommand : IRequest<ActionResponse>
 {
     public AttackCommand(Guid attackerUid, Guid defensiveUid,
         IEnumerable<Guid>? disabledPropertiesOnAttack, Guid roomUid, UserCredentials user)

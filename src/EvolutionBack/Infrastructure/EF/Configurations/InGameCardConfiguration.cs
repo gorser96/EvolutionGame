@@ -10,7 +10,8 @@ internal class InGameCardConfiguration : IEntityTypeConfiguration<InGameCard>
     {
         builder.ToTable("InGameCards");
         builder.HasKey(x => new { x.RoomUid, x.CardUid });
-        builder.HasOne(x => x.Room).WithMany(x => x.Cards).HasForeignKey(x => x.RoomUid);
+        builder.HasOne(x => x.Room).WithMany(x => x.Cards).HasForeignKey(x => x.RoomUid)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => x.RoomUid).IsUnique(false);
     }

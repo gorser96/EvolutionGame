@@ -26,5 +26,15 @@ public class Property
 
     public int? FeedIncreasing { get; init; }
 
+    /// <summary>
+    /// Активно ли свойство у животного
+    /// </summary>
+    /// <param name="selfAnimal"></param>
+    /// <returns></returns>
+    public bool IsActive(Animal animal)
+    {
+        return animal.Properties.Any(x => x.IsActive && x.Property.AssemblyName == AssemblyName);
+    }
+
     public virtual ICollection<InAnimalProperty> Animals { get; private set; }
 }

@@ -142,7 +142,6 @@ public class RoomHub : Hub
                 case GameRequestType.CreateAnimal:
                     await _mediator.Send(new CreateAnimalCommand(
                         new UserCredentials(userName),
-                        request.GetFromData<Guid>(nameof(CreateAnimalCommand.CardUid)),
                         request.RoomUid), cancellationToken);
                     break;
                 case GameRequestType.AddProperty:

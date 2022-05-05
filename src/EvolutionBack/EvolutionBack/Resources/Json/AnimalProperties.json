@@ -1,12 +1,12 @@
 {
   "properties": [
     {
-      "assemblyName": "Burrowing",
+      "assemblyName": "Domain.Models.Burrowing",
       "isPair": false,
       "isOnEnemy": false
     },
     {
-      "assemblyName": "Carnivorous",
+      "assemblyName": "Domain.Models.Carnivorous",
       "isPair": false,
       "isOnEnemy": false
     }
