@@ -43,6 +43,18 @@ namespace EvolutionBack.Controllers
             return Task.FromResult(room);
         }
 
+        [HttpGet("user")]
+        public Task<RoomViewModel?> GetHostedRoom([FromServices] RoomQueries roomQueries)
+        {
+            var user = User.Identity;
+            if (user is null || user.Name is null)
+            {
+                throw new ApplicationException("User identity not found!");
+            }
+
+            return Task.FromResult(roomQueries.GetHostedRoom(user.Name));
+        }
+
         [HttpPost("{roomUid:guid}/enter")]
         public async Task<RoomViewModel> Enter(Guid roomUid, [FromServices] IMediator mediator)
         {

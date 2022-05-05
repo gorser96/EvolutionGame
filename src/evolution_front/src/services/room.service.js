@@ -6,6 +6,7 @@ export const roomService = {
     create,
     enter,
     get,
+    user,
 };
 
 async function get(roomUid) {
@@ -28,6 +29,17 @@ async function list() {
     const response = await fetch(`${apiUrl}${apiStore.roomList}`, requestOptions);
     const rooms = await handleResponse(response);
     return rooms;
+}
+
+async function user() {
+    const requestOptions = {
+        method: 'GET',
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+    };
+
+    const response = await fetch(`${apiUrl}${apiStore.roomUser}`, requestOptions);
+    const room = await handleResponse(response);
+    return room;
 }
 
 async function create(roomName) {

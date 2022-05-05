@@ -13,7 +13,7 @@ import { roomActions } from "../../actions";
 import {
   Avatar, Select, MenuItem, OutlinedInput,
   Box, Tooltip, InputLabel, FormControl, ListItemText,
-  Switch, FormControlLabel, Slider
+  Switch, FormControlLabel, TextField
 } from "@mui/material";
 
 const AdditionImgDict = {
@@ -46,13 +46,26 @@ const AdditionImgDict = {
 const Room = (props) => {
   let navigation = useNavigate();
   const { uid } = useParams();
+
   const [selectedAdditions, setSelectedAdditions] = useState([]);
-  let [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [roomName, setRoomName] = useState('');
+  const [cardsCount, setCardsCount] = useState(0);
+
+  const user = props.authentication.user;
 
   useEffect(() => {
     props.get(uid);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (props.roomState.room === undefined) {
+      return;
+    }
+    setRoomName(props.roomState.room.name);
+    setCardsCount(props.roomState.room.numOfCards);
+  }, [props])
 
   const handleChange = (e) => {
     const { name, value, checked } = e.target;
@@ -60,6 +73,13 @@ const Room = (props) => {
       setSelectedAdditions(value);
     } else if (name === "privateSwitch") {
       setIsPrivate(checked);
+    } else if (name === "nameText") {
+      setRoomName(value);
+    } else if (name === "cardsCount") {
+      let num = Number(value);
+      if (Number.isInteger(num) && num >= 0) {
+        setCardsCount(value);
+      }
     }
   };
 
@@ -98,6 +118,11 @@ const Room = (props) => {
     );
   };
 
+  const isUserHost = (room) => {
+    let inGameUser = room.inGameUsers.find(x => x.user.userName === user.userName);
+    return inGameUser.isHost;
+  };
+
   const showOptions = () => {
     let room = props.roomState.room;
     if (room === undefined) {
@@ -106,9 +131,19 @@ const Room = (props) => {
     return (
       <ul className="options-list">
         <li className="options-row">
+          <TextField
+            {...(isUserHost(room) ? "" : "disabled")}
+            name="nameText"
+            label="Название"
+            value={roomName}
+            onChange={handleChange}
+            variant="standard" />
+        </li>
+        <li className="options-row">
           <FormControl sx={{ width: "100%" }}>
             <InputLabel id="additions-label">Дополнения</InputLabel>
             <Select
+              {...(isUserHost(room) ? "" : "disabled")}
               labelId="addition-label"
               name="additions"
               multiple
@@ -131,11 +166,22 @@ const Room = (props) => {
         </li>
         <hr />
         <li className="options-row">
-          <div>Количество карт: 0</div>
+          <div className="me-2">Количество карт:</div>
+          <TextField
+            name="cardsCount"
+            value={cardsCount}
+            onChange={handleChange}
+            type="number"
+            InputLabelProps={{ shrink: true }}
+            InputProps={{ inputProps: { min: 0, max: 100 } }}
+            helperText="от 1 до "
+            variant="standard" />
         </li>
         <hr />
         <li className="options-row">
-          <FormControlLabel control={<Switch name="privateSwitch" checked={isPrivate} onChange={handleChange} />} label="Закрытая комната" />
+          <FormControlLabel
+            control={<Switch disabled name="privateSwitch" checked={isPrivate} onChange={handleChange} />}
+            label="Закрытая комната" />
         </li>
       </ul>
     );

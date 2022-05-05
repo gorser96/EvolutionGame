@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,11 @@ const Menu = (props) => {
   const [modalWindowOpened, setModalWindowOpened] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    props.user();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleList = async (_) => {
     navigation('/room-list');
@@ -45,11 +50,30 @@ const Menu = (props) => {
     props.logout();
   };
 
+  const handleEnter = (_) => {
+    navigation(`/room/${props.roomState.room.uid}`);
+  };
+
+  const showPlayButtons = () => {
+    let room = props.roomState.room;
+    console.log(room);
+    if (room === undefined) {
+      return (
+        <>
+          <span className="menu-btn" onClick={handleList}>Поиск игры</span>
+          <span className="menu-btn" onClick={handleOpenModal}>Создать игру</span>
+        </>
+      );
+    }
+    return (
+      <span className="menu-btn" onClick={handleEnter}>Моя игра</span>
+    );
+  }
+
   return (
     <div className="menu-window text-center">
       <div className="menu-block">
-        <span className="menu-btn" onClick={handleList}>Поиск игры</span>
-        <span className="menu-btn" onClick={handleOpenModal}>Создать игру</span>
+        {showPlayButtons()}
         <span className="menu-btn">Профиль</span>
         <span className="menu-btn">Настройки</span>
         <span className="menu-btn" onClick={handleLogout}>Выход</span>
@@ -87,6 +111,7 @@ const mapState = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     create: bindActionCreators(roomActions.create, dispatch),
+    user: bindActionCreators(roomActions.user, dispatch),
     logout: bindActionCreators(userActions.logout, dispatch),
   };
 };

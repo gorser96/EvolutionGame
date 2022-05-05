@@ -51,6 +51,13 @@ export function roomState(state = {}, action) {
     case roomConstants.GET_FAILURE:
       return {};
 
+    case roomConstants.USER_REQUEST:
+      return {};
+    case roomConstants.USER_SUCCESS:
+      return { room: action.room };
+    case roomConstants.USER_FAILURE:
+      return {};
+
     default:
       return state;
   }

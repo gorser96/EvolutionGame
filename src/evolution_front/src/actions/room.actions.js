@@ -6,6 +6,7 @@ export const roomActions = {
   enter,
   list,
   get,
+  user,
 };
 
 function create(roomName) {
@@ -85,4 +86,24 @@ function get(roomUid) {
   function request() { return { type: roomConstants.GET_REQUEST } }
   function success(room) { return { type: roomConstants.GET_SUCCESS, room } }
   function failure(error) { return { type: roomConstants.GET_FAILURE, error } }
+}
+
+function user() {
+  return async dispatch => {
+    dispatch(request());
+
+    return roomService.user()
+      .then(
+        room => {
+          return dispatch(success(room));
+        },
+        error => {
+          return dispatch(failure(error.toString()));
+        }
+      );
+  };
+
+  function request() { return { type: roomConstants.USER_REQUEST } }
+  function success(room) { return { type: roomConstants.USER_SUCCESS, room } }
+  function failure(error) { return { type: roomConstants.USER_FAILURE, error } }
 }
