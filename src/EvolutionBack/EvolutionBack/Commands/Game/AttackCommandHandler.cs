@@ -1,13 +1,14 @@
 ﻿using Domain.Models;
 using Domain.Repo;
 using EvolutionBack.Core;
+using EvolutionBack.Models;
 using Infrastructure.EF;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace EvolutionBack.Commands
 {
-    public class AttackCommandHandler : IRequestHandler<AttackCommand>
+    public class AttackCommandHandler : IRequestHandler<AttackCommand, ActionResponse>
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
@@ -16,7 +17,7 @@ namespace EvolutionBack.Commands
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        public async Task<Unit> Handle(AttackCommand request, CancellationToken cancellationToken)
+        public async Task<ActionResponse> Handle(AttackCommand request, CancellationToken cancellationToken)
         {
             using var scope = _serviceScopeFactory.CreateScope();
             using var db = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
@@ -47,19 +48,28 @@ namespace EvolutionBack.Commands
 
             defensive.DisableProperties(request.DisabledPropertiesOnAttack);
 
-            if (attacker.Attack(defensive))
+            ActionResponse response;
+            var (isSuccessAttack, activeDefenseProperties) = attacker.Attack(defensive);
+
+            if (isSuccessAttack)
             {
                 attacker.Feed(2);
                 room.RemoveAnimal(user.Id, defensive.Uid);
+                response = new(AttackResponseType.SuccessAttack);
+            }
+            else if (activeDefenseProperties is null)
+            {
+                defensive.EnableProperties(request.DisabledPropertiesOnAttack);
+                response = new(AttackResponseType.CantAttack);
             }
             else
             {
-                defensive.EnableProperties(request.DisabledPropertiesOnAttack);
+                response = new(AttackResponseType.CanDefense, new(defensive.InGameUserUserUid, defensive.Uid, activeDefenseProperties));
             }
 
             await db.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
+            return response;
         }
     }
 }

@@ -22,12 +22,14 @@ public class AdditionRepo : IAdditionRepo
     public Addition? Find(Guid uid)
     {
         return _dbContext.Additions
+            .Include(x => x.Cards)
             .Include(x => x.Cards).ThenInclude(x => x.FirstProperty)
             .Include(x => x.Cards).ThenInclude(x => x.SecondProperty)
             .FirstOrDefault(x => x.Uid == uid);
     }
 
     public Addition? GetBaseAddition() => _dbContext.Additions
+        .Include(x => x.Cards)
         .Include(x => x.Cards).ThenInclude(x => x.FirstProperty)
         .Include(x => x.Cards).ThenInclude(x => x.SecondProperty)
         .SingleOrDefault(x => x.IsBase);

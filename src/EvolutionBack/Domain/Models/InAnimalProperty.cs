@@ -1,9 +1,15 @@
-﻿using System.Reflection;
+﻿using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace Domain.Models;
 
 public class InAnimalProperty
 {
+    private static readonly Assembly _assembly = Assembly.GetAssembly(typeof(Property)) ?? Assembly.GetExecutingAssembly();
+    private readonly object _lock = new();
+
+    private static ConcurrentDictionary<Guid, IPropertyAction> _propertyActionCache = new();
+
 #pragma warning disable CS8618
     public InAnimalProperty(Guid propertyUid, Guid animalUid)
     {
@@ -21,29 +27,46 @@ public class InAnimalProperty
 
     public virtual Animal Animal { get; init; }
 
+    public bool IsHasFatTissue { get; private set; }
+
     public bool IsActive { get; private set; }
 
-    public void Update(bool isActive)
+    public void Update(bool? isActive = null, bool? isHasFatTissue = null)
     {
-        IsActive = isActive;
+        if (isActive.HasValue)
+        {
+            IsActive = isActive.Value;
+        }
+        if (isHasFatTissue.HasValue)
+        {
+            IsHasFatTissue = isHasFatTissue.Value;
+        }
     }
 
     internal IPropertyAction GetPropertyAction()
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        var propertyType = assembly.GetType(Property.AssemblyName);
+        if (_propertyActionCache.TryGetValue(PropertyUid, out var obj))
+        {
+            return obj;
+        }
+
+        Type? propertyType;
+        lock (_lock)
+        {
+            propertyType = _assembly.GetType(Property.AssemblyName);
+        }
+
         if (propertyType is null)
         {
             throw new InvalidOperationException($"Property [{Property.AssemblyName}] not found!");
         }
 
-        if (Activator.CreateInstance(propertyType,
-            Property.Uid, Property.Name, Property.IsPair, Property.IsOnEnemy) is not IPropertyAction obj)
+        obj = Activator.CreateInstance(propertyType, Property.Uid, Property.Name) as IPropertyAction;
+        if (obj is null)
         {
             throw new InvalidOperationException($"Can't create instance of {Property.AssemblyName}!");
         }
-
-        obj.SetIsActive(IsActive);
+        _propertyActionCache.TryAdd(PropertyUid, obj);
 
         return obj;
     }

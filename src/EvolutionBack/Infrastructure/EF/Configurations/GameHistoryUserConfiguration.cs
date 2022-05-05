@@ -11,8 +11,10 @@ internal class GameHistoryUserConfiguration : IEntityTypeConfiguration<GameHisto
         builder.ToTable("GameHistoryUsers");
         builder.HasKey(x => x.Uid);
         builder.Property(x => x.Uid).ValueGeneratedNever();
-        builder.HasOne(x => x.User).WithOne(x => x.GameHistoryUser).HasForeignKey<GameHistoryUser>(x => x.UserUid);
-        builder.HasOne(x => x.GameHistory).WithMany(x => x.Users).HasForeignKey(x => x.GameHistoryUid);
+        builder.HasOne(x => x.User).WithOne(x => x.GameHistoryUser).HasForeignKey<GameHistoryUser>(x => x.UserUid)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(x => x.GameHistory).WithMany(x => x.Users).HasForeignKey(x => x.GameHistoryUid)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => x.UserUid).IsUnique(false);
         builder.HasIndex(x => x.GameHistoryUid).IsUnique(false);

@@ -73,9 +73,9 @@ public class InGameUser
         }
     }
 
-    internal Animal AddAnimal()
+    internal Animal AddAnimal(Guid cardUid)
     {
-        var animal = new Animal(Guid.NewGuid(), UserUid, RoomUid);
+        var animal = new Animal(Guid.NewGuid(), UserUid, RoomUid, cardUid);
         Animals.Add(animal);
         return animal;
     }

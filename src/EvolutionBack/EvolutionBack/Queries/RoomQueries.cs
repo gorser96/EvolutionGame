@@ -2,6 +2,7 @@
 using EvolutionBack.Models;
 using Infrastructure.EF;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace EvolutionBack.Queries;
 
@@ -16,13 +17,18 @@ public class RoomQueries : IQueries
         _mapper = mapper;
     }
 
-    public RoomViewModel? GetRoomViewModel(Guid uid)
+    private IQueryable<Domain.Models.Room> GetIncludedQuery()
     {
-        var obj = _dbContext.Rooms.AsNoTracking()
+        return _dbContext.Rooms.AsNoTracking()
             .Include(x => x.Additions)
             .Include(x => x.InGameUsers).ThenInclude(x => x.User)
-            .Include(x => x.InGameUsers).ThenInclude(x => x.Animals)
-            .Include(x => x.Cards).ThenInclude(x => x.Card)
+            .Include(x => x.InGameUsers).ThenInclude(x => x.Animals).ThenInclude(x => x.Properties).ThenInclude(x => x.Property)
+            .Include(x => x.Cards).ThenInclude(x => x.Card);
+    }
+
+    public RoomViewModel? GetRoomViewModel(Guid uid)
+    {
+        var obj = GetIncludedQuery()
             .FirstOrDefault(x => x.Uid == uid);
         if (obj is null)
         {
@@ -34,11 +40,7 @@ public class RoomQueries : IQueries
 
     public ICollection<RoomViewModel> GetRooms()
     {
-        var objs = _dbContext.Rooms.AsNoTracking()
-            .Include(x => x.Additions)
-            .Include(x => x.InGameUsers).ThenInclude(x => x.User)
-            .Include(x => x.InGameUsers).ThenInclude(x => x.Animals)
-            .Include(x => x.Cards).ThenInclude(x => x.Card)
+        var objs = GetIncludedQuery()
             .Select(x => _mapper.Map<RoomViewModel>(x))
             .ToArray();
         return objs;

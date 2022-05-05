@@ -207,11 +207,11 @@ public class Room
         }
     }
 
-    public Animal CreateAnimalFromCard(Guid cardUid, Guid userUid)
+    public Animal CreateAnimalFromNextCard(Guid userUid)
     {
         _roomValidator?.CanUserCreateAnimal(this, userUid);
 
-        var card = Cards.FirstOrDefault(x => x.RoomUid == Uid && x.CardUid == cardUid);
+        var card = Cards.FirstOrDefault();
         if (card is null)
         {
             throw new ValidationException("Card not found!");
@@ -219,7 +219,7 @@ public class Room
         Cards.Remove(card);
 
         var user = FindUserByUid(userUid) ?? throw new NullReferenceException(nameof(userUid));
-        var animal = user.AddAnimal();
+        var animal = user.AddAnimal(card.CardUid);
 
         return animal;
     }
@@ -247,6 +247,7 @@ public class Room
 
         var animal = FindAnimal(userUid, animalUid);
         animal.AddProperty(property);
+        Cards.Remove(card);
     }
 
     public void UseAnimalProperty(Guid userUid, Guid sourceAnimalUid, Guid propertyUid, Guid? targetAnimalUid)

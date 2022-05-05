@@ -5,35 +5,35 @@
 /// </summary>
 public class Running : Property, IPropertyAction
 {
-    public Running(Guid uid, string name, bool isPair, bool isOnEnemy)
-        : base(uid, name, isPair, isOnEnemy, 0, nameof(Running))
+    public Running(Guid uid, string name)
+        : base(uid, name, isPair: false, isOnEnemy: false, feedIncreasing: 0, typeof(Running).FullName!)
     {
-        IsActive = true;
     }
 
-    public bool IsActive { get; private set; }
+    public AnimalPropertyType PropertyType => AnimalPropertyType.ActiveDefense;
 
-    public void SetIsActive(bool value)
+    public DefenseResult OnDefense(Animal self, Animal enemy, Guid? targetUid)
     {
-        IsActive = value;
-    }
-
-    public bool? OnDefense(Animal self, Animal enemy)
-    {
-        if (IsActive)
+        if (IsActive(self))
         {
-            Random rand = new Random((int)DateTime.Now.Ticks);
+            Random rand = new((int)DateTime.Now.Ticks);
             var cubeResult = rand.Next(1, 6);
             if (cubeResult >= 4)
             {
                 //Если выпали числа 4,5,6
-                return true;
+                return new(true);
             }
         }
-        return false;
+
+        return new(false);
     }
 
     public void OnUse(Animal self, Animal? target = null)
     {
+    }
+
+    public bool CanAttack(Animal self, Animal enemy)
+    {
+        return true;
     }
 }

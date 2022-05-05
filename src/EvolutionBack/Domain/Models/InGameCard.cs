@@ -19,6 +19,10 @@ public class InGameCard
 
     public virtual Card Card { get; private set; }
 
+    public Guid? AnimalUid { get; private set; }
+
+    public virtual Animal? Animal { get; private set; }
+
     public int Order { get; private set; }
 
     public void Update(int order)

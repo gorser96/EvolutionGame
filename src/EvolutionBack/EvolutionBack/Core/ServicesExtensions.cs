@@ -97,6 +97,9 @@ public static class ServicesExtensions
                 .ForMember(x => x.NumOfCards, x => x.MapFrom(r => r.Cards.Count));
             cfg.CreateMap<Addition, AdditionViewModel>();
             cfg.CreateMap<InGameUser, InGameUserViewModel>();
+            cfg.CreateMap<Animal, AnimalViewModel>();
+            cfg.CreateMap<InAnimalProperty, InAnimalPropertyViewModel>();
+            cfg.CreateMap<Property, PropertyViewModel>();
         }, _assembly);
 
         return services;
@@ -151,15 +154,12 @@ public static class ServicesExtensions
     {
         using var scope = provider.CreateScope();
         using var db = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
-        var cardRepo = scope.ServiceProvider.GetRequiredService<ICardRepo>();
-        var additionRepo = scope.ServiceProvider.GetRequiredService<IAdditionRepo>();
-        var propertyRepo = scope.ServiceProvider.GetRequiredService<IPropertyRepo>();
 
         var propertyActionType = typeof(IPropertyAction);
         var assembly = Assembly.GetAssembly(propertyActionType) ?? throw new InvalidOperationException("Domain assembly not found!");
         var animalProperties = assembly.DefinedTypes
             .Where(x => x.ImplementedInterfaces.Any(i => i == propertyActionType))
-            .ToDictionary(x => x.Name);
+            .ToDictionary(x => x.FullName!);
 
         var cardsJsonStr = File.ReadAllText("Resources/Json/Cards.json");
         var additionsJsonStr = File.ReadAllText("Resources/Json/Additions.json");
@@ -181,8 +181,7 @@ public static class ServicesExtensions
         {
             if (animalProperties.TryGetValue(property.AssemblyName, out var propertyType))
             {
-                if (Activator.CreateInstance(propertyType, Guid.NewGuid(),
-                    property.AssemblyName, property.IsPair, property.IsOnEnemy) is Property propertyObj)
+                if (Activator.CreateInstance(propertyType, Guid.NewGuid(), property.AssemblyName) is Property propertyObj)
                 {
                     dbProperties.Add(db.Properties.Add(propertyObj).Entity);
                 }
@@ -197,11 +196,15 @@ public static class ServicesExtensions
             }
         }
 
+        db.SaveChanges();
+
         foreach (var addition in additionsJson.Additions)
         {
             string name = addition.IsBase ? "Базовый набор" : addition.Id.ToString();
 
-            var additionObj = additionRepo.Create(Guid.NewGuid(), name, addition.IsBase);
+            var additionObj = db.Additions.Add(new(Guid.NewGuid(), name, addition.IsBase)).Entity;
+
+            db.SaveChanges();
 
             foreach (var card in cardsJson.Cards.Where(x => x.AdditionId == addition.Id))
             {
@@ -217,13 +220,13 @@ public static class ServicesExtensions
                     throw new InvalidOperationException($"Property {card.SecondPropertyName} not found!");
                 }
 
-                for (int i = 0; i < card.Count; i++)
-                {
-                    cardRepo.Create(Guid.NewGuid(), additionObj.Uid, firstProperty.Uid, secondProperty?.Uid);
-                }
+                var cards = Enumerable.Range(1, card.Count)
+                    .Select(i => new Card(Guid.NewGuid(), additionObj.Uid, firstProperty.Uid, secondProperty?.Uid))
+                    .ToList();
+                db.Cards.AddRange(cards);
+
+                db.SaveChanges();
             }
         }
-
-        db.SaveChanges();
     }
 }

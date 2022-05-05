@@ -5,25 +5,24 @@
 /// </summary>
 public class Carnivorous : Property, IPropertyAction
 {
-    public Carnivorous(Guid uid, string name, bool isPair, bool isOnEnemy) 
-        : base(uid, name, isPair, isOnEnemy, 1, nameof(Carnivorous))
+    public Carnivorous(Guid uid, string name) 
+        : base(uid, name, isPair: false, isOnEnemy: false, feedIncreasing: 1, typeof(Carnivorous).FullName!)
     {
-        IsActive = true;
     }
 
-    public bool IsActive { get; private set; }
+    public AnimalPropertyType PropertyType => AnimalPropertyType.Passive;
 
-    public void SetIsActive(bool value)
+    public DefenseResult OnDefense(Animal self, Animal enemy, Guid? targetUid)
     {
-        IsActive = value;
-    }
-
-    public bool? OnDefense(Animal self, Animal enemy)
-    {
-        return null;
+        return new(false);
     }
 
     public void OnUse(Animal self, Animal? target = null)
     {
+    }
+
+    public bool CanAttack(Animal self, Animal enemy)
+    {
+        return true;
     }
 }

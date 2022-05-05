@@ -2,8 +2,8 @@
   "cards": [
     {
       "additionId": 0,
-      "firstPropertyName": "Burrowing",
-      "secondPropertyName": "Carnivorous",
+      "firstPropertyName": "Domain.Models.Burrowing",
+      "secondPropertyName": "Domain.Models.Carnivorous",
       "count": 4
     }
   ]
