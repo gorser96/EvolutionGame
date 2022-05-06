@@ -2,12 +2,16 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendar, faCheckCircle, faEllipsis, faSearch, faUser, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCalendar,
+  faCheckCircle,
+  faEllipsis,
+  faSearch,
+  faUser,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
 import "./RoomList.css";
-import plant_img from '../../img/plant.jpg';
-import jellyfish_img from '../../img/jellyfish.jpg';
-import pterodactyl_img from '../../img/pterodactyl.jpg';
 
 import { roomActions } from "../../actions";
 
@@ -20,23 +24,38 @@ const RoomList = (props) => {
   }, []);
 
   const handleBack = (_) => {
-    navigation('/menu');
+    navigation("/menu");
   };
 
-  const addAdditionIcon = (additionType) => {
-    const iconSize = 30;
-    if (additionType === 'plant') {
-      return <img className="rounded-circle" src={plant_img} alt="plant" width={iconSize} height={iconSize} />;
+  const handleEnter = (roomUid) => {
+    console.log(roomUid);
+    props.enter(roomUid).then((room) => navigation(`/room/${room.uid}`));
+  };
+
+  const getMIMEType = (iconName) => {
+    let ext = iconName.split(".")[1];
+    if (ext === "png") {
+      return "image/png";
+    } else if (ext === "jpg" || ext === "jpeg") {
+      return "image/jpeg";
     }
-    else if (additionType === 'timeToFly') {
-      return <img className="rounded-circle" src={pterodactyl_img} alt="pterodactyl" width={iconSize} height={iconSize} />;
-    }
-    else if (additionType === 'continents') {
-      return <img className="rounded-circle" src={jellyfish_img} alt="jellyfish" width={iconSize} height={iconSize} />;
-    }
-    else {
-      return "";
-    }
+  };
+
+  const addAdditionIcons = (room) => {
+    return (
+      <div className="profile-image">
+        {room.additions.map((item) => (
+          <img
+            key={item.name}
+            alt={item.name}
+            className="rounded-circle"
+            width={30}
+            height={30}
+            src={`data:${getMIMEType(item.iconName)};base64,${item.icon}`}
+          />
+        ))}
+      </div>
+    );
   };
 
   const showRooms = () => {
@@ -50,32 +69,43 @@ const RoomList = (props) => {
           return (
             <li className="d-flex justify-content-between" key={room.name}>
               <div className="d-flex flex-row align-items-center">
-                <FontAwesomeIcon icon={faCheckCircle} className="text-success" />
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  className="text-success"
+                />
                 <div className="ms-2">
                   <h4 className="mb-0">{room.name}</h4>
                   <div className="d-flex flex-row mt-1 text-black-50 date-time">
                     <div>
                       <FontAwesomeIcon icon={faUser} />
-                      <span className="h6 ms-2">{room.inGameUsers.find(x => x.isHost).user.userName}</span>
+                      <span className="h6 ms-2">
+                        {room.inGameUsers.find((x) => x.isHost).user.userName}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="d-flex flex-row align-items-center">Количество карт: {room.numOfCards}</div>
+              <div className="d-flex flex-row align-items-center">
+                Количество карт: {room.numOfCards}
+              </div>
               <div className="d-flex flex-row align-items-center">
                 <div className="d-flex flex-column me-2">
-                  <div className="profile-image">
-                    {addAdditionIcon('plant')}
-                    {addAdditionIcon('timeToFly')}
-                    {addAdditionIcon('continents')}
-                  </div>
+                  <div className="profile-image">{addAdditionIcons(room)}</div>
                   <span className="date-time">
-                    <FontAwesomeIcon icon={faCalendar} className="text-secondary me-1" />
+                    <FontAwesomeIcon
+                      icon={faCalendar}
+                      className="text-secondary me-1"
+                    />
                     {new Date(room.createdDateTime).toLocaleString()}
                   </span>
                 </div>
                 <div className="ms-5">
-                  <span className="btn btn-success">Присоединиться</span>
+                  <span
+                    className="btn btn-success"
+                    onClick={(_) => handleEnter(room.uid)}
+                  >
+                    Присоединиться
+                  </span>
                 </div>
               </div>
             </li>
@@ -89,9 +119,16 @@ const RoomList = (props) => {
     <div className="room-list-window">
       <div className="list-rooms">
         <div className="d-flex justify-content-between align-items-center activity">
-          <div className="icons"><FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} /></div>
-          <div className="list-title"><span className="activity-done">Список игр</span></div>
-          <div className="icons"><FontAwesomeIcon icon={faSearch} className="me-3" /><FontAwesomeIcon icon={faEllipsis} /></div>
+          <div className="icons">
+            <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} />
+          </div>
+          <div className="list-title">
+            <span className="activity-done">Список игр</span>
+          </div>
+          <div className="icons">
+            <FontAwesomeIcon icon={faSearch} className="me-3" />
+            <FontAwesomeIcon icon={faEllipsis} />
+          </div>
         </div>
         {showRooms()}
       </div>
@@ -106,6 +143,7 @@ const mapState = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     list: bindActionCreators(roomActions.list, dispatch),
+    enter: bindActionCreators(roomActions.enter, dispatch),
   };
 };
 

@@ -13,5 +13,8 @@ export const apiStore = {
   roomEnter: '/room/{0}/enter',
   roomUpdate: '/room/{0}/update',
   roomResume: '/room/{0}/resume',
-  roomRemove: '/room/{0}/remove'
+  roomRemove: '/room/{0}/remove',
+
+  additionList: '/additions/list',
+  additionGet: '/additions/{0}',
 };

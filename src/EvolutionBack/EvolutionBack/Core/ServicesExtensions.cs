@@ -96,10 +96,11 @@ public static class ServicesExtensions
             cfg.CreateMap<Room, RoomViewModel>()
                 .ForMember(x => x.NumOfCards, x => x.MapFrom(r => r.Cards.Count));
             cfg.CreateMap<Addition, AdditionViewModel>();
+            cfg.CreateMap<Card, CardViewModel>();
+            cfg.CreateMap<Property, PropertyViewModel>();
             cfg.CreateMap<InGameUser, InGameUserViewModel>();
             cfg.CreateMap<Animal, AnimalViewModel>();
             cfg.CreateMap<InAnimalProperty, InAnimalPropertyViewModel>();
-            cfg.CreateMap<Property, PropertyViewModel>();
         }, _assembly);
 
         return services;
@@ -203,6 +204,13 @@ public static class ServicesExtensions
             string name = addition.IsBase ? "Базовый набор" : addition.Id.ToString();
 
             var additionObj = db.Additions.Add(new(Guid.NewGuid(), name, addition.IsBase)).Entity;
+
+            if (addition.IconName is not null)
+            {
+                var bytes = File.ReadAllBytes(addition.IconName);
+                var fileName = Path.GetFileName(addition.IconName);
+                additionObj.Update(iconName: fileName, icon: bytes);
+            }
 
             db.SaveChanges();
 

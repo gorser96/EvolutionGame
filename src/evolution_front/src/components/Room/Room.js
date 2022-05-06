@@ -1,47 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { useParams, useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import "./Room.css"
-import plant_img from '../../img/plant.jpg';
-import jellyfish_img from '../../img/jellyfish.jpg';
-import pterodactyl_img from '../../img/pterodactyl.jpg';
+import { useParams, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import "./Room.css";
 
-import { roomActions } from "../../actions";
+import { roomActions, additionActions } from "../../actions";
 import {
-  Avatar, Select, MenuItem, OutlinedInput,
-  Box, Tooltip, InputLabel, FormControl, ListItemText,
-  Switch, FormControlLabel, TextField
+  Avatar,
+  Select,
+  MenuItem,
+  OutlinedInput,
+  Box,
+  Tooltip,
+  InputLabel,
+  FormControl,
+  ListItemText,
+  Switch,
+  FormControlLabel,
+  TextField,
 } from "@mui/material";
-
-const AdditionImgDict = {
-  timeToFly: {
-    icon: (iconSize) => (
-      <Tooltip title="Время летать">
-        <img className="rounded-circle" src={pterodactyl_img} alt="pterodactyl" width={iconSize} height={iconSize} />
-      </Tooltip>
-    ),
-    name: "Время летать"
-  },
-  plants: {
-    icon: (iconSize) => (
-      <Tooltip title="Растения">
-        <img className="rounded-circle" src={plant_img} alt="plant" width={iconSize} height={iconSize} />
-      </Tooltip>
-    ),
-    name: "Растения"
-  },
-  continents: {
-    icon: (iconSize) => (
-      <Tooltip title="Континенты">
-        <img className="rounded-circle" src={jellyfish_img} alt="jellyfish" width={iconSize} height={iconSize} />
-      </Tooltip>
-    ),
-    name: "Континенты",
-  },
-};
 
 const Room = (props) => {
   let navigation = useNavigate();
@@ -49,13 +28,16 @@ const Room = (props) => {
 
   const [selectedAdditions, setSelectedAdditions] = useState([]);
   const [isPrivate, setIsPrivate] = useState(false);
-  const [roomName, setRoomName] = useState('');
+  const [roomName, setRoomName] = useState("");
   const [cardsCount, setCardsCount] = useState(0);
+
+  const [additions, setAdditions] = useState([]);
 
   const user = props.authentication.user;
 
   useEffect(() => {
     props.get(uid);
+    props.additionList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -63,9 +45,12 @@ const Room = (props) => {
     if (props.roomState.room === undefined) {
       return;
     }
+    if (props.additionState.additions !== undefined) {
+      setAdditions(props.additionState.additions.filter((x) => !x.isBase));
+    }
     setRoomName(props.roomState.room.name);
     setCardsCount(props.roomState.room.numOfCards);
-  }, [props])
+  }, [props]);
 
   const handleChange = (e) => {
     const { name, value, checked } = e.target;
@@ -119,8 +104,19 @@ const Room = (props) => {
   };
 
   const isUserHost = (room) => {
-    let inGameUser = room.inGameUsers.find(x => x.user.userName === user.userName);
+    let inGameUser = room.inGameUsers.find(
+      (x) => x.user.userName === user.userName
+    );
     return inGameUser.isHost;
+  };
+
+  const getMIMEType = (iconName) => {
+    let ext = iconName.split(".")[1];
+    if (ext === "png") {
+      return "image/png";
+    } else if (ext === "jpg" || ext === "jpeg") {
+      return "image/jpeg";
+    }
   };
 
   const showOptions = () => {
@@ -132,18 +128,19 @@ const Room = (props) => {
       <ul className="options-list">
         <li className="options-row">
           <TextField
-            {...(isUserHost(room) ? "" : "disabled")}
+            disabled={!isUserHost(room)}
             name="nameText"
             label="Название"
             value={roomName}
             onChange={handleChange}
-            variant="standard" />
+            variant="standard"
+          />
         </li>
         <li className="options-row">
           <FormControl sx={{ width: "100%" }}>
             <InputLabel id="additions-label">Дополнения</InputLabel>
             <Select
-              {...(isUserHost(room) ? "" : "disabled")}
+              disabled={!isUserHost(room)}
               labelId="addition-label"
               name="additions"
               multiple
@@ -151,14 +148,40 @@ const Room = (props) => {
               onChange={handleChange}
               input={<OutlinedInput label="Дополнения" />}
               renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value) => AdditionImgDict[value].icon(30))}
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((value) => {
+                    let addition = additions.find((x) => x.uid === value);
+                    return (
+                      <Tooltip title={addition.name} key={addition.uid}>
+                        <img
+                          className="rounded-circle"
+                          src={`data:${getMIMEType(addition.iconName)};base64,${
+                            addition.icon
+                          }`}
+                          alt={addition.iconName}
+                          width={30}
+                          height={30}
+                        />
+                      </Tooltip>
+                    );
+                  })}
                 </Box>
-              )}>
-              {Object.keys(AdditionImgDict).map((key) => (
-                <MenuItem key={key} value={key}>
-                  {AdditionImgDict[key].icon(20)}
-                  <ListItemText primary={AdditionImgDict[key].name} className="ms-1" />
+              )}
+            >
+              {additions.map((item) => (
+                <MenuItem key={item.uid} value={item.uid}>
+                  <Tooltip title={item.name} key={item.uid}>
+                    <img
+                      className="rounded-circle"
+                      src={`data:${getMIMEType(item.iconName)};base64,${
+                        item.icon
+                      }`}
+                      alt={item.iconName}
+                      width={20}
+                      height={20}
+                    />
+                  </Tooltip>
+                  <ListItemText primary={item.name} className="ms-1" />
                 </MenuItem>
               ))}
             </Select>
@@ -168,6 +191,7 @@ const Room = (props) => {
         <li className="options-row">
           <div className="me-2">Количество карт:</div>
           <TextField
+            disabled={!isUserHost(room)}
             name="cardsCount"
             value={cardsCount}
             onChange={handleChange}
@@ -175,13 +199,22 @@ const Room = (props) => {
             InputLabelProps={{ shrink: true }}
             InputProps={{ inputProps: { min: 0, max: 100 } }}
             helperText="от 1 до "
-            variant="standard" />
+            variant="standard"
+          />
         </li>
         <hr />
         <li className="options-row">
           <FormControlLabel
-            control={<Switch disabled name="privateSwitch" checked={isPrivate} onChange={handleChange} />}
-            label="Закрытая комната" />
+            control={
+              <Switch
+                disabled
+                name="privateSwitch"
+                checked={isPrivate}
+                onChange={handleChange}
+              />
+            }
+            label="Закрытая комната"
+          />
         </li>
       </ul>
     );
@@ -192,7 +225,9 @@ const Room = (props) => {
       <div className="content-container">
         <div className="players-container">
           <div className="list-header">
-            <div className="icons"><FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} /></div>
+            <div className="icons">
+              <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} />
+            </div>
             <div className="list-title">Список игроков</div>
           </div>
           {showPlayers()}
@@ -213,6 +248,7 @@ const mapState = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     get: bindActionCreators(roomActions.get, dispatch),
+    additionList: bindActionCreators(additionActions.list, dispatch),
   };
 };
 

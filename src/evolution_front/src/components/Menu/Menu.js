@@ -56,8 +56,7 @@ const Menu = (props) => {
 
   const showPlayButtons = () => {
     let room = props.roomState.room;
-    console.log(room);
-    if (room === undefined) {
+    if (room === undefined || room === '') {
       return (
         <>
           <span className="menu-btn" onClick={handleList}>Поиск игры</span>
