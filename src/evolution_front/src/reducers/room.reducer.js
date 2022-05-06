@@ -9,20 +9,6 @@ export function roomState(state = {}, action) {
     case roomConstants.CREATE_FAILURE:
       return {};
 
-    case roomConstants.ENTER_REQUEST:
-      return { entering: true };
-    case roomConstants.ENTER_SUCCESS:
-      return { entered: true, room: action.room };
-    case roomConstants.ENTER_FAILURE:
-      return {};
-
-    case roomConstants.START_REQUEST:
-      return { starting: true };
-    case roomConstants.START_SUCCESS:
-      return { started: true, room: action.room };
-    case roomConstants.START_FAILURE:
-      return {};
-
     case roomConstants.UPDATE_REQUEST:
       return { updating: true, room: action.room };
     case roomConstants.UPDATE_SUCCESS:
@@ -37,24 +23,66 @@ export function roomState(state = {}, action) {
     case roomConstants.REMOVE_FAILURE:
       return {};
 
-    case roomConstants.LIST_REQUEST:
+    case roomConstants.ENTER_REQUEST:
+      return { entering: true };
+    case roomConstants.ENTER_SUCCESS:
+      return { entered: true, room: action.room };
+    case roomConstants.ENTER_FAILURE:
       return {};
+
+    case roomConstants.LEAVE_REQUEST:
+      return { leaving: true };
+    case roomConstants.LEAVE_SUCCESS:
+      return { leaved: true, room: action.room };
+    case roomConstants.LEAVE_FAILURE:
+      return {};
+
+    case roomConstants.START_REQUEST:
+      return { starting: true };
+    case roomConstants.START_SUCCESS:
+      return { started: true };
+    case roomConstants.START_FAILURE:
+      return {};
+
+    case roomConstants.PAUSE_REQUEST:
+      return { pausing: true };
+    case roomConstants.PAUSE_SUCCESS:
+      return { paused: true };
+    case roomConstants.PAUSE_FAILURE:
+      return {};
+
+    case roomConstants.RESUME_REQUEST:
+      return { resuming: true };
+    case roomConstants.RESUME_SUCCESS:
+      return { resumed: true };
+    case roomConstants.RESUME_FAILURE:
+      return {};
+
+    case roomConstants.END_REQUEST:
+      return { ending: true };
+    case roomConstants.END_SUCCESS:
+      return { ended: true };
+    case roomConstants.END_FAILURE:
+      return {};
+
+    case roomConstants.LIST_REQUEST:
+      return { requesting: true };
     case roomConstants.LIST_SUCCESS:
-      return { rooms: action.rooms };
+      return { requested: true, rooms: action.rooms };
     case roomConstants.LIST_FAILURE:
       return {};
 
     case roomConstants.GET_REQUEST:
-      return {};
+      return { requesting: true };
     case roomConstants.GET_SUCCESS:
-      return { room: action.room };
+      return { requested: true, room: action.room };
     case roomConstants.GET_FAILURE:
       return {};
 
     case roomConstants.USER_REQUEST:
-      return {};
+      return { requesting: true };
     case roomConstants.USER_SUCCESS:
-      return { room: action.room };
+      return { requested: true, room: action.room };
     case roomConstants.USER_FAILURE:
       return {};
 

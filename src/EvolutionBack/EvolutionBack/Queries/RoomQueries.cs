@@ -26,9 +26,9 @@ public class RoomQueries : IQueries
             .Include(x => x.Cards).ThenInclude(x => x.Card);
     }
 
-    public RoomViewModel? GetHostedRoom(string userName)
+    public RoomViewModel? GetRoomWithUser(string userName)
     {
-        var obj = GetIncludedQuery().FirstOrDefault(x => x.InGameUsers.Any(x => x.IsHost && x.User.UserName == userName));
+        var obj = GetIncludedQuery().FirstOrDefault(x => x.InGameUsers.Any(x => x.User.UserName == userName));
         if (obj is null)
         {
             return null;

@@ -52,7 +52,7 @@ namespace EvolutionBack.Controllers
                 throw new ApplicationException("User identity not found!");
             }
 
-            return Task.FromResult(roomQueries.GetHostedRoom(user.Name));
+            return Task.FromResult(roomQueries.GetRoomWithUser(user.Name));
         }
 
         [HttpPost("{roomUid:guid}/enter")]
