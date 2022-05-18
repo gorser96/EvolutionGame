@@ -2,18 +2,10 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendar,
-  faCheckCircle,
-  faEllipsis,
-  faSearch,
-  faUser,
-  faArrowLeft,
-} from "@fortawesome/free-solid-svg-icons";
 import "./RoomList.css";
 
 import { roomActions } from "../../actions";
+import { ArrowBack, CalendarMonth, CheckCircle, MoreHoriz, Person, Search } from "@mui/icons-material";
 
 const RoomList = (props) => {
   let navigation = useNavigate();
@@ -69,15 +61,14 @@ const RoomList = (props) => {
           return (
             <li className="d-flex justify-content-between" key={room.name}>
               <div className="d-flex flex-row align-items-center">
-                <FontAwesomeIcon
-                  icon={faCheckCircle}
+                <CheckCircle
                   className="text-success"
                 />
                 <div className="ms-2">
                   <h4 className="mb-0">{room.name}</h4>
                   <div className="d-flex flex-row mt-1 text-black-50 date-time">
                     <div>
-                      <FontAwesomeIcon icon={faUser} />
+                      <Person />
                       <span className="h6 ms-2">
                         {room.inGameUsers.find((x) => x.isHost).user.userName}
                       </span>
@@ -92,8 +83,7 @@ const RoomList = (props) => {
                 <div className="d-flex flex-column me-2">
                   <div className="profile-image">{addAdditionIcons(room)}</div>
                   <span className="date-time">
-                    <FontAwesomeIcon
-                      icon={faCalendar}
+                    <CalendarMonth
                       className="text-secondary me-1"
                     />
                     {new Date(room.createdDateTime).toLocaleString()}
@@ -120,14 +110,14 @@ const RoomList = (props) => {
       <div className="list-rooms">
         <div className="d-flex justify-content-between align-items-center activity">
           <div className="icons">
-            <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} />
+            <ArrowBack onClick={handleBack} />
           </div>
           <div className="list-title">
             <span className="activity-done">Список игр</span>
           </div>
           <div className="icons">
-            <FontAwesomeIcon icon={faSearch} className="me-3" />
-            <FontAwesomeIcon icon={faEllipsis} />
+            <Search className="me-3" />
+            <MoreHoriz />
           </div>
         </div>
         {showRooms()}

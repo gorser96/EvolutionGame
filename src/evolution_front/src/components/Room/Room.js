@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useParams, useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import "./Room.css";
 
 import { roomActions, additionActions } from "../../actions";
@@ -21,6 +19,7 @@ import {
   FormControlLabel,
   TextField,
 } from "@mui/material";
+import { ArrowBack, Person } from "@mui/icons-material";
 
 const Room = (props) => {
   let navigation = useNavigate();
@@ -78,7 +77,7 @@ const Room = (props) => {
 
   const showIsHost = (isHost) => {
     if (isHost) {
-      return <FontAwesomeIcon icon={faUser} />;
+      return <Person />;
     }
     return "";
   };
@@ -226,7 +225,7 @@ const Room = (props) => {
         <div className="players-container">
           <div className="list-header">
             <div className="icons">
-              <FontAwesomeIcon icon={faArrowLeft} onClick={handleBack} />
+              <ArrowBack onClick={handleBack} />
             </div>
             <div className="list-title">Список игроков</div>
           </div>
