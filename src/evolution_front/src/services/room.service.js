@@ -177,16 +177,21 @@ async function end(roomUid) {
 
 function handleResponse(response) {
   return response.text().then((text) => {
-    const data = text && JSON.parse(text);
+    let resultData = text;
+    try {
+      const data = text && JSON.parse(text);
+      resultData = data;
+    } catch (error) {}
+
     if (!response.ok) {
       if (response.status === 401) {
         Location.reload(true);
       }
 
-      const error = (data && data.message) || response.statusText;
+      const error = resultData || response.statusText;
       return Promise.reject(error);
     }
 
-    return data;
+    return resultData;
   });
 }

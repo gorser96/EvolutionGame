@@ -38,7 +38,7 @@ public class RoomCleanerServiceHosted : IHostedService, IDisposable
 
     private void OnTick(object? source)
     {
-        _logger.LogInformation("Clean stared");
+        _logger.LogInformation("Clean started");
         using var scope = _serviceScopeFactory.CreateScope();
         using var db = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
         var roomQueries = scope.ServiceProvider.GetRequiredService<RoomQueries>();

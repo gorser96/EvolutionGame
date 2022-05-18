@@ -1,27 +1,45 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./RoomList.css";
 
 import { roomActions } from "../../actions";
-import { ArrowBack, CalendarMonth, CheckCircle, MoreHoriz, Person, Search } from "@mui/icons-material";
+import {
+  ArrowBack,
+  CalendarMonth,
+  CheckCircle,
+  MoreHoriz,
+  Person,
+  Search,
+} from "@mui/icons-material";
+import { Box, Button } from "@mui/material";
+import useSnackbar from "../hooks/SnackbarHook";
 
 const RoomList = (props) => {
   let navigation = useNavigate();
+  let location = useLocation();
+  const [snackbar, sendNotification] = useSnackbar();
 
   useEffect(() => {
     props.list();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [location]);
 
   const handleBack = (_) => {
     navigation("/menu");
   };
 
   const handleEnter = (roomUid) => {
-    console.log(roomUid);
-    props.enter(roomUid).then((room) => navigation(`/room/${room.uid}`));
+    props.enter(roomUid).then(
+      (result) => {
+        navigation(`/room/${result.room.uid}`);
+      },
+      (error) => {
+        sendNotification(error.error, "error");
+        props.list();
+      }
+    );
   };
 
   const getMIMEType = (iconName) => {
@@ -59,44 +77,47 @@ const RoomList = (props) => {
       <ul className="list list-inline">
         {rooms.map((room) => {
           return (
-            <li className="d-flex justify-content-between" key={room.name}>
-              <div className="d-flex flex-row align-items-center">
-                <CheckCircle
-                  className="text-success"
-                />
-                <div className="ms-2">
-                  <h4 className="mb-0">{room.name}</h4>
-                  <div className="d-flex flex-row mt-1 text-black-50 date-time">
-                    <div>
-                      <Person />
-                      <span className="h6 ms-2">
-                        {room.inGameUsers.find((x) => x.isHost).user.userName}
-                      </span>
-                    </div>
+            <li key={room.name}>
+              <div className="list-block">
+                <CheckCircle className="text-success" />
+                <div style={{ marginLeft: "0.75rem" }}>
+                  <h4 style={{ marginBottom: "0" }}>{room.name}</h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      marginTop: "0.5rem",
+                      color: "rgba(0,0,0,.5)!important",
+                    }}
+                    className="date-time"
+                  >
+                    <Person />
+                    <span style={{ fontSize: "1rem", marginLeft: "0.75rem" }}>
+                      {room.inGameUsers.find((x) => x.isHost).user.userName}
+                    </span>
                   </div>
                 </div>
               </div>
-              <div className="d-flex flex-row align-items-center">
+              <div className="list-block">
                 Количество карт: {room.numOfCards}
               </div>
-              <div className="d-flex flex-row align-items-center">
-                <div className="d-flex flex-column me-2">
+              <div className="list-block">
+                <Box sx={{ display: "flex", flexDirection: "column", mr: 2 }}>
                   <div className="profile-image">{addAdditionIcons(room)}</div>
                   <span className="date-time">
-                    <CalendarMonth
-                      className="text-secondary me-1"
-                    />
-                    {new Date(room.createdDateTime).toLocaleString()}
+                    <CalendarMonth sx={{ color: "#6c757d!important", mr: 1 }} />
+                    {new Date(room.createdDateTime + "Z").toLocaleString()}
                   </span>
-                </div>
-                <div className="ms-5">
-                  <span
-                    className="btn btn-success"
+                </Box>
+                <Box sx={{ ml: 5 }}>
+                  <Button
+                    variant="contained"
+                    color="success"
                     onClick={(_) => handleEnter(room.uid)}
                   >
                     Присоединиться
-                  </span>
-                </div>
+                  </Button>
+                </Box>
               </div>
             </li>
           );
@@ -106,23 +127,27 @@ const RoomList = (props) => {
   };
 
   return (
-    <div className="room-list-window">
-      <div className="list-rooms">
-        <div className="d-flex justify-content-between align-items-center activity">
-          <div className="icons">
+    <Box component="div" className="room-list-window">
+      {snackbar}
+      <Box component="div" className="list-rooms">
+        <Box
+          component="div"
+          className="list-rooms-header"
+        >
+          <Box component="div" className="icons">
             <ArrowBack onClick={handleBack} />
-          </div>
-          <div className="list-title">
-            <span className="activity-done">Список игр</span>
-          </div>
-          <div className="icons">
+          </Box>
+          <Box component="div" className="list-title">
+            Список игр
+          </Box>
+          <Box component="div" className="icons">
             <Search className="me-3" />
             <MoreHoriz />
-          </div>
-        </div>
+          </Box>
+        </Box>
         {showRooms()}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

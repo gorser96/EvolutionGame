@@ -18,8 +18,10 @@ import {
   Switch,
   FormControlLabel,
   TextField,
+  Button,
 } from "@mui/material";
 import { ArrowBack, Person } from "@mui/icons-material";
+import useSureDialog from "../hooks/SureDialogHook";
 
 const Room = (props) => {
   let navigation = useNavigate();
@@ -29,8 +31,15 @@ const Room = (props) => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [roomName, setRoomName] = useState("");
   const [cardsCount, setCardsCount] = useState(0);
-
   const [additions, setAdditions] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogResult, setDialogResult] = useState(undefined);
+  const onCloseDialog = (result) => {
+    setDialogResult(result);
+    setOpenDialog(false);
+  };
+
+  const sureDialog = useSureDialog(onCloseDialog, openDialog);
 
   const user = props.authentication.user;
 
@@ -93,8 +102,10 @@ const Room = (props) => {
           return (
             <li key={player.user.userName} className="player-row">
               {getAvatar(player.user)}
-              <div className="ms-2">{player.user.userName}</div>
-              <div className="ms-auto">{showIsHost(player.isHost)}</div>
+              <div style={{ marginLeft: "1rem" }}>{player.user.userName}</div>
+              <div style={{ marginLeft: "auto" }}>
+                {showIsHost(player.isHost)}
+              </div>
             </li>
           );
         })}
@@ -106,6 +117,9 @@ const Room = (props) => {
     let inGameUser = room.inGameUsers.find(
       (x) => x.user.userName === user.userName
     );
+    if (inGameUser === undefined) {
+      return false;
+    }
     return inGameUser.isHost;
   };
 
@@ -116,6 +130,35 @@ const Room = (props) => {
     } else if (ext === "jpg" || ext === "jpeg") {
       return "image/jpeg";
     }
+  };
+
+  const handleLeave = async () => {
+    await props
+      .leave(props.roomState.room.uid)
+      .then((result) => navigation("/room-list"));
+  };
+
+  const handleSave = async () => {
+    console.log("Save options");
+  };
+
+  const handleRemove = async () => {
+    console.log("remove room?");
+    setOpenDialog(true);
+    await new Promise(() => waitForDialogResult(dialogResult));
+    console.log(dialogResult);
+    setDialogResult(null);
+  };
+
+  const waitForDialogResult = (result) => {
+    if (result === undefined) {
+      console.log('next waiting...');
+      setTimeout(waitForDialogResult.bind(this, dialogResult), 500);
+    }
+  };
+
+  const handleStart = async () => {
+    console.log("Start game?");
   };
 
   const showOptions = () => {
@@ -188,18 +231,21 @@ const Room = (props) => {
         </li>
         <hr />
         <li className="options-row">
-          <div className="me-2">Количество карт:</div>
-          <TextField
-            disabled={!isUserHost(room)}
-            name="cardsCount"
-            value={cardsCount}
-            onChange={handleChange}
-            type="number"
-            InputLabelProps={{ shrink: true }}
-            InputProps={{ inputProps: { min: 0, max: 100 } }}
-            helperText="от 1 до "
-            variant="standard"
-          />
+          <FormControl>
+            <TextField
+              disabled={!isUserHost(room)}
+              name="cardsCount"
+              label="Количество карт"
+              value={cardsCount}
+              onChange={handleChange}
+              type="number"
+              InputLabelProps={{ shrink: true }}
+              InputProps={{ inputProps: { min: 0, max: 100 } }}
+              helperText={`от 1 до ${room.NumOfCards || 0}`}
+              variant="standard"
+              sx={{ minWidth: 100, maxWidth: 250 }}
+            />
+          </FormControl>
         </li>
         <hr />
         <li className="options-row">
@@ -215,28 +261,88 @@ const Room = (props) => {
             label="Закрытая комната"
           />
         </li>
+        <hr />
+        <li className="options-row">
+          <FormControl
+            sx={{
+              mt: 2,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              width: "100%",
+            }}
+          >
+            {isUserHost(room) ? (
+              <Box
+                sx={{ display: "flex", flexDirection: "column", width: "100%" }}
+              >
+                <Box
+                  sx={{ display: "flex", flexDirection: "row-reverse", mb: 2 }}
+                >
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleRemove}
+                  >
+                    Удалить комнату
+                  </Button>
+                </Box>
+                <Box
+                  sx={{ display: "flex", flexDirection: "row-reverse", mb: 2 }}
+                >
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={handleStart}
+                    sx={{ ml: 2 }}
+                  >
+                    Начать игру
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSave}
+                  >
+                    Сохранить
+                  </Button>
+                </Box>
+              </Box>
+            ) : (
+              <>
+                <Button variant="contained" color="error" onClick={handleLeave}>
+                  Покинуть комнату
+                </Button>
+              </>
+            )}
+          </FormControl>
+        </li>
       </ul>
     );
   };
 
   return (
-    <div className="room-window">
-      <div className="content-container">
-        <div className="players-container">
-          <div className="list-header">
-            <div className="icons">
+    <Box component="div" className="room-window">
+      {sureDialog}
+      <Box component="div" className="content-container">
+        <Box component="div" className="players-container">
+          <Box component="div" className="list-header">
+            <Box component="div" className="icons">
               <ArrowBack onClick={handleBack} />
-            </div>
-            <div className="list-title">Список игроков</div>
-          </div>
+            </Box>
+            <Box component="div" className="list-title">
+              Список игроков
+            </Box>
+          </Box>
           {showPlayers()}
-        </div>
-        <div className="options-container">
-          <div className="list-title">Параметры игры</div>
+        </Box>
+        <Box component="div" className="options-container">
+          <Box component="div" className="list-title">
+            Параметры игры
+          </Box>
           {showOptions()}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
@@ -247,6 +353,7 @@ const mapState = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     get: bindActionCreators(roomActions.get, dispatch),
+    leave: bindActionCreators(roomActions.leave, dispatch),
     additionList: bindActionCreators(additionActions.list, dispatch),
   };
 };

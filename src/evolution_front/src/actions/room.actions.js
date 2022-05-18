@@ -24,7 +24,7 @@ function create(roomName) {
         return dispatch(success(room));
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -48,7 +48,7 @@ function update(roomUid, roomModel) {
         return dispatch(success(room));
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -72,7 +72,7 @@ function remove(roomUid) {
         return dispatch(success());
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -97,7 +97,7 @@ function enter(roomUid) {
         return dispatch(success(room));
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -122,7 +122,7 @@ function leave(roomUid) {
         return dispatch(success(room));
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -147,7 +147,7 @@ function start(roomUid) {
         return dispatch(success());
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -172,7 +172,7 @@ function pause(roomUid) {
         return dispatch(success());
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -197,7 +197,7 @@ function resume(roomUid) {
         return dispatch(success());
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -222,7 +222,7 @@ function end(roomUid) {
         return dispatch(success());
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -247,7 +247,7 @@ function list() {
         return dispatch(success(rooms));
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -272,7 +272,7 @@ function get(roomUid) {
         return dispatch(success(room));
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };
@@ -297,7 +297,7 @@ function user() {
         return dispatch(success(room));
       },
       (error) => {
-        return dispatch(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error.toString())));
       }
     );
   };

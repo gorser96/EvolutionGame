@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useNavigate } from "react-router-dom";
-import { Modal } from "@mui/material";
+import { Button, FormControl, Modal, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import "./Menu.css";
 
@@ -11,7 +11,7 @@ import { roomActions, userActions } from "../../actions";
 const Menu = (props) => {
   let navigation = useNavigate();
   const [modalWindowOpened, setModalWindowOpened] = useState(false);
-  const [roomName, setRoomName] = useState('');
+  const [roomName, setRoomName] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
@@ -20,15 +20,16 @@ const Menu = (props) => {
   }, []);
 
   const handleList = async (_) => {
-    navigation('/room-list');
+    navigation("/room-list");
   };
 
   const handleCreateSubmit = async (_) => {
     setSubmitted(true);
     if (roomName) {
       props.create(roomName).then(
-        result => navigation(`/room/${result.room.uid}`),
-        failure => setRoomName(''));
+        (result) => navigation(`/room/${result.room.uid}`),
+        (failure) => setRoomName("")
+      );
     }
   };
 
@@ -56,18 +57,29 @@ const Menu = (props) => {
 
   const showPlayButtons = () => {
     let room = props.roomState.room;
-    if (room === undefined || room === '') {
+    if (room === undefined || room === "") {
       return (
         <>
-          <span className="menu-btn" onClick={handleList}>Поиск игры</span>
-          <span className="menu-btn" onClick={handleOpenModal}>Создать игру</span>
+          <span className="menu-btn" onClick={handleList}>
+            Поиск игры
+          </span>
+          <span className="menu-btn" onClick={handleOpenModal}>
+            Создать игру
+          </span>
         </>
       );
     }
     return (
-      <span className="menu-btn" onClick={handleEnter}>Моя игра</span>
+      <>
+        <span className="menu-btn" onClick={handleEnter}>
+          Моя игра
+        </span>
+        <span className="menu-btn" onClick={handleList}>
+          Список игр
+        </span>
+      </>
     );
-  }
+  };
 
   return (
     <div className="menu-window text-center">
@@ -75,28 +87,41 @@ const Menu = (props) => {
         {showPlayButtons()}
         <span className="menu-btn">Профиль</span>
         <span className="menu-btn">Настройки</span>
-        <span className="menu-btn" onClick={handleLogout}>Выход</span>
+        <span className="menu-btn" onClick={handleLogout}>
+          Выход
+        </span>
       </div>
       <Modal
         open={modalWindowOpened}
         onClose={handleCloseModal}
-        aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
         <Box className="modal-box">
-          <div>
-            <h4 className="mb-3">Введите название игры</h4>
-            <input
+          <FormControl component="div">
+            <h4 style={{ marginBottom: "1rem" }}>Введите название игры</h4>
+            <TextField
               name="roomName"
               type="text"
-              className="form-control mb-2"
+              style={{ marginBottom: "1rem" }}
               value={roomName}
               onChange={handleNameChange}
               placeholder="Название игры"
+              label="Название игры"
+              size="small"
+              error={submitted && !roomName}
+              helperText={submitted && !roomName && "Room name is required"}
             />
-            {submitted && !roomName && (
-              <div className="h6 help-block">Room name is required</div>
-            )}
-            <button type="submit" className="btn btn-lg btn-success btn-block" onClick={handleCreateSubmit}>Создать</button>
-          </div>
+            <Button
+              type="submit"
+              className="btn-block"
+              variant="contained"
+              color="success"
+              onClick={handleCreateSubmit}
+            >
+              Создать
+            </Button>
+          </FormControl>
         </Box>
       </Modal>
     </div>

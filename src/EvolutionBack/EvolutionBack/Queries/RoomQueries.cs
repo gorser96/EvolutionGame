@@ -21,6 +21,9 @@ public class RoomQueries : IQueries
     {
         return _dbContext.Rooms.AsNoTracking()
             .Include(x => x.Additions)
+            .Include(x => x.Additions).ThenInclude(x => x.Cards)
+            .Include(x => x.Additions).ThenInclude(x => x.Cards).ThenInclude(x => x.FirstProperty)
+            .Include(x => x.Additions).ThenInclude(x => x.Cards).ThenInclude(x => x.SecondProperty)
             .Include(x => x.InGameUsers).ThenInclude(x => x.User)
             .Include(x => x.InGameUsers).ThenInclude(x => x.Animals).ThenInclude(x => x.Properties).ThenInclude(x => x.Property)
             .Include(x => x.Cards).ThenInclude(x => x.Card);
