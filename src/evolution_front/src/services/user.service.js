@@ -60,20 +60,24 @@ async function _delete(id) {
     return handleResponse(response);
 }
 */
+
 function handleResponse(response) {
-    return response.text().then(text => {
+    return response.text().then((text) => {
+      let resultData = text;
+      try {
         const data = text && JSON.parse(text);
-        if (!response.ok) {
-            if (response.status === 401) {
-                // auto logout if 401 response returned from api
-                logout();
-                Location.reload(true);
-            }
-
-            const error = (data && data.message) || response.statusText;
-            return Promise.reject(error);
+        resultData = data;
+      } catch (error) {}
+  
+      if (!response.ok) {
+        if (response.status === 401) {
+          Location.reload(true);
         }
-
-        return data;
+  
+        const error = resultData || response.statusText;
+        return Promise.reject(error);
+      }
+  
+      return resultData;
     });
-}
+  }

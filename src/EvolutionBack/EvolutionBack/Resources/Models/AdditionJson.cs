@@ -10,4 +10,5 @@ public class AdditionJsonElement
 {
     public int Id { get; set; }
     public bool IsBase { get; set; }
+    public string? IconName { get; set; }
 }

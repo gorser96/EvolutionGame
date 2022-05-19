@@ -22,6 +22,7 @@ public class Room
         MaxTimeLeft = null;
         StartDateTime = null;
         PauseStartedTime = null;
+        IsPrivate = false;
     }
 
     public Guid Uid { get; init; }
@@ -41,6 +42,8 @@ public class Room
     public bool IsStarted { get; private set; }
 
     public bool IsPaused { get; private set; }
+
+    public bool IsPrivate { get; private set; }
 
     public DateTime? PauseStartedTime { get; private set; }
 
@@ -73,6 +76,14 @@ public class Room
         if (StartDateTime is null)
         {
             StartDateTime = DateTime.UtcNow;
+        }
+    }
+
+    private void SetIsPrivate(bool isPrivate)
+    {
+        if (IsPrivate != isPrivate)
+        {
+            IsPrivate = isPrivate;
         }
     }
 
@@ -147,6 +158,11 @@ public class Room
         var listToRemove = new List<Addition>();
         foreach (var addition in source)
         {
+            if (addition.IsBase)
+            {
+                continue;
+            }
+
             if (!additions.Any(x => x.Uid == addition.Uid))
             {
                 listToRemove.Add(addition);
@@ -204,6 +220,31 @@ public class Room
         for (int i = 0; i < orders.Length; i++)
         {
             Cards.ElementAt(i).Update(orders[i]);
+        }
+    }
+
+    private void SetNumOfCards(int numOfCards)
+    {
+        if (numOfCards < 1)
+        {
+            throw new ValidationException("Num of cards should be more then 0!");
+        }
+
+        if (numOfCards > Additions.SelectMany(x => x.Cards).Count())
+        {
+            throw new ValidationException("Num of cards should be less then max cards in all additions!");
+        }
+
+        if (numOfCards != Cards.Count)
+        {
+            // TODO опитимизировать
+            UpdateCards(Additions.SelectMany(x => x.Cards).ToArray());
+
+            var toRemove = Cards.OrderBy(x => x.Order).Skip(numOfCards).ToArray();
+            foreach (var card in toRemove)
+            {
+                Cards.Remove(card);
+            }
         }
     }
 
@@ -361,6 +402,14 @@ public class Room
                     user.Update(new(order: order));
                 }
             }
+            if (editModel.IsPrivate.HasValue)
+            {
+                SetIsPrivate(editModel.IsPrivate.Value);
+            }
+            if (editModel.NumOfCards.HasValue)
+            {
+                SetNumOfCards(editModel.NumOfCards.Value);
+            }
         }
     }
 
@@ -370,7 +419,7 @@ public class Room
 
         if (!IsStarted && !IsFinished)
         {
-            var user = FindUserByUid(userUid) ?? throw new NullReferenceException(nameof(userUid));
+            var user = FindUserByUid(userUid) ?? throw new ValidationException($"User [{userUid}] not found in room!");
             InGameUsers.Remove(user);
         }
     }

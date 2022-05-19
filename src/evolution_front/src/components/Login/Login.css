@@ -5,6 +5,7 @@
   width: 100%;
   overflow: hidden;
   align-items: center;
+  justify-content: center;
   display: flex;
 }
 
@@ -56,6 +57,7 @@ form * {
 .evo-logo {
   border: 3px solid rgb(10, 113, 14);
   border-radius: 0.5rem;
+  margin: 0 1.5rem 1.5rem 1rem;
 }
 
 .evo-name {

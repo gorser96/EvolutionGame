@@ -2,7 +2,8 @@
   "additions": [
     {
       "id": 0,
-      "isBase": true
+      "isBase": true,
+      "iconName": "Resources/Images/base.png"
     }
   ]
 }

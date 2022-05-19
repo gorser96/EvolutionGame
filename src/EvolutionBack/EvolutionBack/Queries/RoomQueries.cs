@@ -21,9 +21,23 @@ public class RoomQueries : IQueries
     {
         return _dbContext.Rooms.AsNoTracking()
             .Include(x => x.Additions)
+            .Include(x => x.Additions).ThenInclude(x => x.Cards)
+            .Include(x => x.Additions).ThenInclude(x => x.Cards).ThenInclude(x => x.FirstProperty)
+            .Include(x => x.Additions).ThenInclude(x => x.Cards).ThenInclude(x => x.SecondProperty)
             .Include(x => x.InGameUsers).ThenInclude(x => x.User)
             .Include(x => x.InGameUsers).ThenInclude(x => x.Animals).ThenInclude(x => x.Properties).ThenInclude(x => x.Property)
             .Include(x => x.Cards).ThenInclude(x => x.Card);
+    }
+
+    public RoomViewModel? GetRoomWithUser(string userName)
+    {
+        var obj = GetIncludedQuery().FirstOrDefault(x => x.InGameUsers.Any(x => x.User.UserName == userName));
+        if (obj is null)
+        {
+            return null;
+        }
+
+        return _mapper.Map<RoomViewModel>(obj);
     }
 
     public RoomViewModel? GetRoomViewModel(Guid uid)
