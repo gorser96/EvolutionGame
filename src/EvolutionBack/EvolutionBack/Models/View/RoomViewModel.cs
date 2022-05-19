@@ -21,6 +21,8 @@ public record RoomViewModel
 
     public bool IsPaused { get; init; }
 
+    public bool IsPrivate { get; init; }
+
     public DateTime? PauseStartedTime { get; init; }
 
     public int NumOfCards { get; init; }

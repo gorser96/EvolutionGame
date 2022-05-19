@@ -5,7 +5,7 @@ import { LoginProtectedRoute } from "./components/LoginProtectedRoute";
 import Layout from "./components/Layout";
 import Menu from "./components/Menu/Menu";
 import Room from "./components/Room/Room";
-import RoomList from "./components/RoomList/RoomList";
+import RoomList from "./components/Room/RoomList";
 import Login from "./components/Login/Login";
 import Register from "./components/Login/Register";
 import { connect } from "react-redux";

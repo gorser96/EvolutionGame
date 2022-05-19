@@ -8,6 +8,7 @@ export const apiStore = {
   roomList: '/room/list',
   roomEnd: '/room/{0}/end',
   roomLeave: '/room/{0}/leave',
+  roomKick: '/room/{0}/kick/{1}',
   roomStart: '/room/{0}/start',
   roomPause: '/room/{0}/pause',
   roomEnter: '/room/{0}/enter',

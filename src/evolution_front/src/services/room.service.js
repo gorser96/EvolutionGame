@@ -10,6 +10,7 @@ export const roomService = {
   remove,
   enter,
   leave,
+  kick,
   start,
   pause,
   resume,
@@ -117,6 +118,20 @@ async function leave(roomUid) {
 
   const response = await fetch(
     `${apiUrl}${apiStore.roomLeave.format(roomUid)}`,
+    requestOptions
+  );
+  const room = handleResponse(response);
+  return room;
+}
+
+async function kick(roomUid, userUid) {
+  const requestOptions = {
+    method: "POST",
+    headers: { ...authHeader(), "Content-Type": "application/json" },
+  };
+  
+  const response = await fetch(
+    `${apiUrl}${apiStore.roomKick.format(roomUid, userUid)}`,
     requestOptions
   );
   const room = handleResponse(response);

@@ -37,6 +37,13 @@ export function roomState(state = {}, action) {
     case roomConstants.LEAVE_FAILURE:
       return {};
 
+    case roomConstants.KICK_REQUEST:
+      return { kicking: true };
+    case roomConstants.KICK_SUCCESS:
+      return { kicked: true, room: action.room };
+    case roomConstants.KICK_FAILURE:
+      return {};
+
     case roomConstants.START_REQUEST:
       return { starting: true };
     case roomConstants.START_SUCCESS:

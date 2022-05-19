@@ -6,29 +6,39 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import React from "react";
+import React, { useState, useRef } from "react";
 
-export default function useSureDialog(onClose, open) {
-  const handleClose = () => {
-    onClose(false);
+export default function useSureDialog() {
+  const [open, setOpen] = useState(false);
+  const resolveFunc = useRef(undefined);
+
+  const handleResult = (value) => {
+    setOpen(false);
+    if (resolveFunc.current !== undefined) {
+      resolveFunc.current(value);
+    }
   };
 
-  const handleClick = (value) => {
-    onClose(value);
+  const showDialog = () => {
+    setOpen(true);
+    return new Promise((resolve, reject) => {
+      resolveFunc.current = resolve;
+    });
   };
 
-  return (
-    <Dialog onClose={handleClose} open={open}>
+  return [
+    <Dialog onClose={() => handleResult(false)} open={open}>
       <DialogTitle>Подтвердите действие</DialogTitle>
       <DialogContent>
         <DialogContentText>Вы уверены?</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => handleClick(false)}>Нет</Button>
-        <Button onClick={() => handleClick(true)} autoFocus>
+        <Button onClick={() => handleResult(false)}>Нет</Button>
+        <Button onClick={() => handleResult(true)} autoFocus>
           Да
         </Button>
       </DialogActions>
-    </Dialog>
-  );
+    </Dialog>,
+    showDialog,
+  ];
 }

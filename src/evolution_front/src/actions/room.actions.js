@@ -7,6 +7,7 @@ export const roomActions = {
   remove,
   enter,
   leave,
+  kick,
   start,
   pause,
   resume,
@@ -135,6 +136,31 @@ function leave(roomUid) {
   }
   function failure(error) {
     return { type: roomConstants.LEAVE_FAILURE, error };
+  }
+}
+
+function kick(roomUid, userUid) {
+  return async (dispatch) => {
+    dispatch(request(roomUid, userUid));
+
+    return roomService.kick(roomUid, userUid).then(
+      (room) => {
+        return dispatch(success(room));
+      },
+      (error) => {
+        return Promise.reject(dispatch(failure(error.toString())));
+      }
+    );
+  };
+
+  function request(roomUid, userUid) {
+    return { type: roomConstants.KICK_REQUEST, roomUid, userUid };
+  }
+  function success(room) {
+    return { type: roomConstants.KICK_SUCCESS, room };
+  }
+  function failure(error) {
+    return { type: roomConstants.KICK_FAILURE, error };
   }
 }
 

@@ -6,21 +6,22 @@ using EvolutionBack.Models;
 using Infrastructure.EF;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace EvolutionBack.Commands;
 
-public class RoomLeaveCommandHandler : IRequestHandler<RoomLeaveCommand, RoomViewModel>
+public class RoomKickCommandHandler : IRequestHandler<RoomKickCommand, RoomViewModel>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IMapper _mapper;
 
-    public RoomLeaveCommandHandler(IServiceScopeFactory serviceScopeFactory, IMapper mapper)
+    public RoomKickCommandHandler(IServiceScopeFactory serviceScopeFactory, IMapper mapper)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _mapper = mapper;
     }
 
-    public async Task<RoomViewModel> Handle(RoomLeaveCommand request, CancellationToken cancellationToken)
+    public async Task<RoomViewModel> Handle(RoomKickCommand request, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
@@ -35,7 +36,14 @@ public class RoomLeaveCommandHandler : IRequestHandler<RoomLeaveCommand, RoomVie
             throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
-        obj.RemoveUser(user.Id);
+        var requester = obj.FindUserByUid(user.Id) ?? throw new ObjectNotFoundException(user.Id, nameof(User));
+
+        if (!requester.IsHost)
+        {
+            throw new ValidationException($"User [{user.UserName}] not host!");
+        }
+
+        obj.RemoveUser(request.UserUid);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

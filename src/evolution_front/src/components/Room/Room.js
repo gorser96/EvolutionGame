@@ -22,24 +22,21 @@ import {
 } from "@mui/material";
 import { ArrowBack, Person } from "@mui/icons-material";
 import useSureDialog from "../hooks/SureDialogHook";
+import useSnackbar from "../hooks/SnackbarHook";
+import IsolatedMenu from "./IsolatedMenu";
 
 const Room = (props) => {
   let navigation = useNavigate();
   const { uid } = useParams();
+  const [snackbar, sendNotification] = useSnackbar();
 
   const [selectedAdditions, setSelectedAdditions] = useState([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [roomName, setRoomName] = useState("");
   const [cardsCount, setCardsCount] = useState(0);
   const [additions, setAdditions] = useState([]);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogResult, setDialogResult] = useState(undefined);
-  const onCloseDialog = (result) => {
-    setDialogResult(result);
-    setOpenDialog(false);
-  };
 
-  const sureDialog = useSureDialog(onCloseDialog, openDialog);
+  const [sureDialog, showDialog] = useSureDialog();
 
   const user = props.authentication.user;
 
@@ -54,10 +51,11 @@ const Room = (props) => {
       return;
     }
     if (props.additionState.additions !== undefined) {
-      setAdditions(props.additionState.additions.filter((x) => !x.isBase));
+      setAdditions(props.additionState.additions);
     }
     setRoomName(props.roomState.room.name);
     setCardsCount(props.roomState.room.numOfCards);
+    setIsPrivate(props.roomState.room.isPrivate);
   }, [props]);
 
   const handleChange = (e) => {
@@ -71,7 +69,7 @@ const Room = (props) => {
     } else if (name === "cardsCount") {
       let num = Number(value);
       if (Number.isInteger(num) && num >= 0) {
-        setCardsCount(value);
+        setCardsCount(num);
       }
     }
   };
@@ -82,35 +80,6 @@ const Room = (props) => {
 
   const getAvatar = (user) => {
     return <Avatar>{user.userName.charAt(0).toUpperCase()}</Avatar>;
-  };
-
-  const showIsHost = (isHost) => {
-    if (isHost) {
-      return <Person />;
-    }
-    return "";
-  };
-
-  const showPlayers = () => {
-    let room = props.roomState.room;
-    if (room === undefined) {
-      return "";
-    }
-    return (
-      <ul className="players-list">
-        {room.inGameUsers.map((player) => {
-          return (
-            <li key={player.user.userName} className="player-row">
-              {getAvatar(player.user)}
-              <div style={{ marginLeft: "1rem" }}>{player.user.userName}</div>
-              <div style={{ marginLeft: "auto" }}>
-                {showIsHost(player.isHost)}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    );
   };
 
   const isUserHost = (room) => {
@@ -139,26 +108,87 @@ const Room = (props) => {
   };
 
   const handleSave = async () => {
-    console.log("Save options");
+    const room = {
+      name: roomName,
+      maxTimeLeft: undefined,
+      additions: additions.map((x) => x.uid),
+      isPrivate: isPrivate,
+      numOfCards: cardsCount,
+    };
+    await props.update(uid, room).then(
+      (result) => {
+        sendNotification(`Комната ${result.room.name} сохранена!`, "success");
+      },
+      (failure) => {
+        sendNotification(failure.error, "error");
+        props.get(uid);
+      }
+    );
   };
 
   const handleRemove = async () => {
-    console.log("remove room?");
-    setOpenDialog(true);
-    await new Promise(() => waitForDialogResult(dialogResult));
-    console.log(dialogResult);
-    setDialogResult(null);
-  };
-
-  const waitForDialogResult = (result) => {
-    if (result === undefined) {
-      console.log('next waiting...');
-      setTimeout(waitForDialogResult.bind(this, dialogResult), 500);
+    const result = await showDialog();
+    if (result) {
+      await props.remove(uid).then(
+        (result) => {
+          sendNotification(`Комната удалена!`, "success");
+          navigation(-1);
+        },
+        (failure) => {
+          sendNotification(failure.error, "error");
+          props.get(uid);
+        }
+      );
     }
   };
 
   const handleStart = async () => {
     console.log("Start game?");
+  };
+
+  const showPlayerButtons = (player, room) => {
+    let components = [];
+    if (player.isHost) {
+      components.push(<Person key={0} />);
+    }
+
+    if (user.userName !== player.user.userName) {
+      console.log(player);
+      components.push(
+        <IsolatedMenu
+          key={1}
+          isHost={isUserHost(room)}
+          kick={props.kick}
+          get={props.get}
+          roomUid={room.uid}
+          userUid={player.user.id}
+        />
+      );
+    }
+
+    return <>{components}</>;
+  };
+
+  const showPlayers = () => {
+    let room = props.roomState.room;
+    if (room === undefined) {
+      return "";
+    }
+    return (
+      <ul className="players-list">
+        {room.inGameUsers.map((player) => {
+          return (
+            <li key={player.user.userName} className="player-row">
+              {getAvatar(player.user)}
+              <div style={{ marginLeft: "1rem" }}>{player.user.userName}</div>
+              <div style={{ marginLeft: "auto" }}>
+                {showPlayerButtons(player, room)}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    );
   };
 
   const showOptions = () => {
@@ -210,22 +240,24 @@ const Room = (props) => {
                 </Box>
               )}
             >
-              {additions.map((item) => (
-                <MenuItem key={item.uid} value={item.uid}>
-                  <Tooltip title={item.name} key={item.uid}>
-                    <img
-                      className="rounded-circle"
-                      src={`data:${getMIMEType(item.iconName)};base64,${
-                        item.icon
-                      }`}
-                      alt={item.iconName}
-                      width={20}
-                      height={20}
-                    />
-                  </Tooltip>
-                  <ListItemText primary={item.name} className="ms-1" />
-                </MenuItem>
-              ))}
+              {additions
+                .filter((x) => !x.isBase)
+                .map((item) => (
+                  <MenuItem key={item.uid} value={item.uid}>
+                    <Tooltip title={item.name} key={item.uid}>
+                      <img
+                        className="rounded-circle"
+                        src={`data:${getMIMEType(item.iconName)};base64,${
+                          item.icon
+                        }`}
+                        alt={item.iconName}
+                        width={20}
+                        height={20}
+                      />
+                    </Tooltip>
+                    <ListItemText primary={item.name} className="ms-1" />
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
         </li>
@@ -241,7 +273,11 @@ const Room = (props) => {
               type="number"
               InputLabelProps={{ shrink: true }}
               InputProps={{ inputProps: { min: 0, max: 100 } }}
-              helperText={`от 1 до ${room.NumOfCards || 0}`}
+              helperText={`от 1 до ${
+                room.additions
+                  .map((a) => a.cards.length)
+                  .reduce((ps, count) => ps + count, 0) || 0
+              }`}
               variant="standard"
               sx={{ minWidth: 100, maxWidth: 250 }}
             />
@@ -252,7 +288,7 @@ const Room = (props) => {
           <FormControlLabel
             control={
               <Switch
-                disabled
+                disabled={!isUserHost(room)}
                 name="privateSwitch"
                 checked={isPrivate}
                 onChange={handleChange}
@@ -323,6 +359,7 @@ const Room = (props) => {
   return (
     <Box component="div" className="room-window">
       {sureDialog}
+      {snackbar}
       <Box component="div" className="content-container">
         <Box component="div" className="players-container">
           <Box component="div" className="list-header">
@@ -353,7 +390,11 @@ const mapState = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     get: bindActionCreators(roomActions.get, dispatch),
+    update: bindActionCreators(roomActions.update, dispatch),
+    remove: bindActionCreators(roomActions.remove, dispatch),
     leave: bindActionCreators(roomActions.leave, dispatch),
+    kick: bindActionCreators(roomActions.kick, dispatch),
+    start: bindActionCreators(roomActions.start, dispatch),
     additionList: bindActionCreators(additionActions.list, dispatch),
   };
 };

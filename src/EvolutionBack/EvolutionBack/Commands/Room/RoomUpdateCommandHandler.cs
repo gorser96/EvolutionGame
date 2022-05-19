@@ -43,7 +43,13 @@ public class RoomUpdateCommandHandler : IRequestHandler<RoomUpdateCommand, RoomV
             throw new ObjectNotFoundException($"Room with uid=[{request.RoomUid}] not found!");
         }
 
-        obj.Update(new RoomUpdateModel(request.EditModel.Name, request.EditModel.MaxTimeLeft, additions), user.Id);
+        obj.Update(
+            new RoomUpdateModel(
+                request.EditModel.Name,
+                request.EditModel.MaxTimeLeft,
+                additions,
+                isPrivate: request.EditModel.IsPrivate,
+                numOfCards: request.EditModel.NumOfCards), user.Id);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<RoomViewModel>(obj);
