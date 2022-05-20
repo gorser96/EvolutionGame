@@ -1,5 +1,8 @@
 ﻿namespace Domain.Models;
 
+/// <summary>
+/// Игровое дополнение
+/// </summary>
 public class Addition
 {
     public Addition(Guid uid, string name, bool isBase)

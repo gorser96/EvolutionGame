@@ -1,5 +1,8 @@
 ﻿namespace Domain.Models;
 
+/// <summary>
+/// Игрок, который принадлежит игровой комнате
+/// </summary>
 public class InGameUser
 {
 #pragma warning disable CS8618
@@ -31,14 +34,23 @@ public class InGameUser
 
     public int Order { get; private set; }
 
+    /// <summary>
+    /// Является ли игрок создателем комнаты
+    /// </summary>
     public bool IsHost { get; private set; }
 
+    /// <summary>
+    /// Начало хода игрока
+    /// </summary>
     private void StartStep()
     {
         IsCurrent = true;
         StartStepTime = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Конец хода игрока
+    /// </summary>
     private void EndStep()
     {
         IsCurrent = false;
@@ -73,6 +85,11 @@ public class InGameUser
         }
     }
 
+    /// <summary>
+    /// Добавление животного игроку
+    /// </summary>
+    /// <param name="cardUid"></param>
+    /// <returns></returns>
     internal Animal AddAnimal(Guid cardUid)
     {
         var animal = new Animal(Guid.NewGuid(), UserUid, RoomUid, cardUid);

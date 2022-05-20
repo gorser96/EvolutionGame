@@ -1,5 +1,8 @@
 ﻿namespace Domain.Models;
 
+/// <summary>
+/// Игровая карточка. Может содержать 1 или 2 свойства
+/// </summary>
 public class Card
 {
 #pragma warning disable CS8618

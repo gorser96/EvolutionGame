@@ -4,6 +4,9 @@ using Infrastructure.EF;
 
 namespace EvolutionBack.Services;
 
+/// <summary>
+/// Сервис, который удаляем старые/неактивные комнаты
+/// </summary>
 public class RoomCleanerServiceHosted : IHostedService, IDisposable
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
