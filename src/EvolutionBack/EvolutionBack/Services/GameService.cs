@@ -11,6 +11,7 @@ namespace EvolutionBack.Services;
 public class GameService
 {
     private readonly Guid _roomUid;
+    private readonly IList<string> _connectedUsers;
     private readonly CancellationToken _cancellationToken;
 
     private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -18,14 +19,30 @@ public class GameService
     private bool _isStarted = false;
     private PhaseType _currentPhase;
 
-    public GameService(IServiceScopeFactory serviceScopeFactory, Guid roomUid, CancellationToken cancellationToken)
+    public GameService(IServiceScopeFactory serviceScopeFactory, Guid roomUid, CancellationToken? cancellationToken = null)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _roomUid = roomUid;
-        _cancellationToken = cancellationToken;
+        _cancellationToken = cancellationToken ?? CancellationToken.None;
+        _connectedUsers = new List<string>();
     }
 
     public event EventHandler<MsgFromServer>? MessageEvent;
+
+    public void ConnectUser(string userId)
+    {
+        if (_connectedUsers.Contains(userId))
+        {
+            throw new BadHttpRequestException($"User [{userId}] already connected!");
+        }
+
+        _connectedUsers.Add(userId);
+    }
+
+    public void DisconnectUser(string userId)
+    {
+        _connectedUsers.Remove(userId);
+    }
 
     public Task StartGame()
     {

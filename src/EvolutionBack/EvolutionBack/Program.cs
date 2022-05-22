@@ -2,6 +2,7 @@ using EvolutionBack.Core;
 using EvolutionBack.Services.Hubs;
 using Infrastructure.EF;
 using MediatR;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -53,11 +54,21 @@ builder.Services.AddHostedServices();
 builder.Services.AddValidators();
 
 // SignalR
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllHeaders", corsBuilder => corsBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+    options.AddPolicy("AllowAllHeaders", corsBuilder =>
+    {
+        corsBuilder
+            .SetIsOriginAllowed((host) => true)
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 var app = builder.Build();
@@ -74,7 +85,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<RoomHub>("/hubs/room");
+app.MapHub<GameHub>("/api/hub");
 
 app.UseCors("AllowAllHeaders");
 
