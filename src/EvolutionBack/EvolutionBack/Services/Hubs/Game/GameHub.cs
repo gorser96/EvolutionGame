@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 
 namespace EvolutionBack.Services.Hubs;
 
-[Authorize]
 public class GameHub : Hub
 {
     private readonly ILogger<GameHub> _logger;
@@ -31,11 +30,13 @@ public class GameHub : Hub
         return base.OnDisconnectedAsync(exception);
     }
 
+    [Authorize]
     public async Task TestConnectionServer()
     {
         await Clients.Client(Context.ConnectionId).SendAsync("TestConnectionClient");
     }
 
+    [Authorize]
     public async Task JoinToRoom(string roomUid)
     {
         if (_rooms.TryGetValue(roomUid, out var gameService))
@@ -54,6 +55,7 @@ public class GameHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, roomUid);
     }
 
+    [Authorize]
     public async Task LeaveRoom(string roomUid)
     {
         if (_rooms.TryGetValue(roomUid, out var gameService))

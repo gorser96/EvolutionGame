@@ -85,7 +85,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<GameHub>("/api/hub");
+app.MapHub<GameHub>("/api/hub", options =>
+{
+    options.Transports = HttpTransportType.WebSockets;
+});
 
 app.UseCors("AllowAllHeaders");
 
