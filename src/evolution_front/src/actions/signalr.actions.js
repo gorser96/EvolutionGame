@@ -11,8 +11,12 @@ const signalREvents = [
   { name: 'TestConnectionClient', action: onTestClientReceived }
 ];
 
+const signalRSendEvents = [
+  { request_type: signalRConstants.TEST_REQUEST, failure_type: signalRConstants.TEST_FAILURE, method: 'TestConnectionServer' }
+];
+
 const signalRActions = {
   testConnection
 };
 
-export { signalRActions, signalREvents };
+export { signalRActions, signalREvents, signalRSendEvents };
