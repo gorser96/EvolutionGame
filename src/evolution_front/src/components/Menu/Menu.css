@@ -10,7 +10,7 @@
 
 .menu-window::before {
   content: "";
-  background-image: url('../../img/menu_back.jpg');
+  /*background-image: url('../../img/menu_back.jpg');*/
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

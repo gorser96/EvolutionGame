@@ -10,6 +10,7 @@ using Infrastructure.Repo;
 using Infrastructure.Validators;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -181,6 +182,7 @@ public static class ServicesExtensions
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
+
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
@@ -197,16 +199,25 @@ public static class ServicesExtensions
 
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/api/hub")))
+                        if (path.StartsWithSegments("/api/hub"))
                         {
-                            // Read the token out of the query string
-                            context.Token = accessToken;
+                            if (!string.IsNullOrEmpty(accessToken))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
                         }
                         return Task.CompletedTask;
                     }
                 };
             });
+
+        services.AddAuthorization(options =>
+        {
+            var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme);
+            defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+            options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+        });
 
         return services;
     }

@@ -11,7 +11,10 @@ export const ProtectedRoute = ({ user, children }) => {
       .withUrl(hubUrl, {
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets,
-        accessTokenFactory: () => user.token
+        accessTokenFactory: () => {
+          const parsedUser = JSON.parse(user);
+          return parsedUser.token;
+        },
       })
       .withAutomaticReconnect()
       .build();
@@ -22,7 +25,8 @@ export const ProtectedRoute = ({ user, children }) => {
   useEffect(() => {
     if (connection) {
       console.log("test connection... started...");
-
+      
+      connection.stop();
       connection
         .start()
         .then(() => {
