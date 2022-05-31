@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
+using System.Security.Authentication;
 
 namespace EvolutionBack.Services.Hubs;
 
@@ -10,6 +11,7 @@ public class GameHub : Hub
     private readonly ILogger<GameHub> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
+    private readonly ConnectionMapping<string> _connections = new();
     private readonly ConcurrentDictionary<string, GameService> _rooms;
 
     public GameHub(ILogger<GameHub> logger, IServiceScopeFactory serviceScopeFactory)
@@ -21,12 +23,18 @@ public class GameHub : Hub
 
     public override Task OnConnectedAsync()
     {
+        string name = Context.User?.Identity?.Name ?? throw new AuthenticationException();
+        _connections.Add(name, Context.ConnectionId);
+
         _logger.LogInformation("New Client connected [{ConnectionId}]", Context.ConnectionId);
         return base.OnConnectedAsync();
     }
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
+        string name = Context.User?.Identity?.Name ?? throw new AuthenticationException();
+        _connections.Remove(name, Context.ConnectionId);
+
         _logger.LogInformation("Client disconnected [{ConnectionId}]", Context.ConnectionId);
         return base.OnDisconnectedAsync(exception);
     }

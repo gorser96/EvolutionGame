@@ -64,8 +64,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAllHeaders", corsBuilder =>
     {
         corsBuilder
-            .SetIsOriginAllowed((host) => true)
-            .AllowCredentials()
+            .WithOrigins("*")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -80,6 +79,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowAllHeaders");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -90,7 +91,7 @@ app.MapHub<GameHub>("/api/hub", options =>
     options.Transports = HttpTransportType.WebSockets;
 });
 
-app.UseCors("AllowAllHeaders");
+app.UseHttpsRedirection();
 
 app.Services.UseAnimalProperties();
 
