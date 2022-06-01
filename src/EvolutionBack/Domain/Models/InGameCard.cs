@@ -1,5 +1,8 @@
 ﻿namespace Domain.Models;
 
+/// <summary>
+/// Игровая карточка, которая принадлежит комнате
+/// </summary>
 public class InGameCard
 {
 #pragma warning disable CS8618
@@ -23,6 +26,9 @@ public class InGameCard
 
     public virtual Animal? Animal { get; private set; }
 
+    /// <summary>
+    /// Порядковый номер карточки
+    /// </summary>
     public int Order { get; private set; }
 
     public void Update(int order)

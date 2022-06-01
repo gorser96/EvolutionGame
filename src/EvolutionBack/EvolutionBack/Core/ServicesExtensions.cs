@@ -27,12 +27,24 @@ public static class ServicesExtensions
         _assembly = Assembly.GetExecutingAssembly();
     }
 
+    /// <summary>
+    /// Добавление хостинговых сервисов. Данные сервисы создаются в единственном экземпляре,
+    /// начинают работу вызовом метода <see cref="IHostedService.StartAsync(CancellationToken)"/>,
+    /// заканчивают работу вызовом метода <see cref="IHostedService.StopAsync(CancellationToken)"/> (он вызывается при завершении работы приложения)
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddHostedServices(this IServiceCollection services)
     {
         services.AddHostedService<RoomCleanerServiceHosted>();
         return services;
     }
 
+    /// <summary>
+    /// Добавление простых сервисов, реализующих <see cref="IService"/>. Данные сервисы создаются при каждом создании scope
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         var customServices = _assembly.DefinedTypes
@@ -46,6 +58,11 @@ public static class ServicesExtensions
         return services;
     }
 
+    /// <summary>
+    /// Добавление простых сервисов запросов, реализующих <see cref="IQueries"/>. Данные сервисы создаются при каждом вызове из DI.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddQueries(this IServiceCollection services)
     {
         var queries = _assembly.DefinedTypes
@@ -59,6 +76,11 @@ public static class ServicesExtensions
         return services;
     }
 
+    /// <summary>
+    /// Добавление обработчиков команд библиотеки <see cref="IMediator"/>
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddCommandHandlers(this IServiceCollection services)
     {
         var handlers = _assembly.DefinedTypes
@@ -75,6 +97,11 @@ public static class ServicesExtensions
         return services;
     }
 
+    /// <summary>
+    /// Добавление репозиториев объектов.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<ICardRepo, CardRepo>();
@@ -85,6 +112,11 @@ public static class ServicesExtensions
         return services;
     }
 
+    /// <summary>
+    /// Добавление и инициализация <see cref="IMapper"/>
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddMapper(this IServiceCollection services)
     {
         services.AddAutoMapper(cfg =>
@@ -106,6 +138,11 @@ public static class ServicesExtensions
         return services;
     }
 
+    /// <summary>
+    /// Добавление валидаторов
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddValidators(this IServiceCollection services)
     {
         services.AddScoped<IRoomValidator, RoomValidator>();
@@ -113,6 +150,12 @@ public static class ServicesExtensions
         return services;
     }
 
+    /// <summary>
+    /// Добавление аутентификации
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
     public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services
@@ -151,6 +194,11 @@ public static class ServicesExtensions
         return services;
     }
 
+    /// <summary>
+    /// Инициализация дополнений, карт и свойств животных из json ресурсов
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <exception cref="InvalidOperationException"></exception>
     public static void UseAnimalProperties(this IServiceProvider provider)
     {
         using var scope = provider.CreateScope();

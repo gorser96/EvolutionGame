@@ -1,5 +1,8 @@
 ﻿namespace Domain.Models;
 
+/// <summary>
+/// История игры. Содержит информацию об игроке
+/// </summary>
 public class GameHistoryUser
 {
 #pragma warning disable CS8618

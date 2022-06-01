@@ -3,6 +3,9 @@ using System.Reflection;
 
 namespace Domain.Models;
 
+/// <summary>
+/// Свойсто, которое присвоено животному
+/// </summary>
 public class InAnimalProperty
 {
     private static readonly Assembly _assembly = Assembly.GetAssembly(typeof(Property)) ?? Assembly.GetExecutingAssembly();
@@ -43,6 +46,12 @@ public class InAnimalProperty
         }
     }
 
+    /// <summary>
+    /// Метод получения объекта свойства с реализацией интерфейса <see cref="IPropertyAction"/>.
+    /// Необходим для доступа к действиям свойства из БД.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     internal IPropertyAction GetPropertyAction()
     {
         if (_propertyActionCache.TryGetValue(PropertyUid, out var obj))

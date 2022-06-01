@@ -2,6 +2,9 @@
 
 namespace Domain.Models;
 
+/// <summary>
+/// Учетная запись игрока
+/// </summary>
 public class User : IdentityUser<Guid>
 {
     public User(string userName, Guid Id)
