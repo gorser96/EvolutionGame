@@ -1,5 +1,6 @@
 import { apiUrl } from "../appsettings";
 import { authHeader, apiStore } from "../helpers";
+import { handleResponse } from "./service.base";
 
 export const additionService = {
   get,
@@ -12,12 +13,12 @@ async function get(additionUid) {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.additionGet.format(additionUid)}`,
     requestOptions
   );
-  const addition = await handleResponse(response);
-  return addition;
+
+  return handleResponse(response);
 }
 
 async function list() {
@@ -26,28 +27,7 @@ async function list() {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(`${apiUrl}${apiStore.additionList}`, requestOptions);
-  const additions = await handleResponse(response);
-  return additions;
-}
+  const response = fetch(`${apiUrl}${apiStore.additionList}`, requestOptions);
 
-function handleResponse(response) {
-  return response.text().then((text) => {
-    let resultData = text;
-    try {
-      const data = text && JSON.parse(text);
-      resultData = data;
-    } catch (error) {}
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        Location.reload(true);
-      }
-
-      const error = resultData || response.statusText;
-      return Promise.reject(error);
-    }
-
-    return resultData;
-  });
+  return handleResponse(response);
 }

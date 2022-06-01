@@ -34,7 +34,6 @@ public class EvolutionDbContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
 
     public virtual DbSet<GameHistoryUser> GameHistoryUsers { get; set; }
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());

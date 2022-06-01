@@ -18,7 +18,7 @@ function login(username, password) {
                     return dispatch(success(user));
                 },
                 error => {
-                    return Promise.reject(failure(error.toString()));
+                    return Promise.reject(dispatch(failure(error)));
                 }
             );
     };
@@ -43,7 +43,7 @@ function register(username, password) {
                     return dispatch(success(user));
                 },
                 error => {
-                    return Promise.reject(failure(error.toString()));
+                    return Promise.reject(dispatch(failure(error)));
                 }
             );
     };

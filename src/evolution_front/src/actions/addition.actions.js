@@ -15,7 +15,7 @@ function list() {
         return dispatch(success(additions));
       },
       (error) => {
-        return Promise.reject(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error)));
       }
     );
   };
@@ -40,7 +40,7 @@ function get(additionUid) {
         return dispatch(success(addition));
       },
       (error) => {
-        return Promise.reject(failure(error.toString()));
+        return Promise.reject(dispatch(failure(error)));
       }
     );
   };

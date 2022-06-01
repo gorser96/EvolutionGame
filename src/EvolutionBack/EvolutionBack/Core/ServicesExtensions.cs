@@ -10,6 +10,7 @@ using Infrastructure.Repo;
 using Infrastructure.Validators;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -109,6 +110,9 @@ public static class ServicesExtensions
         services.AddScoped<IAdditionRepo, AdditionRepo>();
         services.AddScoped<IPropertyRepo, PropertyRepo>();
 
+        // interceptors
+        services.AddTransient<PreSaveChangesInterceptor>();
+
         return services;
     }
 
@@ -181,6 +185,7 @@ public static class ServicesExtensions
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
+
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
@@ -188,6 +193,25 @@ public static class ServicesExtensions
                     ValidAudience = configuration["JWT:ValidAudience"],
                     ValidIssuer = configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (path.StartsWithSegments("/api/hub"))
+                        {
+                            if (!string.IsNullOrEmpty(accessToken))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
 

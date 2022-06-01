@@ -2,6 +2,7 @@ using EvolutionBack.Core;
 using EvolutionBack.Services.Hubs;
 using Infrastructure.EF;
 using MediatR;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -19,8 +20,9 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContextPool<EvolutionDbContext>(opt =>
+builder.Services.AddDbContextPool<EvolutionDbContext>((provider, opt) =>
 {
+    opt.AddInterceptors(provider.GetRequiredService<PreSaveChangesInterceptor>());
     opt.UseSqlServer(builder.Configuration.GetConnectionString("MsSql"), sqlOpt => sqlOpt.MigrationsAssembly(nameof(EvolutionBack)));
 
     opt.UseLazyLoadingProxies();
@@ -53,11 +55,20 @@ builder.Services.AddHostedServices();
 builder.Services.AddValidators();
 
 // SignalR
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllHeaders", corsBuilder => corsBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+    options.AddPolicy("AllowAllHeaders", corsBuilder =>
+    {
+        corsBuilder
+            .WithOrigins("*")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 var app = builder.Build();
@@ -69,14 +80,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowAllHeaders");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<RoomHub>("/hubs/room");
-
-app.UseCors("AllowAllHeaders");
+app.MapHub<GameHub>("/api/hub", options =>
+{
+    options.Transports = HttpTransportType.WebSockets;
+});
 
 app.Services.UseAnimalProperties();
 

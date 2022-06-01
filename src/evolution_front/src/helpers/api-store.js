@@ -18,4 +18,6 @@ export const apiStore = {
 
   additionList: '/additions/list',
   additionGet: '/additions/{0}',
+
+  hubApi: '/hub',
 };

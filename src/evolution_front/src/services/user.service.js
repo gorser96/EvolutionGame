@@ -1,40 +1,48 @@
-import { apiUrl } from '../appsettings';
-import { apiStore } from '../helpers';
+import { apiUrl } from "../appsettings";
+import { apiStore } from "../helpers";
+import { handleResponse } from "./service.base";
 
 export const userService = {
-    login,
-    logout,
-    register
+  login,
+  logout,
+  register,
 };
 
 async function login(username, password) {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login: username, password: password })
-    };
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ login: username, password: password }),
+  };
 
-    const response = await fetch(`${apiUrl}${apiStore.userLogin}`, requestOptions);
-    const user = await handleResponse(response);
-    // store user details and jwt token in local storage to keep user logged in between page refreshes
-    localStorage.setItem('user', JSON.stringify(user));
-    return user;
+  const response = fetch(`${apiUrl}${apiStore.userLogin}`, requestOptions);
+  return handleResponse(response).then(
+    (result) => {
+      // store user details and jwt token in local storage to keep user logged in between page refreshes
+      localStorage.setItem("user", JSON.stringify(result));
+      return result;
+    },
+    (failure) => {
+      console.log('reject');
+      return Promise.reject(failure)
+    }
+  );
 }
 
 function logout() {
-    // remove user from local storage to log user out
-    localStorage.removeItem('user');
+  // remove user from local storage to log user out
+  localStorage.removeItem("user");
 }
 
 async function register(username, password) {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login: username, password: password })
-    };
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ login: username, password: password }),
+  };
 
-    const response = await fetch(`${apiUrl}${apiStore.userRegister}`, requestOptions);
-    return handleResponse(response);
+  const response = fetch(`${apiUrl}${apiStore.userRegister}`, requestOptions);
+  return handleResponse(response);
 }
 /*
 async function update(user) {
@@ -60,24 +68,3 @@ async function _delete(id) {
     return handleResponse(response);
 }
 */
-
-function handleResponse(response) {
-    return response.text().then((text) => {
-      let resultData = text;
-      try {
-        const data = text && JSON.parse(text);
-        resultData = data;
-      } catch (error) {}
-  
-      if (!response.ok) {
-        if (response.status === 401) {
-          Location.reload(true);
-        }
-  
-        const error = resultData || response.statusText;
-        return Promise.reject(error);
-      }
-  
-      return resultData;
-    });
-  }

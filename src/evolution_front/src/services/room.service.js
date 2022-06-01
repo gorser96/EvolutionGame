@@ -1,5 +1,6 @@
 import { apiUrl } from "../appsettings";
 import { authHeader, apiStore } from "../helpers";
+import { handleResponse } from "./service.base";
 
 export const roomService = {
   user,
@@ -23,12 +24,12 @@ async function get(roomUid) {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.roomGet.format(roomUid)}`,
     requestOptions
   );
-  const room = await handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function list() {
@@ -37,9 +38,9 @@ async function list() {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(`${apiUrl}${apiStore.roomList}`, requestOptions);
-  const rooms = await handleResponse(response);
-  return rooms;
+  const response = fetch(`${apiUrl}${apiStore.roomList}`, requestOptions);
+
+  return handleResponse(response);
 }
 
 async function user() {
@@ -48,9 +49,9 @@ async function user() {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(`${apiUrl}${apiStore.roomUser}`, requestOptions);
-  const room = await handleResponse(response);
-  return room;
+  const response = fetch(`${apiUrl}${apiStore.roomUser}`, requestOptions);
+
+  return handleResponse(response);
 }
 
 async function create(roomName) {
@@ -60,12 +61,9 @@ async function create(roomName) {
     body: `"${roomName}"`,
   };
 
-  const response = await fetch(
-    `${apiUrl}${apiStore.roomCreate}`,
-    requestOptions
-  );
-  const room = await handleResponse(response);
-  return room;
+  const response = fetch(`${apiUrl}${apiStore.roomCreate}`, requestOptions);
+
+  return handleResponse(response);
 }
 
 async function update(roomUid, roomModel) {
@@ -75,12 +73,12 @@ async function update(roomUid, roomModel) {
     body: JSON.stringify(roomModel),
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.roomUpdate.format(roomUid)}`,
     requestOptions
   );
-  const room = await handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function remove(roomUid) {
@@ -89,11 +87,12 @@ async function remove(roomUid) {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.roomRemove.format(roomUid)}`,
     requestOptions
   );
-  handleResponse(response);
+
+  return handleResponse(response);
 }
 
 async function enter(roomUid) {
@@ -102,12 +101,12 @@ async function enter(roomUid) {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.roomEnter.format(roomUid)}`,
     requestOptions
   );
-  const room = handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function leave(roomUid) {
@@ -116,12 +115,12 @@ async function leave(roomUid) {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.roomLeave.format(roomUid)}`,
     requestOptions
   );
-  const room = handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function kick(roomUid, userUid) {
@@ -129,13 +128,13 @@ async function kick(roomUid, userUid) {
     method: "POST",
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
-  
-  const response = await fetch(
+
+  const response = fetch(
     `${apiUrl}${apiStore.roomKick.format(roomUid, userUid)}`,
     requestOptions
   );
-  const room = handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function start(roomUid) {
@@ -144,11 +143,12 @@ async function start(roomUid) {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.roomStart.format(roomUid)}`,
     requestOptions
   );
-  handleResponse(response);
+
+  return handleResponse(response);
 }
 
 async function pause(roomUid) {
@@ -157,11 +157,12 @@ async function pause(roomUid) {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.roomPause.format(roomUid)}`,
     requestOptions
   );
-  handleResponse(response);
+
+  return handleResponse(response);
 }
 
 async function resume(roomUid) {
@@ -170,11 +171,12 @@ async function resume(roomUid) {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.roomResume.format(roomUid)}`,
     requestOptions
   );
-  handleResponse(response);
+
+  return handleResponse(response);
 }
 
 async function end(roomUid) {
@@ -183,30 +185,10 @@ async function end(roomUid) {
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
 
-  const response = await fetch(
+  const response = fetch(
     `${apiUrl}${apiStore.roomEnd.format(roomUid)}`,
     requestOptions
   );
-  handleResponse(response);
-}
 
-function handleResponse(response) {
-  return response.text().then((text) => {
-    let resultData = text;
-    try {
-      const data = text && JSON.parse(text);
-      resultData = data;
-    } catch (error) {}
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        Location.reload(true);
-      }
-
-      const error = resultData || response.statusText;
-      return Promise.reject(error);
-    }
-
-    return resultData;
-  });
+  return handleResponse(response);
 }
