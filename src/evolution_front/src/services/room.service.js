@@ -28,8 +28,8 @@ async function get(roomUid) {
     `${apiUrl}${apiStore.roomGet.format(roomUid)}`,
     requestOptions
   );
-  const room = await handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function list() {
@@ -39,8 +39,8 @@ async function list() {
   };
 
   const response = fetch(`${apiUrl}${apiStore.roomList}`, requestOptions);
-  const rooms = await handleResponse(response);
-  return rooms;
+
+  return handleResponse(response);
 }
 
 async function user() {
@@ -50,8 +50,8 @@ async function user() {
   };
 
   const response = fetch(`${apiUrl}${apiStore.roomUser}`, requestOptions);
-  const room = await handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function create(roomName) {
@@ -61,12 +61,9 @@ async function create(roomName) {
     body: `"${roomName}"`,
   };
 
-  const response = fetch(
-    `${apiUrl}${apiStore.roomCreate}`,
-    requestOptions
-  );
-  const room = await handleResponse(response);
-  return room;
+  const response = fetch(`${apiUrl}${apiStore.roomCreate}`, requestOptions);
+
+  return handleResponse(response);
 }
 
 async function update(roomUid, roomModel) {
@@ -80,8 +77,8 @@ async function update(roomUid, roomModel) {
     `${apiUrl}${apiStore.roomUpdate.format(roomUid)}`,
     requestOptions
   );
-  const room = await handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function remove(roomUid) {
@@ -94,6 +91,7 @@ async function remove(roomUid) {
     `${apiUrl}${apiStore.roomRemove.format(roomUid)}`,
     requestOptions
   );
+
   return handleResponse(response);
 }
 
@@ -107,8 +105,8 @@ async function enter(roomUid) {
     `${apiUrl}${apiStore.roomEnter.format(roomUid)}`,
     requestOptions
   );
-  const room = await handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function leave(roomUid) {
@@ -121,8 +119,8 @@ async function leave(roomUid) {
     `${apiUrl}${apiStore.roomLeave.format(roomUid)}`,
     requestOptions
   );
-  const room = await handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function kick(roomUid, userUid) {
@@ -130,13 +128,13 @@ async function kick(roomUid, userUid) {
     method: "POST",
     headers: { ...authHeader(), "Content-Type": "application/json" },
   };
-  
+
   const response = fetch(
     `${apiUrl}${apiStore.roomKick.format(roomUid, userUid)}`,
     requestOptions
   );
-  const room = await handleResponse(response);
-  return room;
+
+  return handleResponse(response);
 }
 
 async function start(roomUid) {
@@ -149,6 +147,7 @@ async function start(roomUid) {
     `${apiUrl}${apiStore.roomStart.format(roomUid)}`,
     requestOptions
   );
+
   return handleResponse(response);
 }
 
@@ -162,6 +161,7 @@ async function pause(roomUid) {
     `${apiUrl}${apiStore.roomPause.format(roomUid)}`,
     requestOptions
   );
+
   return handleResponse(response);
 }
 
@@ -175,6 +175,7 @@ async function resume(roomUid) {
     `${apiUrl}${apiStore.roomResume.format(roomUid)}`,
     requestOptions
   );
+
   return handleResponse(response);
 }
 
@@ -188,5 +189,6 @@ async function end(roomUid) {
     `${apiUrl}${apiStore.roomEnd.format(roomUid)}`,
     requestOptions
   );
+
   return handleResponse(response);
 }

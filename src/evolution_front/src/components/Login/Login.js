@@ -45,9 +45,14 @@ const Login = (props) => {
 
     setSubmitted(true);
     if (username && password) {
-      props.login(username, password).then((_) => {
-        navigation("/menu");
-      });
+      props.login(username, password).then(
+        (_) => {
+          navigation("/menu");
+        },
+        (failure) => {
+          setSubmitted(false);
+        }
+      );
     }
   };
   const { loggingIn } = props;
@@ -63,9 +68,7 @@ const Login = (props) => {
             width="72"
             height="72"
           />
-          <div className="evo-name">
-            EVOLUTION
-          </div>
+          <div className="evo-name">EVOLUTION</div>
         </Box>
         <TextField
           name="username"

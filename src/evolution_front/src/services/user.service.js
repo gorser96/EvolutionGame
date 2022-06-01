@@ -15,14 +15,18 @@ async function login(username, password) {
     body: JSON.stringify({ login: username, password: password }),
   };
 
-  const response = fetch(
-    `${apiUrl}${apiStore.userLogin}`,
-    requestOptions
+  const response = fetch(`${apiUrl}${apiStore.userLogin}`, requestOptions);
+  return handleResponse(response).then(
+    (result) => {
+      // store user details and jwt token in local storage to keep user logged in between page refreshes
+      localStorage.setItem("user", JSON.stringify(result));
+      return result;
+    },
+    (failure) => {
+      console.log('reject');
+      return Promise.reject(failure)
+    }
   );
-  const user = await handleResponse(response);
-  // store user details and jwt token in local storage to keep user logged in between page refreshes
-  localStorage.setItem("user", JSON.stringify(user));
-  return user;
 }
 
 function logout() {
@@ -37,10 +41,7 @@ async function register(username, password) {
     body: JSON.stringify({ login: username, password: password }),
   };
 
-  const response = fetch(
-    `${apiUrl}${apiStore.userRegister}`,
-    requestOptions
-  );
+  const response = fetch(`${apiUrl}${apiStore.userRegister}`, requestOptions);
   return handleResponse(response);
 }
 /*

@@ -110,6 +110,9 @@ public static class ServicesExtensions
         services.AddScoped<IAdditionRepo, AdditionRepo>();
         services.AddScoped<IPropertyRepo, PropertyRepo>();
 
+        // interceptors
+        services.AddTransient<PreSaveChangesInterceptor>();
+
         return services;
     }
 
@@ -211,13 +214,6 @@ public static class ServicesExtensions
                     }
                 };
             });
-
-        services.AddAuthorization(options =>
-        {
-            var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme);
-            defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
-            options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
-        });
 
         return services;
     }

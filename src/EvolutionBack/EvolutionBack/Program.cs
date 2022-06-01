@@ -20,8 +20,9 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContextPool<EvolutionDbContext>(opt =>
+builder.Services.AddDbContextPool<EvolutionDbContext>((provider, opt) =>
 {
+    opt.AddInterceptors(provider.GetRequiredService<PreSaveChangesInterceptor>());
     opt.UseSqlServer(builder.Configuration.GetConnectionString("MsSql"), sqlOpt => sqlOpt.MigrationsAssembly(nameof(EvolutionBack)));
 
     opt.UseLazyLoadingProxies();
@@ -90,8 +91,6 @@ app.MapHub<GameHub>("/api/hub", options =>
 {
     options.Transports = HttpTransportType.WebSockets;
 });
-
-app.UseHttpsRedirection();
 
 app.Services.UseAnimalProperties();
 

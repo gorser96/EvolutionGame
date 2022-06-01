@@ -17,8 +17,8 @@ async function get(additionUid) {
     `${apiUrl}${apiStore.additionGet.format(additionUid)}`,
     requestOptions
   );
-  const addition = await handleResponse(response);
-  return addition;
+
+  return handleResponse(response);
 }
 
 async function list() {
@@ -28,6 +28,6 @@ async function list() {
   };
 
   const response = fetch(`${apiUrl}${apiStore.additionList}`, requestOptions);
-  const additions = await handleResponse(response);
-  return additions;
+
+  return handleResponse(response);
 }
