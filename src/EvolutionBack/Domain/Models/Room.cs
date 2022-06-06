@@ -98,6 +98,7 @@ public partial class Room : Entity
         {
             AddDomainEvent(new RoomDeletedEvent(this));
         }
+
         _isDeleted = true;
     }
 }

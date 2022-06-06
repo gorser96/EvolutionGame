@@ -4,6 +4,9 @@ using System.Collections.Concurrent;
 
 namespace EvolutionBack.Services;
 
+/// <summary>
+/// Сервис отправки событий клиентам SignalR
+/// </summary>
 public class HubPublisher
 {
     private readonly IHubContext<GameHub> _hub;
@@ -18,7 +21,12 @@ public class HubPublisher
         _logger = logger;
     }
 
-    public void AddConnection(string name, string connectionId)
+    /// <summary>
+    /// Подключение нового клиента, а также обновление комнаты (если пользователь пересоздает подключение, то его не должно выкидывать из комнаты)
+    /// </summary>
+    /// <param name="name">username пользователя</param>
+    /// <param name="connectionId"></param>
+    internal void AddConnection(string name, string connectionId)
     {
         _connections.Add(name, connectionId);
         if (_groups.TryGetValue(name, out var roomUid))
@@ -27,7 +35,12 @@ public class HubPublisher
         }
     }
 
-    public void RemoveConnection(string name, string connectionId)
+    /// <summary>
+    /// Отключение клиента и удаление его из комнаты
+    /// </summary>
+    /// <param name="name">username пользователя</param>
+    /// <param name="connectionId"></param>
+    internal void RemoveConnection(string name, string connectionId)
     {
         _connections.Remove(name, connectionId);
         if (_groups.TryGetValue(name, out var roomUid))
@@ -36,19 +49,13 @@ public class HubPublisher
         }
     }
 
-    public async Task UpdatedRoom(Guid roomUid)
-    {
-        var clients = _hub.Clients.Group(roomUid.ToString());
-        if (clients is null)
-        {
-            return;
-        }
-
-        _logger.LogInformation($"Sending UpdatedRoom to group: [name={roomUid}]");
-        await clients.SendAsync("UpdatedRoom", new object[] { roomUid });
-    }
-
-    public async Task JoinToRoom(string userName, Guid roomUid)
+    /// <summary>
+    /// Добавление пользователя в комнату
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <param name="roomUid"></param>
+    /// <returns></returns>
+    internal async Task JoinToRoom(string userName, Guid roomUid)
     {
         var connections = _connections.GetConnections(userName);
         if (!connections.Any())
@@ -62,7 +69,13 @@ public class HubPublisher
         _groups.TryAdd(userName, roomUid);
     }
 
-    public async Task LeaveRoom(string userName, Guid roomUid)
+    /// <summary>
+    /// Удаление пользователя из комнаты
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <param name="roomUid"></param>
+    /// <returns></returns>
+    internal async Task LeaveRoom(string userName, Guid roomUid)
     {
         var connections = _connections.GetConnections(userName);
         if (!connections.Any())
@@ -76,6 +89,28 @@ public class HubPublisher
         _groups.Remove(userName);
     }
 
+    /// <summary>
+    /// Отправка события обновления комнаты
+    /// </summary>
+    /// <param name="roomUid"></param>
+    /// <returns></returns>
+    public async Task UpdatedRoom(Guid roomUid)
+    {
+        var clients = _hub.Clients.Group(roomUid.ToString());
+        if (clients is null)
+        {
+            return;
+        }
+
+        _logger.LogInformation($"Sending UpdatedRoom to group: [name={roomUid}]");
+        await clients.SendAsync("UpdatedRoom", new object[] { roomUid });
+    }
+
+    /// <summary>
+    /// Отправка события об удалении комнаты
+    /// </summary>
+    /// <param name="roomUid"></param>
+    /// <returns></returns>
     public async Task DeletedRoom(Guid roomUid)
     {
         var clients = _hub.Clients.Group(roomUid.ToString());
