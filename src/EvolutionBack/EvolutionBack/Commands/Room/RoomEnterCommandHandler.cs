@@ -35,7 +35,7 @@ public class RoomEnterCommandHandler : IRequestHandler<RoomEnterCommand, RoomVie
 
         var user = await userManager.FindByNameAsync(request.User.UserName);
 
-        obj.AddUser(user.Id);
+        obj.AddUser(user);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

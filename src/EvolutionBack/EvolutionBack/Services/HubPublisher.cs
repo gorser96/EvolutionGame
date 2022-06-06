@@ -7,28 +7,85 @@ namespace EvolutionBack.Services;
 public class HubPublisher
 {
     private readonly IHubContext<GameHub> _hub;
+    private readonly ILogger<HubPublisher> _logger;
     private readonly ConnectionMapping<string> _connections = new();
+    private readonly IDictionary<string, Guid> _groups = new Dictionary<string, Guid>();
     private readonly ConcurrentDictionary<string, GameService> _rooms = new();
 
-    public HubPublisher(IHubContext<GameHub> hub)
+    public HubPublisher(IHubContext<GameHub> hub, ILogger<HubPublisher> logger)
     {
         _hub = hub;
+        _logger = logger;
     }
 
     public void AddConnection(string name, string connectionId)
     {
         _connections.Add(name, connectionId);
+        if (_groups.TryGetValue(name, out var roomUid))
+        {
+            JoinToRoom(name, roomUid).Wait();
+        }
     }
 
     public void RemoveConnection(string name, string connectionId)
     {
         _connections.Remove(name, connectionId);
+        if (_groups.TryGetValue(name, out var roomUid))
+        {
+            LeaveRoom(name, roomUid).Wait();
+        }
     }
 
-    public void UpdateRoom(Guid roomUid)
+    public async Task UpdatedRoom(Guid roomUid)
     {
         var clients = _hub.Clients.Group(roomUid.ToString());
-        clients?.SendAsync("UpdatedRoom", roomUid);
+        if (clients is null)
+        {
+            return;
+        }
+
+        _logger.LogInformation($"Sending UpdatedRoom to group: [name={roomUid}]");
+        await clients.SendAsync("UpdatedRoom", new object[] { roomUid });
+    }
+
+    public async Task JoinToRoom(string userName, Guid roomUid)
+    {
+        var connections = _connections.GetConnections(userName);
+        if (!connections.Any())
+        {
+            return;
+        }
+
+        var lastConnection = connections.Last();
+        _logger.LogInformation($"Connecting user [username={userName}; connectionId={lastConnection}] to group [name={roomUid}]");
+        await _hub.Groups.AddToGroupAsync(lastConnection, roomUid.ToString());
+        _groups.TryAdd(userName, roomUid);
+    }
+
+    public async Task LeaveRoom(string userName, Guid roomUid)
+    {
+        var connections = _connections.GetConnections(userName);
+        if (!connections.Any())
+        {
+            return;
+        }
+
+        var lastConnection = connections.Last();
+        _logger.LogInformation($"Disconnecting user [username={userName}; connectionId={lastConnection}] from group [name={roomUid}]");
+        await _hub.Groups.RemoveFromGroupAsync(lastConnection, roomUid.ToString());
+        _groups.Remove(userName);
+    }
+
+    public async Task DeletedRoom(Guid roomUid)
+    {
+        var clients = _hub.Clients.Group(roomUid.ToString());
+        if (clients is null)
+        {
+            return;
+        }
+
+        _logger.LogInformation($"Sending DeletedRoom to group: [name={roomUid}]");
+        await clients.SendAsync("DeletedRoom", new object[] { roomUid });
     }
     /*
     public async Task JoinToRoom(string roomUid)

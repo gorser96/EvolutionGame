@@ -10,7 +10,6 @@ using Infrastructure.Repo;
 using Infrastructure.Validators;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -38,6 +37,9 @@ public static class ServicesExtensions
     public static IServiceCollection AddHostedServices(this IServiceCollection services)
     {
         services.AddHostedService<RoomCleanerServiceHosted>();
+        
+        services.AddSingleton<HubPublisher>();
+        
         return services;
     }
 

@@ -22,7 +22,7 @@ const IsolatedMenu = (props) => {
     (roomUid, userUid) => {
       return async (e) => {
         await props.kick(roomUid, userUid);
-        await props.get(roomUid);
+        // await props.get(roomUid);
       };
     },
     [props]

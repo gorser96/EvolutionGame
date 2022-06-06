@@ -35,7 +35,7 @@ public class RoomLeaveCommandHandler : IRequestHandler<RoomLeaveCommand, RoomVie
             throw new ObjectNotFoundException(request.RoomUid, nameof(Room));
         }
 
-        obj.RemoveUser(user.Id);
+        obj.RemoveUser(user);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

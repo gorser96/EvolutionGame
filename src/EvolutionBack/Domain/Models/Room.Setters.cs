@@ -12,6 +12,7 @@ public partial class Room
         if (Name != name)
         {
             Name = name;
+            SetModified();
         }
     }
 
@@ -36,6 +37,7 @@ public partial class Room
         if (IsPrivate != isPrivate)
         {
             IsPrivate = isPrivate;
+            SetModified();
         }
     }
 
@@ -44,6 +46,7 @@ public partial class Room
         if (MaxTimeLeft != maxTimeLeft)
         {
             MaxTimeLeft = maxTimeLeft;
+            SetModified();
         }
     }
 
@@ -85,6 +88,7 @@ public partial class Room
             if (exist is null)
             {
                 Additions.Add(addition);
+                SetModified();
             }
         }
 
@@ -105,6 +109,7 @@ public partial class Room
         foreach (var addition in listToRemove)
         {
             Additions.Remove(addition);
+            SetModified();
         }
         UpdateCards(Additions.SelectMany(x => x.Cards).ToArray());
     }

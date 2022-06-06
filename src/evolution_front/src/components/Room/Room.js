@@ -153,7 +153,6 @@ const Room = (props) => {
     }
 
     if (user.userName !== player.user.userName) {
-      console.log(player);
       components.push(
         <IsolatedMenu
           key={1}

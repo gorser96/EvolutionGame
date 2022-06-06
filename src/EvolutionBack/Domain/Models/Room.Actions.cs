@@ -1,4 +1,5 @@
-﻿using Domain.Validators;
+﻿using Domain.Events;
+using Domain.Validators;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models;
@@ -256,14 +257,15 @@ public partial class Room
     /// </summary>
     /// <param name="userUid"></param>
     /// <exception cref="ValidationException"></exception>
-    public void RemoveUser(Guid userUid)
+    public void RemoveUser(User user)
     {
-        _roomValidator?.CanUserLeave(this, userUid);
+        _roomValidator?.CanUserLeave(this, user.Id);
 
         if (!IsStarted && !IsFinished)
         {
-            var user = FindUserByUid(userUid) ?? throw new ValidationException($"User [{userUid}] not found in room!");
-            InGameUsers.Remove(user);
+            var exsistUser = FindUserByUid(user.Id) ?? throw new ValidationException($"User [{user.Id}] not found in room!");
+            InGameUsers.Remove(exsistUser);
+            AddDomainEvent(new RoomLeaveUserEvent(this, user.UserName));
         }
     }
 
@@ -271,16 +273,17 @@ public partial class Room
     /// Добавление пользователя в комнату
     /// </summary>
     /// <param name="userUid"></param>
-    public void AddUser(Guid userUid)
+    public void AddUser(User user)
     {
-        _roomValidator?.CanUserEnter(this, userUid);
+        _roomValidator?.CanUserEnter(this, user.Id);
 
         if (!IsStarted && !IsFinished)
         {
             // первый игрок, который заходит в комнату становится хостом
             bool isUserHost = !InGameUsers.Any();
-            InGameUsers.Add(new InGameUser(userUid, Uid, isUserHost));
+            InGameUsers.Add(new InGameUser(user.Id, Uid, isUserHost));
             InGameUsers.Last().Update(new InGameUserUpdateModel(order: InGameUsers.Count - 1));
+            AddDomainEvent(new RoomEnterUserEvent(this, user.UserName));
 
         }
     }

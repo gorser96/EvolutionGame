@@ -9,6 +9,9 @@ export function signalREvent(state = {}, action) {
     case signalRConstants.TEST_FAILURE:
       return { error: action.error };
 
+    case signalRConstants.ROOM_UPDATED:
+      return { roomUpdated: true, roomUid: action.roomUid };
+
     default:
       return state;
   }

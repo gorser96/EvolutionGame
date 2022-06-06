@@ -43,7 +43,9 @@ public class RoomKickCommandHandler : IRequestHandler<RoomKickCommand, RoomViewM
             throw new ValidationException($"User [{user.UserName}] not host!");
         }
 
-        obj.RemoveUser(request.UserUid);
+        var userForRemove = await userManager.FindByIdAsync(request.UserUid.ToString());
+
+        obj.RemoveUser(userForRemove);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

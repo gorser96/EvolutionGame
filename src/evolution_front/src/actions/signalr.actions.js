@@ -1,4 +1,5 @@
 import { signalRConstants } from "../constants";
+import { roomActions } from "./room.actions";
 
 const testConnection = () => async (dispatch) => dispatch({ type: signalRConstants.TEST_REQUEST });
 
@@ -7,12 +8,23 @@ const onTestClientReceived = (dispatch) => result => {
   dispatch({ type: signalRConstants.TEST_SUCCESS });
 };
 
+const onUpdatedRoom = (dispatch) => result => {
+  dispatch({ type: signalRConstants.ROOM_UPDATED, roomUid: result[0] });
+  roomActions.get(result[0])(dispatch);
+};
+
+const onDeletedRoom = (dispatch) => result => {
+  dispatch({ type: signalRConstants.ROOM_DELETED, roomUid: result[0] });
+};
+
 const signalREvents = [
-  { name: 'TestConnectionClient', action: onTestClientReceived }
+  { name: 'TestConnectionClient', action: onTestClientReceived },
+  { name: 'UpdatedRoom', action: onUpdatedRoom },
+  { name: 'DeletedRoom', action: onDeletedRoom },
 ];
 
 const signalRSendEvents = [
-  { request_type: signalRConstants.TEST_REQUEST, failure_type: signalRConstants.TEST_FAILURE, method: 'TestConnectionServer' }
+  { request_type: signalRConstants.TEST_REQUEST, failure_type: signalRConstants.TEST_FAILURE, method: 'TestConnectionServer' },
 ];
 
 const signalRActions = {
