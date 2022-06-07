@@ -43,6 +43,12 @@ public class RoomController : ControllerBase
         return Task.FromResult(room);
     }
 
+    [HttpGet("{uid:guid}/users")]
+    public Task<ICollection<InGameUserViewModel>> GetUsers(Guid uid, [FromServices] RoomQueries roomQueries)
+    {
+        return Task.FromResult(roomQueries.GetUsersFromRoom(uid));
+    }
+
     [HttpGet("user")]
     public Task<RoomViewModel?> GetHostedRoom([FromServices] RoomQueries roomQueries)
     {

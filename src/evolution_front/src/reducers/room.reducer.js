@@ -93,6 +93,13 @@ export function roomState(state = {}, action) {
     case roomConstants.USER_FAILURE:
       return {};
 
+    case roomConstants.GET_USERS_REQUEST:
+      return { requesting: true, roomUid: action.roomUid };
+    case roomConstants.GET_USERS_SUCCESS:
+      return { requested: true, users: action.users };
+    case roomConstants.GET_USERS_FAILURE:
+      return {};
+
     default:
       return state;
   }

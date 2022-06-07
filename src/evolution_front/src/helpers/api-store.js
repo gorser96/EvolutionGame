@@ -3,6 +3,7 @@ export const apiStore = {
   userRegister: '/user/register',
 
   roomGet: '/room/{0}',
+  roomGetUsers: '/room/{0}/users',
   roomUser: '/room/user',
   roomCreate: '/room/create',
   roomList: '/room/list',

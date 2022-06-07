@@ -40,6 +40,17 @@ public class RoomQueries : IQueries
         return _mapper.Map<RoomViewModel>(obj);
     }
 
+    public ICollection<InGameUserViewModel> GetUsersFromRoom(Guid uid)
+    {
+        var obj = GetIncludedQuery()
+            .FirstOrDefault(x => x.Uid == uid);
+        if (obj is null)
+        {
+            return Array.Empty<InGameUserViewModel>();
+        }
+        return obj.InGameUsers.Select(x => _mapper.Map<InGameUserViewModel>(x)).ToArray();
+    }
+
     public RoomViewModel? GetRoomViewModel(Guid uid)
     {
         var obj = GetIncludedQuery()
