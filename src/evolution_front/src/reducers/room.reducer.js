@@ -10,9 +10,9 @@ export function roomState(state = {}, action) {
       return {};
 
     case roomConstants.UPDATE_REQUEST:
-      return { updating: true, room: action.room };
+      return { updating: true, users: state.users, room: state.room };
     case roomConstants.UPDATE_SUCCESS:
-      return { updated: true, room: action.room };
+      return { updated: true, users: state.users, room: action.room };
     case roomConstants.UPDATE_FAILURE:
       return {};
 
@@ -24,9 +24,9 @@ export function roomState(state = {}, action) {
       return {};
 
     case roomConstants.ENTER_REQUEST:
-      return { entering: true };
+      return { entering: true, users: state.users };
     case roomConstants.ENTER_SUCCESS:
-      return { entered: true, room: action.room };
+      return { entered: true, users: state.users, room: action.room };
     case roomConstants.ENTER_FAILURE:
       return {};
 
@@ -38,9 +38,9 @@ export function roomState(state = {}, action) {
       return {};
 
     case roomConstants.KICK_REQUEST:
-      return { kicking: true };
+      return { kicking: true, users: state.users, room: state.room };
     case roomConstants.KICK_SUCCESS:
-      return { kicked: true, room: action.room };
+      return { kicked: true, users: state.users, room: action.room };
     case roomConstants.KICK_FAILURE:
       return {};
 
@@ -80,23 +80,23 @@ export function roomState(state = {}, action) {
       return {};
 
     case roomConstants.GET_REQUEST:
-      return { requesting: true };
+      return { requesting: true, users: state.users, room: state.room };
     case roomConstants.GET_SUCCESS:
-      return { requested: true, room: action.room };
+      return { requested: true, users: state.users, room: action.room };
     case roomConstants.GET_FAILURE:
       return {};
 
     case roomConstants.USER_REQUEST:
-      return { requesting: true };
+      return { requesting: true, users: state.users, room: state.room };
     case roomConstants.USER_SUCCESS:
-      return { requested: true, room: action.room };
+      return { requested: true, users: state.users, room: action.room };
     case roomConstants.USER_FAILURE:
       return {};
 
     case roomConstants.GET_USERS_REQUEST:
-      return { requesting: true, roomUid: action.roomUid };
+      return { requesting: true, users: state.users, room: state.room, roomUid: action.roomUid };
     case roomConstants.GET_USERS_SUCCESS:
-      return { requested: true, users: action.users };
+      return { requested: true, users: action.users, room: state.room };
     case roomConstants.GET_USERS_FAILURE:
       return {};
 

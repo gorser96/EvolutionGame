@@ -11,7 +11,7 @@ import IsolatedMenu from "./IsolatedMenu";
 const UsersList = (props) => {
   const { uid } = useParams();
   const users = useSelector((state) => state.roomState.users);
-  const user = props.authentication.user;
+  const user = useSelector((state) => state.authentication.user);
 
   useEffect(() => {
     props.getUsers(uid);
@@ -76,11 +76,6 @@ const UsersList = (props) => {
   return <>{showPlayers()}</>;
 };
 
-const mapState = (state) => {
-  const { authentication } = state;
-  return { authentication };
-};
-
 const mapDispatchToProps = (dispatch) => {
   return {
     getUsers: bindActionCreators(roomActions.getUsers, dispatch),
@@ -88,4 +83,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapState, mapDispatchToProps)(UsersList);
+export default connect(null, mapDispatchToProps)(UsersList);

@@ -25,8 +25,11 @@ import useSnackbar from "../hooks/SnackbarHook";
 const OptionsList = (props) => {
   let navigation = useNavigate();
   const { uid } = useParams();
+  
   const room = useSelector((state) => state.roomState.room);
   const additionsSelector = useSelector((state) => state.additionState.additions);
+  const user = useSelector((state) => state.authentication.user);
+
   const [snackbar, sendNotification] = useSnackbar();
 
   const [selectedAdditions, setSelectedAdditions] = useState([]);
@@ -36,8 +39,6 @@ const OptionsList = (props) => {
   const [additions, setAdditions] = useState([]);
 
   const [sureDialog, showDialog] = useSureDialog();
-
-  const user = props.authentication.user;
 
   useEffect(() => {
     props.get(uid);
@@ -310,11 +311,6 @@ const OptionsList = (props) => {
   );
 };
 
-const mapState = (state) => {
-  const { authentication } = state;
-  return { authentication };
-};
-
 const mapDispatchToProps = (dispatch) => {
   return {
     get: bindActionCreators(roomActions.get, dispatch),
@@ -326,4 +322,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapState, mapDispatchToProps)(OptionsList);
+export default connect(null, mapDispatchToProps)(OptionsList);

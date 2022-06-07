@@ -1,5 +1,4 @@
 import React from "react";
-import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./Room.css";
 
@@ -8,7 +7,7 @@ import { ArrowBack } from "@mui/icons-material";
 import UsersList from "./UsersList";
 import OptionsList from "./OptionsList";
 
-const Room = (props) => {
+const Room = () => {
   let navigation = useNavigate();
 
   const handleBack = (_) => {
@@ -40,12 +39,4 @@ const Room = (props) => {
   );
 };
 
-const mapState = (state) => {
-  return state;
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-
-export default connect(mapState, mapDispatchToProps)(Room);
+export default Room;

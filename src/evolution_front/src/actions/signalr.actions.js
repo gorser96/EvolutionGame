@@ -10,7 +10,7 @@ const onTestClientReceived = (dispatch) => result => {
 
 const onUpdatedRoom = (dispatch) => result => {
   dispatch({ type: signalRConstants.ROOM_UPDATED, roomUid: result[0] });
-  roomActions.get(result[0])(dispatch);
+  roomActions.getUsers(result[0])(dispatch);
 };
 
 const onDeletedRoom = (dispatch) => result => {
