@@ -58,8 +58,6 @@ const createConnection = (authData, dispatch) => {
   });
 
   startSignalRConnection(connection, dispatch);
-
-  return connection;
 };
 
 const signalRMiddleware = (store) => (next) => {

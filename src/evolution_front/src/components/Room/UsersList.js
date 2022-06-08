@@ -10,7 +10,7 @@ import IsolatedMenu from "./IsolatedMenu";
 
 const UsersList = (props) => {
   const { uid } = useParams();
-  const users = useSelector((state) => state.roomState.users);
+  const users = useSelector((state) => state.roomUsers.users);
   const user = useSelector((state) => state.authentication.user);
 
   useEffect(() => {

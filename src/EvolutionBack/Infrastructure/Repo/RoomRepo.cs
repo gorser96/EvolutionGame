@@ -45,6 +45,7 @@ public class RoomRepo : IRoomRepo
         }
         else
         {
+            obj.Delete();
             _dbContext.Rooms.Remove(obj);
             return true;
         }

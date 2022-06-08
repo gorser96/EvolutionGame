@@ -43,10 +43,6 @@ public class HubPublisher
     internal void RemoveConnection(string name, string connectionId)
     {
         _connections.Remove(name, connectionId);
-        if (_groups.TryGetValue(name, out var roomUid))
-        {
-            LeaveRoom(name, roomUid).Wait();
-        }
     }
 
     /// <summary>
@@ -121,6 +117,10 @@ public class HubPublisher
 
         _logger.LogInformation($"Sending DeletedRoom to group: [name={roomUid}]");
         await clients.SendAsync("DeletedRoom", new object[] { roomUid });
+        foreach (var userUid in _groups.Where(x => x.Value == roomUid).ToArray())
+        {
+            _groups.Remove(userUid);
+        }
     }
     /*
     public async Task JoinToRoom(string roomUid)

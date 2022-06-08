@@ -20,7 +20,6 @@ import {
   Button,
 } from "@mui/material";
 import useSureDialog from "../hooks/SureDialogHook";
-import useSnackbar from "../hooks/SnackbarHook";
 
 const OptionsList = (props) => {
   let navigation = useNavigate();
@@ -30,8 +29,6 @@ const OptionsList = (props) => {
   const additionsSelector = useSelector((state) => state.additionState.additions);
   const user = useSelector((state) => state.authentication.user);
 
-  const [snackbar, sendNotification] = useSnackbar();
-
   const [selectedAdditions, setSelectedAdditions] = useState([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [roomName, setRoomName] = useState("");
@@ -39,6 +36,7 @@ const OptionsList = (props) => {
   const [additions, setAdditions] = useState([]);
 
   const [sureDialog, showDialog] = useSureDialog();
+  const sendNotification = props.sendNotification;
 
   useEffect(() => {
     props.get(uid);
@@ -99,6 +97,7 @@ const OptionsList = (props) => {
     };
     await props.update(uid, room).then(
       (result) => {
+        navigation('/menu');
         sendNotification(`Комната ${result.room.name} сохранена!`, "success");
       },
       (failure) => {
@@ -114,7 +113,6 @@ const OptionsList = (props) => {
       await props.remove(uid).then(
         (result) => {
           sendNotification(`Комната удалена!`, "success");
-          navigation(-1);
         },
         (failure) => {
           sendNotification(failure.error, "error");
@@ -305,7 +303,6 @@ const OptionsList = (props) => {
   return (
     <>
       {sureDialog}
-      {snackbar}
       {showOptions()}
     </>
   );

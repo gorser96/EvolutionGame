@@ -9,9 +9,19 @@ export function signalREvent(state = {}, action) {
     case signalRConstants.TEST_FAILURE:
       return { error: action.error };
 
+    default:
+      return state;
+  }
+}
+
+export function roomEvent(state = {}, action) {
+  switch (action.type) {
     case signalRConstants.ROOM_UPDATED:
       return { roomUpdated: true, roomUid: action.roomUid };
 
+    case signalRConstants.ROOM_DELETED:
+      return { roomDeleted: true, roomUid: action.roomUid };
+  
     default:
       return state;
   }
