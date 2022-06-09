@@ -36,7 +36,6 @@ const OptionsList = (props) => {
   const [additions, setAdditions] = useState([]);
 
   const [sureDialog, showDialog] = useSureDialog();
-  const sendNotification = props.sendNotification;
 
   useEffect(() => {
     props.get(uid);
@@ -98,10 +97,8 @@ const OptionsList = (props) => {
     await props.update(uid, room).then(
       (result) => {
         navigation('/menu');
-        sendNotification(`Комната ${result.room.name} сохранена!`, "success");
       },
       (failure) => {
-        sendNotification(failure.error, "error");
         props.get(uid);
       }
     );
@@ -112,10 +109,8 @@ const OptionsList = (props) => {
     if (result) {
       await props.remove(uid).then(
         (result) => {
-          sendNotification(`Комната удалена!`, "success");
         },
         (failure) => {
-          sendNotification(failure.error, "error");
           props.get(uid);
         }
       );

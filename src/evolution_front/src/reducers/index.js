@@ -5,6 +5,7 @@ import { registration } from "./registration.reducer";
 import { roomState, roomUsers, roomGame } from "./room.reducer";
 import { additionState } from "./addition.reducer";
 import { signalRState, signalREvent, roomEvent } from "./signalr.reducer";
+import { notificationState } from "./notification.reducer";
 
 const rootReducer = combineReducers({
   authentication,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   signalRState,
   signalREvent,
   roomEvent,
+  notificationState,
 });
 
 export default rootReducer;

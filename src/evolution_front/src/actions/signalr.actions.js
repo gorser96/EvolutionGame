@@ -1,4 +1,4 @@
-import { signalRConstants } from "../constants";
+import { signalRConstants, systemConstants } from "../constants";
 import { roomActions } from "./room.actions";
 
 const testConnection = () => async (dispatch) => dispatch({ type: signalRConstants.TEST_REQUEST });
@@ -15,6 +15,13 @@ const onUpdatedRoom = (dispatch) => result => {
 
 const onDeletedRoom = (dispatch) => result => {
   dispatch({ type: signalRConstants.ROOM_DELETED, roomUid: result[0] });
+  dispatch({
+    type: systemConstants.SNACK_NOTIFY,
+    notify: {
+      message: "Комната была удалена!",
+      severity: "success",
+    },
+  });
 };
 
 const signalREvents = [

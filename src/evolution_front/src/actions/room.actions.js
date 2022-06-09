@@ -1,4 +1,4 @@
-import { roomConstants } from "../constants";
+import { roomConstants, systemConstants } from "../constants";
 import { roomService } from "../services";
 
 export const roomActions = {
@@ -71,6 +71,13 @@ function remove(roomUid) {
     dispatch(request(roomUid));
     return roomService.remove(roomUid).then(
       () => {
+        dispatch({
+          type: systemConstants.SNACK_NOTIFY,
+          notify: {
+            message: "Комната была удалена!",
+            severity: "success",
+          },
+        });
         return dispatch(success());
       },
       (error) => {
