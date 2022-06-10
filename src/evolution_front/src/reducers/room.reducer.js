@@ -40,8 +40,29 @@ export function roomUsers(state = {}, action) {
     case roomConstants.GET_USERS_REQUEST:
       return { requesting: true, users: state.users, roomUid: action.roomUid };
     case roomConstants.GET_USERS_SUCCESS:
-      return { requested: true, users: action.users };
+      return { requested: true, roomUid: state.roomUid, users: action.users };
     case roomConstants.GET_USERS_FAILURE:
+      return {};
+
+    case roomConstants.ENTER_REQUEST:
+      return { entering: true };
+    case roomConstants.ENTER_SUCCESS:
+      return { entered: true };
+    case roomConstants.ENTER_FAILURE:
+      return {};
+
+    case roomConstants.LEAVE_REQUEST:
+      return { leaving: true };
+    case roomConstants.LEAVE_SUCCESS:
+      return { leaved: true };
+    case roomConstants.LEAVE_FAILURE:
+      return {};
+
+    case roomConstants.KICK_REQUEST:
+      return { kicking: true };
+    case roomConstants.KICK_SUCCESS:
+      return { kicked: true };
+    case roomConstants.KICK_FAILURE:
       return {};
 
     default:
@@ -72,33 +93,12 @@ export function roomState(state = {}, action) {
     case roomConstants.REMOVE_FAILURE:
       return {};
 
-    case roomConstants.ENTER_REQUEST:
-      return { entering: true };
-    case roomConstants.ENTER_SUCCESS:
-      return { entered: true, room: action.room };
-    case roomConstants.ENTER_FAILURE:
-      return {};
-
-    case roomConstants.LEAVE_REQUEST:
-      return { leaving: true };
-    case roomConstants.LEAVE_SUCCESS:
-      return { leaved: true, room: action.room };
-    case roomConstants.LEAVE_FAILURE:
-      return {};
-
-    case roomConstants.KICK_REQUEST:
-      return { kicking: true, room: state.room };
-    case roomConstants.KICK_SUCCESS:
-      return { kicked: true, room: action.room };
-    case roomConstants.KICK_FAILURE:
-      return {};
-
     case roomConstants.LIST_REQUEST:
-      return { requesting: true, rooms: state.rooms };
+      return { requesting: true, rooms: state.rooms, room: state.room };
     case roomConstants.LIST_SUCCESS:
-      return { requested: true, rooms: action.rooms };
+      return { requested: true, rooms: action.rooms, room: state.room };
     case roomConstants.LIST_FAILURE:
-      return {};
+      return { room: state.room };
 
     case roomConstants.GET_REQUEST:
       return { requesting: true, room: state.room };

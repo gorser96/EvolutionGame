@@ -16,6 +16,6 @@ public class RoomEnterUserEventHandlerForMqEvent : INotificationHandler<RoomEnte
     public async Task Handle(RoomEnterUserEvent notification, CancellationToken cancellationToken)
     {
         await _publisher.JoinToRoom(notification.UserName, notification.Entity.Uid);
-        await _publisher.UpdatedRoom(notification.Entity.Uid);
+        await _publisher.RoomEvent(new(notification.Entity.Uid, Models.RoomIntegrationType.UserJoined));
     }
 }

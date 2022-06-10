@@ -1,15 +1,18 @@
 import { useEffect } from "react";
 import { connect, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-import { roomActions } from "../../actions";
+import { roomActions, systemActions } from "../../actions";
+import { NotifySeverity } from "../../constants";
 import { Avatar } from "@mui/material";
 import { Person } from "@mui/icons-material";
 import IsolatedMenu from "./IsolatedMenu";
 
 const UsersList = (props) => {
+  const navigation = useNavigate();
   const { uid } = useParams();
+  const roomUidFromState = useSelector((state) => state.roomUsers.roomUid);
   const users = useSelector((state) => state.roomUsers.users);
   const user = useSelector((state) => state.authentication.user);
 
@@ -17,6 +20,16 @@ const UsersList = (props) => {
     props.getUsers(uid);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (roomUidFromState === uid && users && !users.find((x) => x.user.userName === user.userName)) {
+      navigation("/menu");
+      props.sendNotification(
+        "Вы отсутствуете в списке игроков!",
+        NotifySeverity.Error
+      );
+    }
+  }, [navigation, props, roomUidFromState, uid, user.userName, users]);
 
   const getAvatar = (user) => {
     return <Avatar>{user.userName.charAt(0).toUpperCase()}</Avatar>;
@@ -80,6 +93,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getUsers: bindActionCreators(roomActions.getUsers, dispatch),
     kick: bindActionCreators(roomActions.kick, dispatch),
+    sendNotification: bindActionCreators(systemActions.sendNotification, dispatch),
   };
 };
 

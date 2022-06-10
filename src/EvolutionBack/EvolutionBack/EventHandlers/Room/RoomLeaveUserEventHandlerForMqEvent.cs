@@ -15,7 +15,7 @@ public class RoomLeaveUserEventHandlerForMqEvent : INotificationHandler<RoomLeav
 
     public async Task Handle(RoomLeaveUserEvent notification, CancellationToken cancellationToken)
     {
+        await _publisher.RoomEvent(new(notification.Entity.Uid, Models.RoomIntegrationType.UserLeft));
         await _publisher.LeaveRoom(notification.UserName, notification.Entity.Uid);
-        await _publisher.UpdatedRoom(notification.Entity.Uid);
     }
 }

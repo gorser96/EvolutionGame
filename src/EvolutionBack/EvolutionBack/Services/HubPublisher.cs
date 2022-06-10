@@ -1,4 +1,5 @@
-﻿using EvolutionBack.Services.Hubs;
+﻿using EvolutionBack.Models;
+using EvolutionBack.Services.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 
@@ -86,93 +87,27 @@ public class HubPublisher
     }
 
     /// <summary>
-    /// Отправка события обновления комнаты
+    /// Отправка интеграционного события события комнаты
     /// </summary>
-    /// <param name="roomUid"></param>
+    /// <param name="model"></param>
     /// <returns></returns>
-    public async Task UpdatedRoom(Guid roomUid)
+    public async Task RoomEvent(RoomIntegrationModel model)
     {
-        var clients = _hub.Clients.Group(roomUid.ToString());
-        if (clients is null)
+        var clientProxy = model.EventType switch
+        {
+            RoomIntegrationType.Created or RoomIntegrationType.Removed => _hub.Clients.All,
+            RoomIntegrationType.Modified or
+            RoomIntegrationType.UserJoined or
+            RoomIntegrationType.UserLeft => _hub.Clients.Group(model.RoomUid.ToString()),
+            _ => throw new NotSupportedException(nameof(model.EventType)),
+        };
+
+        if (clientProxy is null)
         {
             return;
         }
 
-        _logger.LogInformation($"Sending UpdatedRoom to group: [name={roomUid}]");
-        await clients.SendAsync("UpdatedRoom", new object[] { roomUid });
+        _logger.LogInformation($"Sending RoomEvent [type={model.EventType}] to group: [name={model.RoomUid}]");
+        await clientProxy.SendAsync("RoomEvent", model);
     }
-
-    /// <summary>
-    /// Отправка события об удалении комнаты
-    /// </summary>
-    /// <param name="roomUid"></param>
-    /// <returns></returns>
-    public async Task DeletedRoom(Guid roomUid)
-    {
-        var clients = _hub.Clients.Group(roomUid.ToString());
-        if (clients is null)
-        {
-            return;
-        }
-
-        _logger.LogInformation($"Sending DeletedRoom to group: [name={roomUid}]");
-        await clients.SendAsync("DeletedRoom", new object[] { roomUid });
-        foreach (var userUid in _groups.Where(x => x.Value == roomUid).ToArray())
-        {
-            _groups.Remove(userUid);
-        }
-    }
-    /*
-    public async Task JoinToRoom(string roomUid)
-    {
-        if (_rooms.TryGetValue(roomUid, out var gameService))
-        {
-            gameService.ConnectUser(Context.ConnectionId);
-        }
-        else
-        {
-            var roomGameService = new GameService(_serviceScopeFactory, Guid.Parse(roomUid));
-            roomGameService.MessageEvent += OnMessage;
-
-            _rooms.TryAdd(roomUid, roomGameService);
-
-            roomGameService.ConnectUser(Context.ConnectionId);
-        }
-        await _hub.Groups.AddToGroupAsync(Context.ConnectionId, roomUid);
-    }
-
-    public async Task LeaveRoom(string roomUid)
-    {
-        if (_rooms.TryGetValue(roomUid, out var gameService))
-        {
-            gameService.DisconnectUser(Context.ConnectionId);
-        }
-        else
-        {
-            throw new BadHttpRequestException($"Room {roomUid} not found!");
-        }
-        await _hub.Groups.RemoveFromGroupAsync(Context.ConnectionId, roomUid);
-    }
-
-    private void OnMessage(object? sender, MsgFromServer msg)
-    {
-        if (_rooms.TryGetValue(msg.RoomUid.ToString(), out var _))
-        {
-            var clients = _hub.Clients.Group(msg.RoomUid.ToString());
-            clients?.SendAsync("ReceiveMessage", msg);
-        }
-        else
-        {
-            return;
-        }
-    }
-
-    public void Dispose()
-    {
-        foreach (var room in _rooms)
-        {
-            room.Value.MessageEvent -= OnMessage;
-        }
-    }
-    */
 }

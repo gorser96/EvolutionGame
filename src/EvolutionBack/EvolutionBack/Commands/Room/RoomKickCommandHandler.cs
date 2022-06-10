@@ -2,7 +2,6 @@
 using Domain.Models;
 using Domain.Repo;
 using EvolutionBack.Core;
-using EvolutionBack.Models;
 using Infrastructure.EF;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EvolutionBack.Commands;
 
-public class RoomKickCommandHandler : IRequestHandler<RoomKickCommand, RoomViewModel>
+public class RoomKickCommandHandler : IRequestHandler<RoomKickCommand>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IMapper _mapper;
@@ -21,7 +20,7 @@ public class RoomKickCommandHandler : IRequestHandler<RoomKickCommand, RoomViewM
         _mapper = mapper;
     }
 
-    public async Task<RoomViewModel> Handle(RoomKickCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(RoomKickCommand request, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
@@ -49,6 +48,6 @@ public class RoomKickCommandHandler : IRequestHandler<RoomKickCommand, RoomViewM
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<RoomViewModel>(obj);
+        return Unit.Value;
     }
 }

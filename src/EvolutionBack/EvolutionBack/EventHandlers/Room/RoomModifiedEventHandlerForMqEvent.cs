@@ -15,6 +15,6 @@ public class RoomModifiedEventHandlerForMqEvent : INotificationHandler<RoomModif
 
     public async Task Handle(RoomModifiedEvent notification, CancellationToken cancellationToken)
     {
-        await _publisher.UpdatedRoom(notification.Entity.Uid);
+        await _publisher.RoomEvent(new(notification.Entity.Uid, Models.RoomIntegrationType.Modified));
     }
 }

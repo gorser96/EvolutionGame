@@ -1,4 +1,5 @@
-import { additionConstants } from "../constants";
+import { additionConstants, NotifySeverity } from "../constants";
+import { systemActions } from "./system.actions";
 import { additionService } from "../services";
 
 export const additionActions = {
@@ -15,6 +16,7 @@ function list() {
         return dispatch(success(additions));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -40,6 +42,7 @@ function get(additionUid) {
         return dispatch(success(addition));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );

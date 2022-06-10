@@ -16,6 +16,9 @@ export function signalREvent(state = {}, action) {
 
 export function roomEvent(state = {}, action) {
   switch (action.type) {
+    case signalRConstants.ROOM_CREATED:
+      return { roomCreated: true, roomUid: action.roomUid };
+
     case signalRConstants.ROOM_UPDATED:
       return { roomUpdated: true, roomUid: action.roomUid };
 

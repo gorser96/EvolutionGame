@@ -26,7 +26,6 @@ function handleResponse(fetchPromise) {
         return resultData;
       },
       (failure) => {
-        console.log(failure);
         return Promise.reject(failure);
       }
     );

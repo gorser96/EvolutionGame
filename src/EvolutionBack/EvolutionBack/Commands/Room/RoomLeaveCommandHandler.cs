@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EvolutionBack.Commands;
 
-public class RoomLeaveCommandHandler : IRequestHandler<RoomLeaveCommand, RoomViewModel>
+public class RoomLeaveCommandHandler : IRequestHandler<RoomLeaveCommand>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IMapper _mapper;
@@ -20,7 +20,7 @@ public class RoomLeaveCommandHandler : IRequestHandler<RoomLeaveCommand, RoomVie
         _mapper = mapper;
     }
 
-    public async Task<RoomViewModel> Handle(RoomLeaveCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(RoomLeaveCommand request, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
@@ -39,6 +39,6 @@ public class RoomLeaveCommandHandler : IRequestHandler<RoomLeaveCommand, RoomVie
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<RoomViewModel>(obj);
+        return Unit.Value;
     }
 }

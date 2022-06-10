@@ -1,23 +1,28 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { connect, useSelector } from "react-redux";
+import { bindActionCreators } from "redux";
+import { useNavigate, useParams } from "react-router-dom";
 import "./Room.css";
 
 import { Box } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
+import { systemActions } from "../../actions";
+import { NotifySeverity } from "../../constants";
 import UsersList from "./UsersList";
 import OptionsList from "./OptionsList";
 
-const Room = () => {
-  let navigation = useNavigate();
+const Room = (props) => {
+  const { uid } = useParams();
+  const navigation = useNavigate();
 
   const roomEvent = useSelector((state) => state.roomEvent);
 
   useEffect(() => {
-    if (roomEvent.roomDeleted) {
-      navigation('/menu');
+    if (roomEvent.roomDeleted && roomEvent.roomUid === uid) {
+      navigation("/menu");
+      props.sendNotification("Комната была удалена!", NotifySeverity.Warning);
     }
-  }, [roomEvent, navigation]);
+  }, [roomEvent, navigation, uid, props]);
 
   const handleBack = (_) => {
     navigation(-1);
@@ -48,4 +53,13 @@ const Room = () => {
   );
 };
 
-export default Room;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    sendNotification: bindActionCreators(
+      systemActions.sendNotification,
+      dispatch
+    ),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(Room);

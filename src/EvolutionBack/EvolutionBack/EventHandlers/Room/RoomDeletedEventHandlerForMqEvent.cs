@@ -15,6 +15,6 @@ public class RoomDeletedEventHandlerForMqEvent : INotificationHandler<RoomDelete
 
     public async Task Handle(RoomDeletedEvent notification, CancellationToken cancellationToken)
     {
-        await _publisher.DeletedRoom(notification.Entity.Uid);
+        await _publisher.RoomEvent(new(notification.Entity.Uid, Models.RoomIntegrationType.Removed));
     }
 }
