@@ -3,7 +3,7 @@ using MediatR;
 
 namespace EvolutionBack.Commands;
 
-public class RoomKickCommand : IRequest<RoomViewModel>
+public class RoomKickCommand : IRequest
 {
     public RoomKickCommand(Guid roomUid, Guid userUid, UserCredentials user)
     {

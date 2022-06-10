@@ -3,7 +3,7 @@ using MediatR;
 
 namespace EvolutionBack.Commands;
 
-public class RoomLeaveCommand : IRequest<RoomViewModel>
+public class RoomLeaveCommand : IRequest
 {
     public RoomLeaveCommand(Guid roomUid, UserCredentials user)
     {

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Concurrent;
 using System.Security.Authentication;
 
 namespace EvolutionBack.Services.Hubs;
 
+/// <summary>
+/// Концентратор подключений к SignalR
+/// </summary>
 [Authorize]
 public class GameHub : Hub
 {
@@ -35,6 +37,10 @@ public class GameHub : Hub
         return base.OnDisconnectedAsync(exception);
     }
 
+    /// <summary>
+    /// Запрос к серверу от клиента. Используется для тестирования соединения.
+    /// </summary>
+    /// <returns></returns>
     public async Task TestConnectionServer()
     {
         await Clients.Client(Context.ConnectionId).SendAsync("TestConnectionClient");

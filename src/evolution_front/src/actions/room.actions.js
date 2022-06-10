@@ -1,4 +1,5 @@
-import { roomConstants } from "../constants";
+import { roomConstants, NotifySeverity } from "../constants";
+import { systemActions } from "./system.actions";
 import { roomService } from "../services";
 
 export const roomActions = {
@@ -15,6 +16,7 @@ export const roomActions = {
   list,
   get,
   user,
+  getUsers,
 };
 
 function create(roomName) {
@@ -25,6 +27,7 @@ function create(roomName) {
         return dispatch(success(room));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -49,6 +52,7 @@ function update(roomUid, roomModel) {
         return dispatch(success(room));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -70,9 +74,14 @@ function remove(roomUid) {
     dispatch(request(roomUid));
     return roomService.remove(roomUid).then(
       () => {
+        systemActions.sendNotification(
+          "Комната была удалена!",
+          NotifySeverity.Success
+        )(dispatch);
         return dispatch(success());
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -98,6 +107,7 @@ function enter(roomUid) {
         return dispatch(success(room));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -123,6 +133,7 @@ function leave(roomUid) {
         return dispatch(success(room));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -148,6 +159,7 @@ function kick(roomUid, userUid) {
         return dispatch(success(room));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -173,6 +185,7 @@ function start(roomUid) {
         return dispatch(success());
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -198,6 +211,7 @@ function pause(roomUid) {
         return dispatch(success());
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -223,6 +237,7 @@ function resume(roomUid) {
         return dispatch(success());
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -248,6 +263,7 @@ function end(roomUid) {
         return dispatch(success());
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -273,6 +289,7 @@ function list() {
         return dispatch(success(rooms));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -298,6 +315,7 @@ function get(roomUid) {
         return dispatch(success(room));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -323,6 +341,7 @@ function user() {
         return dispatch(success(room));
       },
       (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
         return Promise.reject(dispatch(failure(error)));
       }
     );
@@ -336,5 +355,31 @@ function user() {
   }
   function failure(error) {
     return { type: roomConstants.USER_FAILURE, error };
+  }
+}
+
+function getUsers(roomUid) {
+  return async (dispatch) => {
+    dispatch(request(roomUid));
+
+    return roomService.getUsers(roomUid).then(
+      (users) => {
+        return dispatch(success(users));
+      },
+      (error) => {
+        systemActions.sendNotification(error.message, NotifySeverity.Error)(dispatch);
+        return Promise.reject(dispatch(failure(error)));
+      }
+    );
+  };
+
+  function request(roomUid) {
+    return { type: roomConstants.GET_USERS_REQUEST, roomUid };
+  }
+  function success(users) {
+    return { type: roomConstants.GET_USERS_SUCCESS, users };
+  }
+  function failure(error) {
+    return { type: roomConstants.GET_USERS_FAILURE, error };
   }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./RoomList.css";
@@ -14,12 +14,12 @@ import {
   Search,
 } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
-import useSnackbar from "../hooks/SnackbarHook";
 
 const RoomList = (props) => {
+  const rooms = useSelector((state) => state.roomState.rooms);
+
   let navigation = useNavigate();
   let location = useLocation();
-  const [snackbar, sendNotification] = useSnackbar();
 
   useEffect(() => {
     props.list();
@@ -33,10 +33,9 @@ const RoomList = (props) => {
   const handleEnter = (roomUid) => {
     props.enter(roomUid).then(
       (result) => {
-        navigation(`/room/${result.room.uid}`);
+        navigation(`/room/${roomUid}`);
       },
       (error) => {
-        sendNotification(error.error, "error");
         props.list();
       }
     );
@@ -69,7 +68,6 @@ const RoomList = (props) => {
   };
 
   const showRooms = () => {
-    let rooms = props.roomState.rooms;
     if (rooms === undefined) {
       return "";
     }
@@ -128,7 +126,6 @@ const RoomList = (props) => {
 
   return (
     <Box component="div" className="room-list-window">
-      {snackbar}
       <Box component="div" className="list-rooms">
         <Box
           component="div"
@@ -151,10 +148,6 @@ const RoomList = (props) => {
   );
 };
 
-const mapState = (state) => {
-  return state;
-};
-
 const mapDispatchToProps = (dispatch) => {
   return {
     list: bindActionCreators(roomActions.list, dispatch),
@@ -162,4 +155,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapState, mapDispatchToProps)(RoomList);
+export default connect(null, mapDispatchToProps)(RoomList);

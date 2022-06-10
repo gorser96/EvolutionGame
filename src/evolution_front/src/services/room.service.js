@@ -5,6 +5,7 @@ import { handleResponse } from "./service.base";
 export const roomService = {
   user,
   get,
+  getUsers,
   list,
   create,
   update,
@@ -26,6 +27,20 @@ async function get(roomUid) {
 
   const response = fetch(
     `${apiUrl}${apiStore.roomGet.format(roomUid)}`,
+    requestOptions
+  );
+
+  return handleResponse(response);
+}
+
+async function getUsers(roomUid) {
+  const requestOptions = {
+    method: "GET",
+    headers: { ...authHeader(), "Content-Type": "application/json" },
+  };
+
+  const response = fetch(
+    `${apiUrl}${apiStore.roomGetUsers.format(roomUid)}`,
     requestOptions
   );
 

@@ -2,14 +2,13 @@
 using Domain.Models;
 using Domain.Repo;
 using EvolutionBack.Core;
-using EvolutionBack.Models;
 using Infrastructure.EF;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace EvolutionBack.Commands;
 
-public class RoomEnterCommandHandler : IRequestHandler<RoomEnterCommand, RoomViewModel>
+public class RoomEnterCommandHandler : IRequestHandler<RoomEnterCommand>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IMapper _mapper;
@@ -20,7 +19,7 @@ public class RoomEnterCommandHandler : IRequestHandler<RoomEnterCommand, RoomVie
         _mapper = mapper;
     }
 
-    public async Task<RoomViewModel> Handle(RoomEnterCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(RoomEnterCommand request, CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<EvolutionDbContext>();
@@ -35,10 +34,10 @@ public class RoomEnterCommandHandler : IRequestHandler<RoomEnterCommand, RoomVie
 
         var user = await userManager.FindByNameAsync(request.User.UserName);
 
-        obj.AddUser(user.Id);
+        obj.AddUser(user);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<RoomViewModel>(obj);
+        return Unit.Value;
     }
 }

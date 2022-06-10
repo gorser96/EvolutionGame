@@ -43,6 +43,12 @@ public class RoomController : ControllerBase
         return Task.FromResult(room);
     }
 
+    [HttpGet("{uid:guid}/users")]
+    public Task<ICollection<InGameUserViewModel>> GetUsers(Guid uid, [FromServices] RoomQueries roomQueries)
+    {
+        return Task.FromResult(roomQueries.GetUsersFromRoom(uid));
+    }
+
     [HttpGet("user")]
     public Task<RoomViewModel?> GetHostedRoom([FromServices] RoomQueries roomQueries)
     {
@@ -56,7 +62,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPost("{roomUid:guid}/enter")]
-    public async Task<RoomViewModel> Enter(Guid roomUid, [FromServices] IMediator mediator)
+    public async Task Enter(Guid roomUid, [FromServices] IMediator mediator)
     {
         var user = User.Identity;
         if (user is null || user.Name is null)
@@ -64,8 +70,7 @@ public class RoomController : ControllerBase
             throw new ApplicationException("User identity not found!");
         }
 
-        var roomViewModel = await mediator.Send(new RoomEnterCommand(roomUid, new(user.Name)));
-        return roomViewModel;
+        await mediator.Send(new RoomEnterCommand(roomUid, new(user.Name)));
     }
 
     [HttpPost("enter-viewer")]
@@ -88,7 +93,7 @@ public class RoomController : ControllerBase
     }
 
     [HttpPost("{roomUid:guid}/leave")]
-    public async Task<RoomViewModel> Leave(Guid roomUid, [FromServices] IMediator mediator)
+    public async Task Leave(Guid roomUid, [FromServices] IMediator mediator)
     {
         var user = User.Identity;
         if (user is null || user.Name is null)
@@ -96,12 +101,11 @@ public class RoomController : ControllerBase
             throw new ApplicationException("User identity not found!");
         }
 
-        var roomViewModel = await mediator.Send(new RoomLeaveCommand(roomUid, new(user.Name)));
-        return roomViewModel;
+        await mediator.Send(new RoomLeaveCommand(roomUid, new(user.Name)));
     }
 
     [HttpPost("{roomUid:guid}/kick/{userUid:guid}")]
-    public async Task<RoomViewModel> Kick(Guid roomUid, Guid userUid, [FromServices] IMediator mediator)
+    public async Task Kick(Guid roomUid, Guid userUid, [FromServices] IMediator mediator)
     {
         var user = User.Identity;
         if (user is null || user.Name is null)
@@ -109,8 +113,7 @@ public class RoomController : ControllerBase
             throw new ApplicationException("User identity not found!");
         }
 
-        var roomViewModel = await mediator.Send(new RoomKickCommand(roomUid, userUid, new(user.Name)));
-        return roomViewModel;
+        await mediator.Send(new RoomKickCommand(roomUid, userUid, new(user.Name)));
     }
 
     [HttpPost("{roomUid:guid}/start")]

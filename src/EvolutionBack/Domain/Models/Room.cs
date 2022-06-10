@@ -1,13 +1,17 @@
-﻿using Domain.Validators;
+﻿using Domain.Events;
+using Domain.Validators;
 
 namespace Domain.Models;
 
 /// <summary>
 /// Класс игровой комнаты
 /// </summary>
-public partial class Room
+public partial class Room : Entity
 {
     private IRoomValidator? _roomValidator;
+
+    private bool _isModified = false;
+    private bool _isDeleted = false;
 
     public Room(Guid uid, string name, DateTime createdDateTime)
     {
@@ -25,6 +29,8 @@ public partial class Room
         StartDateTime = null;
         PauseStartedTime = null;
         IsPrivate = false;
+        
+        SetModified(true);
     }
 
     public Guid Uid { get; init; }
@@ -67,5 +73,32 @@ public partial class Room
     public void SetValidator(IRoomValidator roomValidator)
     {
         _roomValidator = roomValidator;
+    }
+
+    private void SetModified(bool isCreated = false)
+    {
+        if (!_isModified)
+        {
+            if (isCreated)
+            {
+                AddDomainEvent(new RoomCreatedEvent(this));
+            }
+            else
+            {
+                AddDomainEvent(new RoomModifiedEvent(this));
+            }
+        }
+
+        _isModified = true;
+    }
+
+    public void Delete()
+    {
+        if (!_isDeleted)
+        {
+            AddDomainEvent(new RoomDeletedEvent(this));
+        }
+
+        _isDeleted = true;
     }
 }

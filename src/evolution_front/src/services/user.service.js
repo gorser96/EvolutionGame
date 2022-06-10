@@ -23,7 +23,6 @@ async function login(username, password) {
       return result;
     },
     (failure) => {
-      console.log('reject');
       return Promise.reject(failure)
     }
   );
