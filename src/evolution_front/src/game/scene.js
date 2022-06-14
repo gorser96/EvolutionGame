@@ -1,38 +1,43 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 export default class Scene {
-  constructor({
-    canvasContainer,
-    sceneSizes,
-    rectSizes,
-    color,
-    colorChangeHandler,
-  }) {
+  gameObjects = {};
+  loopAction = (objs) => {};
+
+  constructor({ canvasContainer, sceneSizes }) {
     // Для использования внутри класса добавляем параметры к this
     this.sceneSizes = sceneSizes;
-    this.colorChangeHandler = colorChangeHandler;
+    this.fps = 30;
+    this.then = Date.now();
+    this.interval = 1000 / this.fps;
 
     this.initRenderer(canvasContainer); // создание рендерера
     this.initScene(); // создание сцены
     this.initCamera(); // создание камеры
-    // this.renderRect(rectSizes, color); // Добавляем квадрат на сцену
-    this.renderCube();
     this.render(); // Запускаем рендеринг
+
+    const startLoop = () => {
+      requestAnimationFrame(startLoop);
+
+      this.loopAction(this.gameObjects);
+
+      var now = Date.now();
+      var delta = now - this.then;
+      if (delta > this.interval) {
+        this.then = now - (delta % this.interval);
+        this.orbit.update();
+        this.render();
+      }
+    };
+
+    startLoop();
   }
 
   resizeScene(width, height) {
     this.sceneSizes.width = width;
     this.sceneSizes.height = height;
 
-    this.cube.position.x = this.sceneSizes.width / 2;
-    this.cube.position.y = -this.sceneSizes.height / 2;
-
-    // Позиционируем камеру в пространстве
-    this.camera.position.set(
-      this.sceneSizes.width / 2, // Позиция по x
-      this.sceneSizes.height / -2, // Позиция по y
-      this.camera.position.z // Позиция по z
-    );
     this.camera.aspect = this.sceneSizes.width / this.sceneSizes.height;
     this.camera.updateProjectionMatrix();
 
@@ -57,24 +62,27 @@ export default class Scene {
     this.scene = new THREE.Scene();
 
     // Задаём цвет фона
-    this.scene.background = new THREE.Color("white");
+    this.scene.background = new THREE.Color("black");
   }
 
   initCamera() {
     // Создаём ортографическую камеру (Идеально подходит для 2d)
     this.camera = new THREE.PerspectiveCamera(
-      75,
+      90,
       this.sceneSizes.width / this.sceneSizes.height,
       0.1,
-      1000
+      10000
     );
+
+    this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
 
     // Позиционируем камеру в пространстве
     this.camera.position.set(
-      this.sceneSizes.width / 2, // Позиция по x
-      this.sceneSizes.height / -2, // Позиция по y
+      0, // Позиция по x
+      0, // Позиция по y
       5 // Позиция по z
     );
+    this.orbit.update();
   }
 
   render() {
@@ -82,52 +90,17 @@ export default class Scene {
     this.renderer.render(this.scene, this.camera);
   }
 
-  renderCube() {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    this.cube = new THREE.Mesh(geometry, material);
-
-    //Позиционируем куб в пространстве
-    this.cube.position.x = this.sceneSizes.width / 2;
-    this.cube.position.y = -this.sceneSizes.height / 2;
-
-    var animate = function(obj) {
-      obj.cube.rotation.x += 0.01;
-      obj.cube.rotation.y += 0.01;// calc elapsed time since last loop
-      obj.renderer.render(obj.scene, obj.camera);
-      return () => {
-        requestAnimationFrame(animate(obj));
-      }
+  removeObject(name) {
+    if (this.gameObjects.hasOwnProperty(name)) {
+      this.scene.remove(this.gameObjects[name]);
+      delete this.gameObjects[name];
     }
-
-    animate(this)();
-
-    this.scene.add(this.cube);
   }
 
-  renderRect({ width, height }, color) {
-    // Создаём геометрию - квадрат с высотой "height" и шириной "width"
-    const geometry = new THREE.PlaneGeometry(width, height);
-
-    // Создаём материал с цветом "color"
-    const material = new THREE.MeshBasicMaterial({ color });
-
-    // Создаём сетку - квадрат
-    this.rect = new THREE.Mesh(geometry, material);
-
-    //Позиционируем квадрат в пространстве
-    this.rect.position.x = this.sceneSizes.width / 2;
-    this.rect.position.y = -this.sceneSizes.height / 2;
-
-    this.scene.add(this.rect);
-  }
-
-  // Служит для изменения цвета квадрат
-  rectColorChange(color) {
-    // Меняем цвет квадрата
-    this.rect.material.color.set(color);
-
-    // Запускаем рендеринг (отобразится квадрат с новым цветом)
-    this.render();
+  addObject(name, obj) {
+    if (!this.gameObjects.hasOwnProperty(name)) {
+      this.gameObjects[name] = obj;
+      this.scene.add(this.gameObjects[name]);
+    }
   }
 }
