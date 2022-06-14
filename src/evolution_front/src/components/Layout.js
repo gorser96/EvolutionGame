@@ -18,7 +18,7 @@ export default function Layout(props) {
   }, [notify, setMsg, setSeverity, setOpen]);
 
   return (
-    <div>
+    <div style={{ height: "100%" }}>
       <Snackbar
         open={open}
         autoHideDuration={5000}
@@ -34,7 +34,7 @@ export default function Layout(props) {
           {msg}
         </Alert>
       </Snackbar>
-      <Container>{props.children}</Container>
+      <Container sx={{ height: "100%" }}>{props.children}</Container>
     </div>
   );
 }

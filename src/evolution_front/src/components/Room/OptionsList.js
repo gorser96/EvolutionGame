@@ -118,7 +118,7 @@ const OptionsList = (props) => {
   };
 
   const handleStart = async () => {
-    console.log("Start game?");
+    navigation(`/game/${uid}`);
   };
 
   const isUserHost = () => {

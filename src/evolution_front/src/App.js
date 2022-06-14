@@ -8,6 +8,7 @@ import Room from "./components/Room/Room";
 import RoomList from "./components/Room/RoomList";
 import Login from "./components/Login/Login";
 import Register from "./components/Login/Register";
+import SceneContainer from "./components/Game/SceneContainer";
 import { connect } from "react-redux";
 import "./App.css";
 
@@ -20,6 +21,7 @@ const App = (props) => {
         <Route path="/menu" element={<ProtectedRoute user={localStorage.getItem("user")}><Menu /></ProtectedRoute>} />
         <Route path="/room-list" element={<ProtectedRoute user={localStorage.getItem("user")}><RoomList /></ProtectedRoute>} />
         <Route path="/room/:uid" element={<ProtectedRoute user={localStorage.getItem("user")}><Room /></ProtectedRoute>} />
+        <Route path="/game/:uid" element={<ProtectedRoute user={localStorage.getItem("user")}><SceneContainer /></ProtectedRoute>} />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </Layout>
