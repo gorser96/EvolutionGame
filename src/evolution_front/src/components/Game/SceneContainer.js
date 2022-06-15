@@ -1,12 +1,11 @@
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 import { useWindowSize } from "../hooks/WindowSize";
 import Scene from "../../game/scene";
 import "./SceneContainer.css";
-import Ground from "../../models/ground/scene.glb";
-import Agama from "../../models/animals/agama.glb";
+import { createCube, createAnimal, createLand } from "../../game/ObjectFactory";
+import TopMenu from "./TopMenu";
 
 const SceneContainer = (props) => {
   const [width, height] = useWindowSize();
@@ -38,51 +37,14 @@ const SceneContainer = (props) => {
     if (scene.current) {
       let ammo = await scene.current.getAmmo();
 
-      const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
-      const material = new THREE.MeshPhongMaterial({ color: "#8AC" });
-      var cube = new THREE.Mesh(geometry, material);
-
-      cube.position.x = 0;
-      cube.position.y = 50;
-      let mass = 1;
-
-      let transform = new ammo.btTransform();
-      transform.setIdentity();
-      transform.setOrigin(
-        new ammo.btVector3(cube.position.x, cube.position.y, cube.position.z)
+      let [cube, rigidCube] = createCube(
+        ammo,
+        { width: 1, height: 1, depth: 1 },
+        "#8AC",
+        { x: 0, y: 50, z: 0 },
+        1
       );
-      transform.setRotation(
-        new ammo.btQuaternion(
-          cube.position.x,
-          cube.position.y,
-          cube.position.z,
-          1
-        )
-      );
-      let motionState = new ammo.btDefaultMotionState(transform);
-
-      let colShape = new ammo.btBoxShape(
-        new ammo.btVector3(
-          cube.scale.x * 0.5,
-          cube.scale.y * 0.5,
-          cube.scale.z * 0.5
-        )
-      );
-      colShape.setMargin(0.05);
-
-      let localInertia = new ammo.btVector3(0, 0, 0);
-      colShape.calculateLocalInertia(mass, localInertia);
-
-      let rbInfo = new ammo.btRigidBodyConstructionInfo(
-        mass,
-        motionState,
-        colShape,
-        localInertia
-      );
-      let body = new ammo.btRigidBody(rbInfo);
-
-      cube.userData.physicsBody = body;
-      scene.current.addObject("cube", { obj: cube, physics: body });
+      scene.current.addObject("cube", { obj: cube, physics: rigidCube });
 
       const axesHelper = new THREE.AxesHelper(20);
       axesHelper.setColors(
@@ -96,72 +58,15 @@ const SceneContainer = (props) => {
       pointLight.position.set(0, 10, 0);
       scene.current.addObject("light", { obj: pointLight });
 
-      const loader = new GLTFLoader();
-      loader.load(
-        Ground,
-        (gltf) => {
-          gltf.scene.position.x = 5;
-          gltf.scene.position.y = 14;
-          gltf.scene.position.z = 15;
+      let [land, landRigid] = await createLand(ammo, { x: 5, y: 14, z: 15 }, 0);
 
-          let mass = 0;
-          let transform = new ammo.btTransform();
-          transform.setIdentity();
-          transform.setOrigin(
-            new ammo.btVector3(
-              0,
-              0,
-              0
-            )
-          );
-          transform.setRotation(new ammo.btQuaternion(0, 0, 0, 1));
+      scene.current.addObject("location", {
+        obj: land,
+        physics: landRigid,
+      });
 
-          let motionState = new ammo.btDefaultMotionState(transform);
-          let localInertia = new ammo.btVector3(0, 0, 0);
-          let colShape = new ammo.btBoxShape(
-            new ammo.btVector3(
-              10,
-              0.1,
-              10
-            )
-          );
-          colShape.setMargin(0.05);
-
-          colShape.calculateLocalInertia(mass, localInertia);
-
-          let rigidBodyInfo = new ammo.btRigidBodyConstructionInfo(
-            mass,
-            motionState,
-            colShape,
-            localInertia
-          );
-          let rBody = new ammo.btRigidBody(rigidBodyInfo);
-          gltf.scene.userData.physicsBody = rBody;
-
-          scene.current.addObject("location", {
-            obj: gltf.scene,
-            physics: rBody,
-          });
-        },
-        (xhr) => {
-          console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-        },
-        (error) => console.log(error)
-      );
-
-      loader.load(
-        Agama,
-        (gltf) => {
-          gltf.scene.position.x = 0;
-          gltf.scene.position.y = 0;
-          gltf.scene.position.z = 0;
-          scene.current.addObject("agama", { obj: gltf.scene });
-        },
-        (xhr) => {
-          console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-        },
-        (error) => console.log(error)
-      );
+      let [animal] = await createAnimal(ammo, { x: 0, y: 0, z: 0 }, 0);
+      scene.current.addObject("agama", { obj: animal });
     }
   };
 
@@ -172,7 +77,6 @@ const SceneContainer = (props) => {
     */
   };
 
-  // при смене цвета вызывается метод объекта класса Three
   useEffect(() => {
     if (scene.current) {
       scene.current.resizeScene(width, height);
@@ -180,7 +84,12 @@ const SceneContainer = (props) => {
   }, [height, width]);
 
   // Данный узел будет контейнером для canvas (который создаст three.js)
-  return <div id="game_container" className="game-window" ref={threeRef} />;
+  return (
+    <>
+      <TopMenu />
+      <div id="game_container" className="game-window" ref={threeRef} />
+    </>
+  );
 };
 
 export default SceneContainer;

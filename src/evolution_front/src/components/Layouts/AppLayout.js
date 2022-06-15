@@ -1,8 +1,8 @@
-import { Container, Alert, Snackbar } from "@mui/material";
+import { Box, Alert, Snackbar } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-export default function Layout(props) {
+export default function AppLayout(props) {
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState("");
   const [severity, setSeverity] = useState("success");
@@ -34,7 +34,7 @@ export default function Layout(props) {
           {msg}
         </Alert>
       </Snackbar>
-      <Container sx={{ height: "100%" }}>{props.children}</Container>
+      <Box sx={{ height: "100%" }}>{props.children}</Box>
     </div>
   );
 }
