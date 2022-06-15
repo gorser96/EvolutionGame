@@ -1,9 +1,13 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { default as Ammo } from "ammo.js/builds/ammo";
 
 export default class Scene {
   gameObjects = {};
+  ammoObj = {};
   loopAction = (objs) => {};
+  ammoPromise = {};
+  tmpTrans = {};
 
   constructor({ canvasContainer, sceneSizes }) {
     // Для использования внутри класса добавляем параметры к this
@@ -11,6 +15,12 @@ export default class Scene {
     this.fps = 30;
     this.then = Date.now();
     this.interval = 1000 / this.fps;
+
+    this.ammoPromise = Ammo().then((ammoObj) => {
+      this.ammoObj = ammoObj;
+      this.tmpTrans = new this.ammoObj.btTransform();
+      this.initPhysics();
+    });
 
     this.initRenderer(canvasContainer); // создание рендерера
     this.initScene(); // создание сцены
@@ -26,6 +36,31 @@ export default class Scene {
       var delta = now - this.then;
       if (delta > this.interval) {
         this.then = now - (delta % this.interval);
+        if (this.physicsWorld) {
+          this.physicsWorld.stepSimulation(delta, 10);
+
+          for (let i = 0; i < Object.keys(this.gameObjects).length; i++) {
+            const objName = Object.keys(this.gameObjects)[i];
+            let objAmmo =
+              this.gameObjects[objName].obj.userData &&
+              this.gameObjects[objName].obj.userData.physicsBody;
+            if (objAmmo) {
+              let ms = objAmmo.getMotionState();
+              if (ms) {
+                ms.getWorldTransform(this.tmpTrans);
+                let p = this.tmpTrans.getOrigin();
+                let q = this.tmpTrans.getRotation();
+                this.gameObjects[objName].obj.position.set(p.x(), p.y(), p.z());
+                this.gameObjects[objName].obj.quaternion.set(
+                  q.x(),
+                  q.y(),
+                  q.z(),
+                  q.w()
+                );
+              }
+            }
+          }
+        }
         this.orbit.update();
         this.render();
       }
@@ -57,12 +92,30 @@ export default class Scene {
     canvasContainer.appendChild(this.renderer.domElement);
   }
 
+  initPhysics() {
+    this.collisionConfiguration =
+      new this.ammoObj.btDefaultCollisionConfiguration();
+    this.dispatcher = new this.ammoObj.btCollisionDispatcher(
+      this.collisionConfiguration
+    );
+    this.overlappingPairCache = new this.ammoObj.btDbvtBroadphase();
+    this.solver = new this.ammoObj.btSequentialImpulseConstraintSolver();
+
+    this.physicsWorld = new this.ammoObj.btDiscreteDynamicsWorld(
+      this.dispatcher,
+      this.overlappingPairCache,
+      this.solver,
+      this.collisionConfiguration
+    );
+    this.physicsWorld.setGravity(new this.ammoObj.btVector3(0, -1, 0));
+  }
+
   initScene() {
     // Создаём объект сцены
     this.scene = new THREE.Scene();
 
     // Задаём цвет фона
-    this.scene.background = new THREE.Color("black");
+    this.scene.background = new THREE.Color("gray");
   }
 
   initCamera() {
@@ -90,6 +143,11 @@ export default class Scene {
     this.renderer.render(this.scene, this.camera);
   }
 
+  async getAmmo() {
+    await this.ammoPromise;
+    return this.ammoObj;
+  }
+
   removeObject(name) {
     if (this.gameObjects.hasOwnProperty(name)) {
       this.scene.remove(this.gameObjects[name]);
@@ -100,7 +158,10 @@ export default class Scene {
   addObject(name, obj) {
     if (!this.gameObjects.hasOwnProperty(name)) {
       this.gameObjects[name] = obj;
-      this.scene.add(this.gameObjects[name]);
+      this.scene.add(this.gameObjects[name]["obj"]);
+      if (this.gameObjects[name].hasOwnProperty("physics")) {
+        this.physicsWorld.addRigidBody(this.gameObjects[name]["physics"]);
+      }
     }
   }
 }
