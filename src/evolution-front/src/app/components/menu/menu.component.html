@@ -1,0 +1,19 @@
+<div class="menu__language">
+  <select [ngModel]="selectedLocale" (change)="onLocaleChange($event)">
+    <option [value]="i" *ngFor="let i of locales">{{ i }}</option>
+  </select>
+</div>
+
+<div *ngIf="!(isAuthenticated$ | async)">
+  <app-auth></app-auth>
+</div>
+
+<div *ngIf="isAuthenticated$ | async">
+  <div class="menu__list">
+    <div class="menu__item">{{ "new_game" | translate }}</div>
+    <div class="menu__item">{{ "join_game" | translate }}</div>
+    <div class="menu__item">{{ "settings" | translate }}</div>
+    <div class="menu__item">{{ "about" | translate }}</div>
+    <div class="menu__item" (click)="onExit()">{{ "exit" | translate }}</div>
+  </div>
+</div>

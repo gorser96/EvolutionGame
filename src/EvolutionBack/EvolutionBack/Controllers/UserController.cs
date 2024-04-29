@@ -18,9 +18,13 @@ namespace EvolutionBack.Controllers
         }
 
         [HttpPost("register")]
-        public async Task Register([FromBody] UserCreateCommand createCommand, [FromServices] IMediator mediator)
+        public async Task<UserTokenViewModel> Register([FromBody] UserCreateCommand createCommand, [FromServices] IMediator mediator)
         {
             await mediator.Send(createCommand);
+
+            var user = await mediator.Send(new UserLoginCommand(createCommand.Login, createCommand.Password));
+
+            return user;
         }
     }
 }

@@ -1,0 +1,13 @@
+{
+  "username": "Username",
+  "password": "Password",
+  "register": "Sign Up",
+  "login": "LogIn",
+  "new_game": "New game",
+  "join_game": "Join game",
+  "settings": "Settings",
+  "about": "About",
+  "exit": "Exit",
+  "authorization": "Authorization",
+  "registration": "Registration"
+}

@@ -1,0 +1,7 @@
+<app-login *ngIf="isLogin"></app-login>
+<app-register *ngIf="!isLogin"></app-register>
+<div class="auth__link">
+  <a href="javascript:void(0)" (click)="onLinkClick()">{{
+    linkText | translate
+  }}</a>
+</div>

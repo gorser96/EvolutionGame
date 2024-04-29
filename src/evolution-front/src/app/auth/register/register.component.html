@@ -1,0 +1,27 @@
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+  <div class="form-header">
+    {{ "registration" | translate }}
+  </div>
+  <div class="form-item">
+    <label class="form-item-label" for="login"
+      >{{ "username" | translate }}:</label
+    >
+    <input class="form-item-value" type="text" formControlName="login" />
+  </div>
+
+  <div class="form-item">
+    <label class="form-item-label" for="password"
+      >{{ "password" | translate }}:</label
+    >
+    <input class="form-item-value" type="password" formControlName="password" />
+  </div>
+
+  <div class="form-submit-item">
+    <input
+      class="form-submit-btn"
+      type="submit"
+      [disabled]="!registerForm.valid"
+      [value]="'register' | translate"
+    />
+  </div>
+</form>
