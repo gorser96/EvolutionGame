@@ -1,0 +1,31 @@
+<div class="game-list__container">
+  <div class="game-list__find-container">
+    <button class="app-button" [routerLink]="['/menu']">
+      <fa-icon [icon]="faReply"></fa-icon>
+    </button>
+    <input
+      class="app-text-input game-list__find-input"
+      type="text"
+      [placeholder]="'find' | translate"
+    />
+    <button class="app-button">{{ "find" | translate }}</button>
+  </div>
+
+  <div class="game-list__list-container">
+    <div class="game-list__list-control">
+      <mat-selection-list
+        [multiple]="false"
+        [hideSingleSelectionIndicator]="true"
+        (selectionChange)="onGameSelected($event)"
+      >
+        <mat-list-option [value]="game" *ngFor="let game of gameList">
+          {{ game.name }}
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+    <div *ngIf="selectedGame" class="game-list__list-selected-item">
+      <div>{{ selectedGame.name }}</div>
+      <button class="app-button">{{ "join_game" | translate }}</button>
+    </div>
+  </div>
+</div>

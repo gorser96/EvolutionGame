@@ -1,0 +1,5 @@
+<div class="locale-selector__container">
+  <select [ngModel]="selectedLocale" (change)="onLocaleChange($event)">
+    <option [value]="i" *ngFor="let i of locales">{{ i }}</option>
+  </select>
+</div>

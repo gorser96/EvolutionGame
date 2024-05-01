@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { TranslateHelperService } from './core/translate-helper.service';
+import { Observable } from 'rxjs';
+import { AuthService } from './auth/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +10,9 @@ import { TranslateHelperService } from './core/translate-helper.service';
 })
 export class AppComponent {
   title = 'Evolution';
+  isAuthenticated$: Observable<boolean>;
 
-  constructor(private _: TranslateHelperService) {}
+  constructor(private _: TranslateHelperService, private auth: AuthService) {
+    this.isAuthenticated$ = auth.isAuthenticated$();
+  }
 }

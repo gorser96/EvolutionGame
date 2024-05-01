@@ -10,6 +10,7 @@ import { TranslateHelperService } from 'src/app/core/translate-helper.service';
 })
 export class MenuComponent {
   isAuthenticated$: Observable<boolean>;
+  username$: Observable<string | null>;
   locales: string[];
   selectedLocale: string;
 
@@ -18,6 +19,7 @@ export class MenuComponent {
     private translateHelper: TranslateHelperService
   ) {
     this.isAuthenticated$ = auth.isAuthenticated$();
+    this.username$ = auth.getUserName$();
     this.locales = this.translateHelper.getLocales();
     this.selectedLocale = this.translateHelper.getCurrentLanguage();
   }
