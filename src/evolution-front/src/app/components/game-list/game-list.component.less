@@ -1,0 +1,49 @@
+:host {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-list__container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 2rem;
+}
+
+.game-list__find-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.game-list__find-input {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.game-list__list-container {
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.game-list__list-control {
+  background-color: var(--field-background);
+  border: var(--field-border);
+  border-radius: 0.2rem;
+  padding: 0.3rem;
+  flex: 1 1;
+}
+
+.game-list__list-selected-item {
+  width: 100%;
+  background-color: var(--field-background);
+  border: var(--field-border);
+  border-radius: 0.2rem;
+  padding: 0.3rem;
+  margin-left: 1rem;
+  flex: 2 1;
+}

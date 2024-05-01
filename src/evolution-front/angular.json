@@ -32,6 +32,7 @@
               "src/appsettings.json"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/purple-green.css",
               "src/styles.less"
             ],
             "scripts": []
@@ -97,6 +98,7 @@
               "src/appsettings.json"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/purple-green.css",
               "src/styles.less"
             ],
             "scripts": []

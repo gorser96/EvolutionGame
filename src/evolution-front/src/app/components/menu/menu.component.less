@@ -9,7 +9,7 @@
 
 .menu__language {
   position: absolute;
-  top: 0;
+  top: calc(100vh - 70px);
   right: 0;
   margin: 1rem;
 
@@ -17,9 +17,17 @@
     font-size: large;
     font-weight: 500;
     font-family: var(--default-font-family);
-    background-color: var(--form-background);
+    background-color: var(--field-background);
     border-radius: 3px;
   }
+}
+
+.menu__profile {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 1rem;
+  font-size: larger;
 }
 
 .menu__list {
@@ -49,12 +57,12 @@
   border-radius: 5px;
   font-size: x-large;
   font-weight: 500;
-  background-color: var(--form-background);
+  background-color: var(--field-background);
   cursor: pointer;
   user-select: none;
 }
 
 .menu__item:hover {
-  background-color: var(--form-background-item-hover);
+  background-color: var(--field-background-hover);
   scale: 1.1;
 }

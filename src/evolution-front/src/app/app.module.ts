@@ -18,9 +18,28 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppConfigService } from './core/app-config.service';
 import { MenuComponent } from './components/menu/menu.component';
 import { AuthComponent } from './auth/auth.component';
+import { LocaleSelectorComponent } from './components/locale-selector/locale-selector.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ProfileComponent } from './components/profile/profile.component';
+import { GameListComponent } from './components/game-list/game-list.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { HeaderComponent } from './components/header/header.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, RegisterComponent, MenuComponent, AuthComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    RegisterComponent,
+    MenuComponent,
+    AuthComponent,
+    LocaleSelectorComponent,
+    ProfileComponent,
+    GameListComponent,
+    HeaderComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -35,6 +54,11 @@ import { AuthComponent } from './auth/auth.component';
         deps: [HttpClient],
       },
     }),
+    BrowserAnimationsModule,
+    MatToolbarModule,
+    MatInputModule,
+    MatListModule,
+    FontAwesomeModule,
   ],
   providers: [
     AuthService,

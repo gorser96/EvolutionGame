@@ -1,0 +1,5 @@
+<mat-toolbar class="header__container">
+  <span>Evolution</span>
+  <span class="header__spacer"></span>
+  <app-profile *ngIf="isAuthenticated$ | async"></app-profile>
+</mat-toolbar>
