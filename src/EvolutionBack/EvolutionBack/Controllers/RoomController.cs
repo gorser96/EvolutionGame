@@ -14,7 +14,7 @@ namespace EvolutionBack.Controllers;
 public class RoomController : ControllerBase
 {
     [HttpPost("create")]
-    public async Task<RoomViewModel> Create([FromBody] string roomName, [FromServices] IMediator mediator)
+    public async Task<RoomViewModel> Create([FromBody] RoomNameModel roomNameModel, [FromServices] IMediator mediator)
     {
         var user = User.Identity;
         if (user is null || user.Name is null)
@@ -22,7 +22,7 @@ public class RoomController : ControllerBase
             throw new ApplicationException("User identity not found!");
         }
 
-        var roomViewModel = await mediator.Send(new RoomCreateCommand(roomName, new(user.Name)));
+        var roomViewModel = await mediator.Send(new RoomCreateCommand(roomNameModel.Name, new(user.Name)));
         return roomViewModel;
     }
 

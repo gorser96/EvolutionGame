@@ -13,5 +13,9 @@
   "about": "About",
   "exit": "Exit",
   "authorization": "Authorization",
-  "registration": "Registration"
+  "registration": "Registration",
+  "room-name": "Name",
+  "cancel": "Cancel",
+  "create": "Create",
+  "remove_room": "Remove room"
 }

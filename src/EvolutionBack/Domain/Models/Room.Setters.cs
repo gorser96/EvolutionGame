@@ -55,6 +55,7 @@ public partial class Room
         if (StepNumber != stepNumber)
         {
             StepNumber = stepNumber;
+            SetModified();
         }
     }
 
@@ -63,6 +64,7 @@ public partial class Room
         if (IsStarted != isStarted)
         {
             IsStarted = isStarted;
+            SetModified();
         }
     }
 
@@ -71,6 +73,7 @@ public partial class Room
         if (IsPaused != isPaused)
         {
             IsPaused = isPaused;
+            SetModified();
         }
     }
 

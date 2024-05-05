@@ -1,0 +1,14 @@
+<div *ngIf="room">
+  <div>{{ room.name }}</div>
+  <div>
+    <div *ngFor="let player of room.inGameUsers">
+      {{ player.user.userName }}
+    </div>
+  </div>
+  <button *ngIf="!hasInRoom" class="app-button">
+    {{ "join_game" | translate }}
+  </button>
+  <button *ngIf="hasInRoom && isHost" class="app-button" (click)="removeRoom()">
+    {{ "remove_room" | translate }}
+  </button>
+</div>
