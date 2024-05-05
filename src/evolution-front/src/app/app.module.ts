@@ -27,6 +27,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { HeaderComponent } from './components/header/header.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { RoomComponent } from './components/room/room.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     ProfileComponent,
     GameListComponent,
     HeaderComponent,
+    RoomComponent,
   ],
   imports: [
     BrowserModule,

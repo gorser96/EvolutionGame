@@ -3,6 +3,9 @@
     <button class="app-button" [routerLink]="['/menu']">
       <fa-icon [icon]="faReply"></fa-icon>
     </button>
+    <button class="app-button ml-2" (click)="roomNameId.showModal()">
+      <fa-icon [icon]="faPlus"></fa-icon>
+    </button>
     <input
       class="app-text-input game-list__find-input"
       type="text"
@@ -18,14 +21,39 @@
         [hideSingleSelectionIndicator]="true"
         (selectionChange)="onGameSelected($event)"
       >
-        <mat-list-option [value]="game" *ngFor="let game of gameList">
-          {{ game.name }}
+        <mat-list-option [value]="room" *ngFor="let room of rooms | async">
+          {{ room.name }}
         </mat-list-option>
       </mat-selection-list>
     </div>
-    <div *ngIf="selectedGame" class="game-list__list-selected-item">
-      <div>{{ selectedGame.name }}</div>
-      <button class="app-button">{{ "join_game" | translate }}</button>
+    <div *ngIf="selectedRoom" class="game-list__list-selected-item">
+      <app-room [room]="selectedRoom"></app-room>
     </div>
   </div>
 </div>
+
+<dialog #roomNameId>
+  <div class="game-list__dialog-container">
+    <div class="game-list__dialog-input">
+      <div>{{ "room-name" | translate }}:</div>
+      <div><input #roomInputId class="app-text-input" type="text" /></div>
+    </div>
+
+    <div class="game-list__dialog-buttons">
+      <button
+        class="app-button"
+        (click)="roomInputId.value = ''; roomNameId.close()"
+      >
+        {{ "cancel" | translate }}
+      </button>
+      <input
+        type="button"
+        class="app-button"
+        (click)="
+          createRoom(roomInputId.value, roomNameId); roomInputId.value = ''
+        "
+        [value]="'create' | translate"
+      />
+    </div>
+  </div>
+</dialog>

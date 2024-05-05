@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { faReply } from '@fortawesome/free-solid-svg-icons';
-import { IGameHeader } from 'src/app/models/game-list.model';
+import { faReply, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { EMPTY, Observable } from 'rxjs';
+import { RoomApiService } from 'src/app/api-services/room-api.service';
+import { IRoomViewModel } from 'src/app/models/game-list.model';
 
 @Component({
   selector: 'app-game-list',
@@ -9,22 +11,33 @@ import { IGameHeader } from 'src/app/models/game-list.model';
 })
 export class GameListComponent {
   faReply = faReply;
-  gameList: IGameHeader[] = [
-    { id: '1', name: 'test game 1' },
-    { id: '2', name: 'test game 2' },
-    { id: '3', name: 'test game 3' },
-    { id: '4', name: 'test game 4' },
-    { id: '5', name: 'test game 5' },
-    { id: '6', name: 'test game 6' },
-    { id: '7', name: 'test game 7' },
-    { id: '8', name: 'test game 8' },
-    { id: '9', name: 'test game 9' },
-  ];
-  selectedGame: IGameHeader | null = null;
+  faPlus = faPlus;
+
+  rooms: Observable<IRoomViewModel[]> = EMPTY;
+  selectedRoom: IRoomViewModel | null = null;
+
+  constructor(private roomApi: RoomApiService) {}
+
+  ngOnInit(): void {
+    this.rooms = this.roomApi.getRooms();
+  }
 
   onGameSelected(e: any) {
     if (e.options && e.options.length > 0) {
-      this.selectedGame = e.options[0].value;
+      this.selectedRoom = e.options[0].value;
     }
+  }
+
+  createRoom(name: string, roomDialog: HTMLDialogElement) {
+    if (!name) {
+      return;
+    }
+
+    this.roomApi.create(name).subscribe((room) => {
+      this.selectedRoom = room;
+      this.rooms = this.roomApi.getRooms();
+    });
+
+    roomDialog.close();
   }
 }

@@ -23,3 +23,13 @@ public class RoomEditModel
 
     public int NumOfCards { get; init; }
 }
+
+public record RoomNameModel
+{
+    public RoomNameModel(string name)
+    {
+        Name = name;
+    }
+ 
+    public string Name { get; set; }
+}

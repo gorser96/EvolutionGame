@@ -38,13 +38,13 @@ public class RoomCreateCommandHandler : IRequestHandler<RoomCreateCommand, RoomV
         }
 
         var obj = repo.Create(Guid.NewGuid(), request.Name);
-        obj.AddUser(user);
 
         var baseAddition = additionRepo.GetBaseAddition();
         if (baseAddition is not null)
         {
             obj.Init(new[] { baseAddition });
         }
+        obj.AddUser(user);
 
         dbContext.SaveChanges();
 

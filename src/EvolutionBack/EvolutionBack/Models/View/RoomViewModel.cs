@@ -27,6 +27,8 @@ public record RoomViewModel
 
     public int NumOfCards { get; init; }
 
+    public int MaxUsersCount { get; init; }
+
     public ICollection<InGameUserViewModel> InGameUsers { get; init; }
 
     public ICollection<AdditionViewModel> Additions { get; init; }

@@ -27,7 +27,7 @@ export class AuthService {
 
   login(user: IAuthUser): Observable<{ token: string }> {
     return this.http
-      .post<IUserToken>(this.config.appSettings.baseApiUrl + 'user/login', user)
+      .post<IUserToken>(this.config.appSettings.baseApiUrl + 'api/user/login', user)
       .pipe(
         tap((userToken) => {
           this.setToken(userToken);
@@ -74,7 +74,7 @@ export class AuthService {
   register(user: IAuthUser): Observable<{ token: string }> {
     return this.http
       .post<IUserToken>(
-        this.config.appSettings.baseApiUrl + 'user/register',
+        this.config.appSettings.baseApiUrl + 'api/user/register',
         user
       )
       .pipe(

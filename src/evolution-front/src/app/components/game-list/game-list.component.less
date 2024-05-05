@@ -52,3 +52,43 @@
   margin-left: 1rem;
   flex: 2 1;
 }
+
+dialog {
+  border: var(--field-border);
+  border-radius: 0.2rem;
+  background-color: rgba(157, 169, 70, 1);
+}
+
+.game-list__dialog-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.game-list__dialog-input {
+  flex: 1 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+
+  input {
+    width: auto;
+  }
+}
+
+.game-list__dialog-buttons {
+  flex: 0 1;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 0.5rem;
+
+  button {
+    font-size: medium;
+  }
+
+  input {
+    font-size: medium;
+  }
+}
