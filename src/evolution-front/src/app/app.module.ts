@@ -28,6 +28,8 @@ import { MatListModule } from '@angular/material/list';
 import { HeaderComponent } from './components/header/header.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RoomComponent } from './components/room/room.component';
+import { AboutComponent } from './components/about/about.component';
+import { RulesComponent } from './components/rules/rules.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,8 @@ import { RoomComponent } from './components/room/room.component';
     GameListComponent,
     HeaderComponent,
     RoomComponent,
+    AboutComponent,
+    RulesComponent,
   ],
   imports: [
     BrowserModule,

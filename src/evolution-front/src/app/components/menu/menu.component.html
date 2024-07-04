@@ -7,7 +7,10 @@
     {{ "play" | translate }}
   </div>
   <div class="menu__item">{{ "settings" | translate }}</div>
-  <div class="menu__item">{{ "about" | translate }}</div>
+  <div class="menu__item" [routerLink]="['/about']">
+    {{ "about" | translate }}
+  </div>
+  <div class="menu__item" [routerLink]="['/rules']">{{ "rules" | translate }}</div>
   <div class="menu__item" (click)="onExit()">{{ "exit" | translate }}</div>
 </div>
 
